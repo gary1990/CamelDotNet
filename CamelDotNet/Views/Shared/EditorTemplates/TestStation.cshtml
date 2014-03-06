@@ -1,0 +1,15 @@
+﻿@model TestStation
+<div class="editor-label">
+    @Html.LabelFor(model => model.Name)
+</div>
+<div class="editor-field">
+    @Html.EditorFor(model => model.Name)
+    @Html.ValidationMessageFor(model => model.Name)
+</div>
+<div class="editor-label">
+    @Html.LabelFor(model => model.ProcessId)
+</div>
+<div class="editor-field">
+    @Html.DropDownListFor(model => model.ProcessId, new SelectList(Common.GetProcessList(), "Id", "Name"), String.Empty)
+    @Html.ValidationMessageFor(model => model.ProcessId)
+</div>

@@ -1,0 +1,163 @@
+﻿@{
+    var menuPath = "";
+    var sideMenuPath = "";
+    if(ViewBag.path != null)
+    {
+        var pathList = ViewBag.path as List<string>;
+        menuPath = pathList[0];  
+        if(pathList.Count > 1)
+        {
+            sideMenuPath = pathList[1];
+        }
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title-Camel</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width" />
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/customCss/foo")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/custom")
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <header>
+        <div class="content-wrapper">
+            <div class="float-left">
+                <p class="site-title">@Html.AuthorizeActionLink("Application Name", "Index", "Home")</p>
+            </div>
+            <div class="float-right">
+                <section id="login">
+                    @Html.Partial("_LoginPartial")
+                </section>
+            </div>
+        </div>
+        <nav>
+            <ul id="menu">
+                <li>@Html.AuthorizeActionLink("首页", "Index", "Home")</li>
+
+                @if (ViewBag.path != null && ViewBag.path[0] == "测试管理")
+                {
+                    <li class="current">@Html.AuthorizeActionLink("测试管理", "Index", "TestManageHome")
+                        <ul class="sideMenu">
+                            <li class="@(sideMenuPath == "产品型号" ? "current" : "")">@Html.AuthorizeActionLink("产品型号", "Index", "ProductType")</li>
+                            <li class="@(sideMenuPath == "测试项" ? "current" : "")">@Html.AuthorizeActionLink("测试项", "Index", "TestItem")</li>
+                            <li class="@(sideMenuPath == "测试站点" ? "current" : "")">@Html.AuthorizeActionLink("测试站点", "Index", "TestStation")</li>
+                            <li class="@(sideMenuPath == "测试设备" ? "current" : "")">@Html.AuthorizeActionLink("测试设备", "Index", "TestEquipment")</li>
+                            <li class="@(sideMenuPath == "测试方案" ? "current" : "")">@Html.AuthorizeActionLink("测试方案", "Index", "TestConfig")</li>
+                            <li class="@(sideMenuPath == "客户" ? "current" : "")">@Html.AuthorizeActionLink("客户", "Index", "Client")</li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li>@Html.AuthorizeActionLink("测试管理", "Index", "TestManageHome")
+                    </li>
+                }
+
+                @if (ViewBag.path != null && ViewBag.path[0] == "质量追溯")
+                {
+                    <li class="current">@Html.AuthorizeActionLink("质量追溯", "Index", "QualityTracingHome")
+                        <ul class="sideMenu">
+                            <li class="@(sideMenuPath == "VNA测试" ? "current" : "")">@Html.AuthorizeActionLink("VNA测试", "Index", "VnaTestRecord")</li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li>@Html.AuthorizeActionLink("质量追溯", "Index", "QualityTracingHome")</li>
+                }
+
+                @if (ViewBag.path != null && ViewBag.path[0] == "报表管理")
+                {
+                    <li class="current">@Html.AuthorizeActionLink("报表管理", "Index", "ReportHome")
+                        <ul class="sideMenu">
+                        
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li>@Html.AuthorizeActionLink("报表管理", "Index", "ReportHome")</li>
+                }
+
+                @if (ViewBag.path != null && ViewBag.path[0] == "系统管理")
+                {
+                    <li class="current">@Html.AuthorizeActionLink("系统管理", "Index", "SystemHome")
+                        <ul class="sideMenu">
+                            <li class="@(sideMenuPath == "用户管理" ? "current" : "")">@Html.AuthorizeActionLink("用户管理", "Index", "UserProfile")</li>
+                            <li class="@(sideMenuPath == "权限管理" ? "current" : "")">@Html.AuthorizeActionLink("权限管理", "Index", "Permission")</li>
+                            <li class="@(sideMenuPath == "角色管理" ? "current" : "")">@Html.AuthorizeActionLink("角色管理", "Index", "Role")</li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li>@Html.AuthorizeActionLink("系统管理", "Index", "SystemHome")</li>
+                }
+            </ul>
+            <div class="clear-fix"></div>
+        </nav>
+        <div class="sideMenu">
+            <div>
+                @if (ViewBag.path != null)
+                {
+                    int i = 0;
+                    foreach (string tmpStr in ViewBag.path)
+                    {
+                        if (i++ == 0)
+                        {
+                            continue;
+                        }
+                    @tmpStr <span>></span>
+                    }
+                }
+            </div>
+        </div>
+    </header>
+    <div id="body">
+        @RenderSection("featured", required: false)
+        <section class="content-wrapper main-content clear-fix">
+            <div style="width: 100%">
+                <div style="width: 96%; margin: 0 2%;" class="box">
+                    @Html.Partial("Msg")
+                    @RenderBody()
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="float-left" style="height: 100px; clear: both">&nbsp;</div>
+    <footer>
+        <div class="content-wrapper" style="clear: both">
+            <div class="float-left">
+                <p>&copy; @DateTime.Now.Year - Gemcycle</p>
+            </div>
+        </div>
+    </footer>
+
+    @RenderSection("scripts", required: false)
+    <script>
+        $("#msg").delay(3000).fadeOut(500);
+    </script>
+    @*    <script>
+        $(document).ready(function () {
+            $("body").on("click", ".datepicker", function () {
+                $(this).datepicker({
+                });
+            })
+            $("body").on("click", ".datepickerMonth", function () {
+                $(this).datepicker({
+                    format: "yyyy-mm",
+                    startView: "decade",
+                    minViewMode: "years"
+                });
+            })
+        })
+    </script>*@
+</body>
+</html>

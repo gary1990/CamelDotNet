@@ -1,0 +1,21 @@
+﻿@model BaseModel
+
+@{
+    ViewBag.Title = "详情";
+}
+
+<h2>@ViewBag.Name:@ViewBag.Title</h2>
+
+@Html.Action("Abstract", (string)ViewBag.Controller, new { id = Model.Id })
+
+<p>
+    @using (Html.BeginForm("Edit", (string)ViewBag.Controller))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.Hidden("id", Model.Id)
+        @Html.Hidden("returnUrl", @Url.Content((string)ViewBag.ReturnUrl))
+        <input type="submit" value="编辑" />
+    }
+    <a href="@Url.Content((string)ViewBag.ReturnUrl)">返回</a>
+</p>

@@ -1,0 +1,31 @@
+﻿@model BaseModel
+
+@{
+    ViewBag.Title = "编辑";
+}
+
+<h2>@ViewBag.Name:@ViewBag.Title</h2>
+
+@using (Html.BeginForm("EditSave", (string)ViewBag.Controller))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        @Html.Hidden("returnUrl", (string)ViewBag.ReturnUrl)
+
+        @Html.EditorForModel("EditBaseModel")
+
+        <p>
+            <input type="submit" value="保存" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    <a href="@Url.Content((string)ViewBag.ReturnUrl)">取消</a>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

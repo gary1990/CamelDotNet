@@ -1,0 +1,56 @@
+﻿@{
+    Html.IndexPageInit();
+    string action = (((RouteValueDictionary)(ViewBag.RV))["actionAjax"]).ToString();
+    string returnRoot = (((RouteValueDictionary)(ViewBag.RV))["returnRoot"]).ToString();
+
+    AjaxOptions ajaxOpts = new AjaxOptions
+    {
+        UpdateTargetId = "AjaxBody",
+        Url = Url.Action(action),
+    };
+
+}
+
+<h2>@ViewBag.Name</h2>
+
+@using (Ajax.BeginForm(null, null, ajaxOpts, new { id = "searchForm" }))
+{
+    <table>
+        <tr>
+            <td>
+                <span class="searchLabel">关键词</span>
+            </td>
+            <td>
+                <span class="searchLabel">包含已删除项目</span>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            @Html.Hidden("returnRoot", returnRoot)
+            @Html.Hidden("actionAjax", action)
+            @Html.Hidden("filter")
+            <td>
+                @Html.TextBox("Name@%", null, new { @class = "filter" })
+            </td>
+            <td>
+                @Html.CheckBox("includeSoftDeleted", false)
+            </td>
+            <td>
+                <button type="submit">查询</button>
+            </td>
+        </tr>
+    </table>
+}
+<div id="AjaxBody">
+    @Html.Action(action, (RouteValueDictionary)(ViewBag.RV))
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/custom")
+    <script>
+        $(document).ready(function () {
+            $("#searchForm").submit(function (e) { setFilter(); });
+        });
+    </script>
+
+}

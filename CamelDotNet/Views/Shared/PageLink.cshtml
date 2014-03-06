@@ -1,0 +1,44 @@
+﻿<div class="pageLink">
+    @{
+        int showCount = 5;
+
+        string action = ((RouteValueDictionary)ViewBag.RV).Where(a => a.Key == "actionAjax").Select(a => a.Value).SingleOrDefault().ToString();
+        int page = int.Parse(((RouteValueDictionary)ViewBag.RV).Where(a => a.Key == "page").Select(a => a.Value).SingleOrDefault().ToString());
+        int total = int.Parse(((RouteValueDictionary)ViewBag.RV).Where(a => a.Key == "totalPage").Select(a => a.Value).SingleOrDefault().ToString());
+
+        var rv = (RouteValueDictionary)(ViewBag.RV);
+
+        var originalPageNum = rv["page"];
+        
+        rv["page"] = 1;
+        @Ajax.ActionLink("<<", action, rv, new AjaxOptions { UpdateTargetId = "AjaxBody" });
+                                                                                           rv["page"] = ((page - 1) <= 0 ? 1 : (page - 1));
+        @Ajax.ActionLink("<", action, rv, new AjaxOptions { UpdateTargetId = "AjaxBody" });
+                                                                                          if (page > (showCount + 1))
+                                                                                          {
+        <a>...</a>
+                                                                                          }
+                                                                                          for (int i = (page - showCount <= 1 ? 1 : page - showCount); i <= (page + showCount >= total ? total : page + showCount); i++)
+                                                                                          {
+                                                                                              if (i == page)
+                                                                                              {
+        <span>@i</span>
+                                                                                              }
+                                                                                              else
+                                                                                              {
+                                                                                                  rv["page"] = i;
+        @Ajax.ActionLink(i.ToString(), action, rv, new AjaxOptions { UpdateTargetId = "AjaxBody" });
+                                                                                              }
+                                                                                          }
+                                                                                          if (page < (total - showCount))
+                                                                                          {
+        <a>...</a>
+                                                                                          }
+                                                                                          rv["page"] = ((page + 1) > total ? total : (page + 1));
+        @Ajax.ActionLink(">", action, rv, new AjaxOptions { UpdateTargetId = "AjaxBody" });
+                                                                                          rv["page"] = total;
+        @Ajax.ActionLink(">>", action, rv, new AjaxOptions { UpdateTargetId = "AjaxBody" });
+
+                                                                                           rv["page"] = originalPageNum;
+    }
+</div>

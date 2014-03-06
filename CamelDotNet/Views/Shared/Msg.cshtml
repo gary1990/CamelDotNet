@@ -1,0 +1,31 @@
+﻿@{
+    Msg msg = (Msg)TempData["msg"];
+    if (msg == null)
+    {
+    <p>
+        <span>&nbsp;</span>
+    </p>
+    }
+    else
+    {
+    <p>
+        @{
+        string c = "green";
+        if (msg.MsgType == MsgType.OK)
+        {
+            c = "green";
+        }
+        if (msg.MsgType == MsgType.WARN)
+        {
+            c = "yellow";
+        }
+        if (msg.MsgType == MsgType.ERROR)
+        {
+            c = "red";
+        }
+            
+            <span id="msg" class="@c">@msg.Content</span><span>&nbsp;</span>
+        }
+    </p>
+    }
+}

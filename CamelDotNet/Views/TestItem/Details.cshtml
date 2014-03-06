@@ -1,0 +1,13 @@
+﻿@model TestItem
+
+@{
+    ViewBag.Title = "详情";
+}
+
+<h2>@ViewBag.Name:@ViewBag.Title</h2>
+
+@Html.Action("Abstract", (string)ViewBag.Controller, new { id = Model.Id })
+
+<p>
+    <a href="@Url.Content((string)ViewBag.ReturnUrl)">返回</a>
+</p>
