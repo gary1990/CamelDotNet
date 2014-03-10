@@ -11,10 +11,14 @@ namespace CamelDotNet.Models
 {
     public class TestItem : BaseModel, IEditable<TestItem>
     {
+        [DisplayName("类别")]
+        public int TestItemCategoryId { get; set; }
         [DisplayName("计算公式")]
         public string Formular { get; set; }
+        public virtual TestItemCategory TestItemCategory { get; set; }
         public void Edit(TestItem model)
         {
+            this.TestItemCategoryId = model.TestItemCategoryId;
             this.Name = model.Name;
         }
     }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CamelDotNet.Models.Base;
+using CamelDotNet.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,16 +9,12 @@ using System.Web;
 
 namespace CamelDotNet.Models
 {
-    public class Permission
+    public class Permission : BaseModel,IEditable<Permission>
     {
         public Permission() 
         {
             this.CamelDotNetRoles = new List<CamelDotNetRole>() { };
         }
-        public int Id { get; set; }
-        [DisplayName("权限名称")]
-        [Required,StringLength(256)]
-        public string Name { get; set; }
         [DisplayName("Controller")]
         [Required, StringLength(256)]
         public string ControllerName { get; set; }
@@ -24,5 +22,12 @@ namespace CamelDotNet.Models
         [Required, StringLength(256)]
         public string ActionName { get; set; }
         public virtual ICollection<CamelDotNetRole> CamelDotNetRoles { get; set; }
+
+        public void Edit(Permission model)
+        {
+            Name = model.Name;
+            ControllerName = model.ControllerName;
+            ActionName = model.ActionName;
+        }
     }
 }

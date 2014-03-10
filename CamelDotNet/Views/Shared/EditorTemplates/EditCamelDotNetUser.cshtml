@@ -1,0 +1,26 @@
+﻿@model CamelDotNetUser
+@Html.HiddenFor(model => model.Id)
+
+@*@Html.Action("AbstractEdit", Model.Id)*@
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.JobNumber)
+</div>
+<div class="editor-field">
+    @Html.EditorFor(model => model.JobNumber)
+    @Html.ValidationMessageFor(model => model.JobNumber)
+</div>
+<div class="editor-label">
+    @Html.LabelFor(model => model.UserName)
+</div>
+<div class="editor-field">
+    @Html.EditorFor(model => model.UserName)
+    @Html.ValidationMessageFor(model => model.UserName)
+</div>
+<div class="editor-label">
+    @Html.LabelFor(model => model.CamelDotNetRoleId)
+</div>
+<div class="editor-field">
+    @Html.DropDownListFor(model => model.CamelDotNetRoleId, new SelectList(Common.GetRoleList(), "Id", "Name"), String.Empty)
+    @Html.ValidationMessageFor(model => model.CamelDotNetRoleId)
+</div>

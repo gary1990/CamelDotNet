@@ -39,6 +39,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper.Net4">
+      <HintPath>..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.Net4.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -159,15 +165,22 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\BaseModelController.cs" />
+    <Compile Include="Controllers\BaseController\TestConfigModelController.cs" />
+    <Compile Include="Controllers\BaseController\UserModelController.cs" />
+    <Compile Include="Controllers\BaseController\BaseModelController.cs" />
     <Compile Include="Controllers\ClientController.cs" />
     <Compile Include="Controllers\Common\CommonRazor.cs" />
+    <Compile Include="Controllers\PermissionController.cs" />
+    <Compile Include="Controllers\ProductTypeController.cs" />
+    <Compile Include="Controllers\RoleController.cs" />
+    <Compile Include="Controllers\TestConfigController.cs" />
     <Compile Include="Controllers\TestEquipmentController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SystemHomeController.cs" />
     <Compile Include="Controllers\TestItemController.cs" />
     <Compile Include="Controllers\TestManageHomeController.cs" />
     <Compile Include="Controllers\TestStationController.cs" />
+    <Compile Include="Controllers\UserProfileController.cs" />
     <Compile Include="Filter\PermissionAuthorizeAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -183,18 +196,30 @@
     <Compile Include="Models\DAL\CamelDotNetDBContext.cs" />
     <Compile Include="Models\DAL\GenericRepository.cs" />
     <Compile Include="Models\DAL\UnitOfWork.cs" />
+    <Compile Include="Models\PerConfig.cs" />
     <Compile Include="Models\Process.cs" />
+    <Compile Include="Models\ProductType.cs" />
+    <Compile Include="Models\TestConfig.cs" />
     <Compile Include="Models\TestEquipment.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Interfaces\IEditable.cs" />
     <Compile Include="Models\Permission.cs" />
     <Compile Include="Models\TestItem.cs" />
+    <Compile Include="Models\TestItemCategory.cs" />
+    <Compile Include="Models\TestItemConfig.cs" />
     <Compile Include="Models\TestStation.cs" />
+    <Compile Include="Models\ViewModels\CreatePerCofig.cs" />
+    <Compile Include="Models\ViewModels\CreateTestConfig.cs" />
+    <Compile Include="Models\ViewModels\CreateTestItemConfig.cs" />
     <Compile Include="Models\ViewModels\Msg.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.Net4.dll">
+      <Link>AutoMapper.Net4.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bootstrap-datepicker.css" />
     <Content Include="Content\bootstrap-datepicker.min.css" />
     <Content Include="Content\bootstrap-responsive.css" />
@@ -665,7 +690,7 @@
     <Content Include="Views\TestEquipment\Create.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\TestEquipment.cshtml" />
     <Content Include="Views\TestEquipment\Edit.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\EditTestEquipment.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\EditCamelDotNetRole.cshtml" />
     <Content Include="Views\TestEquipment\Details.cshtml" />
     <Content Include="Views\TestEquipment\Abstract.cshtml" />
     <Content Include="Views\TestEquipment\Delete.cshtml" />
@@ -689,12 +714,40 @@
     <Content Include="Views\Shared\EditorTemplates\TestStation.cshtml" />
     <Content Include="Views\TestStation\Details.cshtml" />
     <Content Include="Views\TestStation\Restore.cshtml" />
+    <Content Include="Views\Permission\Index.cshtml" />
+    <Content Include="Views\Permission\Get.cshtml" />
+    <Content Include="Views\Permission\Edit.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\EditPermisssion.cshtml" />
+    <Content Include="Views\Permission\Delete.cshtml" />
+    <Content Include="Views\Permission\Abstract.cshtml" />
+    <Content Include="Views\Permission\Restore.cshtml" />
+    <Content Include="Views\Role\Index.cshtml" />
+    <Content Include="Views\Role\Get.cshtml" />
+    <Content Include="Views\Role\Edit.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\EditTestEquipment.cshtml" />
+    <Content Include="Views\UserProfile\Index.cshtml" />
+    <Content Include="Views\UserProfile\Get.cshtml" />
+    <Content Include="Views\UserProfile\Create.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\RegisterViewModel.cshtml" />
+    <Content Include="Views\UserProfile\Edit.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\EditCamelDotNetUser.cshtml" />
+    <Content Include="Views\UserProfile\Details.cshtml" />
+    <Content Include="Views\UserProfile\Abstract.cshtml" />
+    <Content Include="Views\UserProfile\Delete.cshtml" />
+    <Content Include="Views\UserProfile\Restore.cshtml" />
+    <Content Include="Views\UserProfile\ResetPassword.cshtml" />
+    <Content Include="Views\TestConfig\Index.cshtml" />
+    <Content Include="Views\TestConfig\Get.cshtml" />
+    <Content Include="Views\TestConfig\Copy.cshtml" />
+    <Content Include="Views\TestConfig\Abstract.cshtml" />
+    <Content Include="Views\TestConfig\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\ImportTemplate\" />
     <Folder Include="Content\UploadedFolder\Template\" />
     <Folder Include="Views\Client\" />
+    <Folder Include="Views\ProductType\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

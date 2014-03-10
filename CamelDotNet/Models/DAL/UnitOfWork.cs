@@ -15,6 +15,13 @@ namespace CamelDotNet.Models.DAL
         private GenericRepository<Process> processRepository;
         private GenericRepository<TestStation> testStationRepository;
         private GenericRepository<Client> clientRepository;
+        private GenericRepository<Permission> permissionRepository;
+        private GenericRepository<CamelDotNetRole> camelDotNetRoleRepository;
+        private GenericRepository<CamelDotNetUser> camelDotNetUserRepository;
+        private GenericRepository<ProductType> productTypeRepository;
+        private GenericRepository<TestItemCategory> testItemCategoryRepository;
+        private GenericRepository<TestConfig> testConfigRepository;
+        private GenericRepository<TestItemConfig> testItemConfig;
         public GenericRepository<TestItem> TestItemRepository 
         {
             get 
@@ -72,11 +79,108 @@ namespace CamelDotNet.Models.DAL
             }
         }
 
+        public GenericRepository<Permission> PermissionRepository
+        {
+            get
+            {
+                if (this.permissionRepository == null)
+                {
+                    this.permissionRepository = new GenericRepository<Permission>(context);
+                }
+                return permissionRepository;
+            }
+        }
+
+        public GenericRepository<CamelDotNetRole> CamelDotNetRoleRepository
+        {
+            get
+            {
+                if (this.camelDotNetRoleRepository == null)
+                {
+                    this.camelDotNetRoleRepository = new GenericRepository<CamelDotNetRole>(context);
+                }
+                return camelDotNetRoleRepository;
+            }
+        }
+
+        public GenericRepository<CamelDotNetUser> CamelDotNetUserRepository
+        {
+            get
+            {
+                if (this.camelDotNetUserRepository == null)
+                {
+                    this.camelDotNetUserRepository = new GenericRepository<CamelDotNetUser>(context);
+                }
+                return camelDotNetUserRepository;
+            }
+        }
+
+        public GenericRepository<ProductType> ProductTypeRepository
+        {
+            get
+            {
+                if (this.productTypeRepository == null)
+                {
+                    this.productTypeRepository = new GenericRepository<ProductType>(context);
+                }
+                return productTypeRepository;
+            }
+        }
+
+        public GenericRepository<TestItemCategory> TestItemCategoryRepository
+        {
+            get
+            {
+                if (this.testItemCategoryRepository == null)
+                {
+                    this.testItemCategoryRepository = new GenericRepository<TestItemCategory>(context);
+                }
+                return testItemCategoryRepository;
+            }
+        }
+
+        public GenericRepository<TestConfig> TestConfigRepository
+        {
+            get
+            {
+                if (this.testConfigRepository == null)
+                {
+                    this.testConfigRepository = new GenericRepository<TestConfig>(context);
+                }
+                return testConfigRepository;
+            }
+        }
+
+        public GenericRepository<TestItemConfig> TestItemConfig
+        {
+            get
+            {
+                if (this.testItemConfig == null)
+                {
+                    this.testItemConfig = new GenericRepository<TestItemConfig>(context);
+                }
+                return testItemConfig;
+            }
+        }
+
         public void CamelSave() 
         {
             foreach(var deletedEntity in context.ChangeTracker.Entries<BaseModel>())
             {
                 if(deletedEntity.State == EntityState.Deleted)
+                {
+                    deletedEntity.State = EntityState.Unchanged;
+                    deletedEntity.Entity.IsDeleted = true;
+                }
+            }
+            context.SaveChanges();
+        }
+
+        public void CamelUserSave()
+        {
+            foreach (var deletedEntity in context.ChangeTracker.Entries<CamelDotNetUser>())
+            {
+                if (deletedEntity.State == EntityState.Deleted)
                 {
                     deletedEntity.State = EntityState.Unchanged;
                     deletedEntity.Entity.IsDeleted = true;

@@ -1,0 +1,13 @@
+﻿@model TestConfig
+<div class="editor-label">
+    @Html.LabelFor(model => model.ClientId)
+</div>
+<div class="editor-field">
+    @Html.DisplayFor(model => model.Client.Name)
+</div>
+<div class="editor-label">
+@Html.LabelFor(model => model.ProductTypeId)
+</div>
+<div class="editor-field">
+    @Html.DisplayFor(model => model.ProductType.Name)
+</div>

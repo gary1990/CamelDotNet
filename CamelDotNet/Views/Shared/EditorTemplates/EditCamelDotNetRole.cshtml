@@ -1,0 +1,28 @@
+﻿@model CamelDotNetRole
+@{
+    var multiSelectList = ((CamelDotNet.Controllers.RoleController)this.ViewContext.Controller).GetRelatedList(Model);
+}
+
+@Html.HiddenFor(model => model.Id)
+
+@*@Html.Action("AbstractEdit", Model.Id)*@
+
+<div class="infoBlock" style="width: 24%">
+    <div class="editor-label">
+        @Html.LabelFor(model => model.Name)
+    </div>
+    <div class="editor-field">
+        @Html.HiddenFor(model => model.Name)
+        @Html.TextBoxFor(model => model.Name, new { @ReadOnly = "ReadOnly" })
+        @Html.ValidationMessageFor(model => model.Name)
+    </div>
+</div>
+<div style="clear: both">
+    <div class="editor-label">
+        @Html.LabelFor(model => model.Permissions)
+    </div>
+    <div class="editor-field">
+        @Html.ListBox("Items", multiSelectList, new { @class = "multiselect2side" })
+        @Html.ValidationMessageFor(model => model.Permissions)
+    </div>
+</div>

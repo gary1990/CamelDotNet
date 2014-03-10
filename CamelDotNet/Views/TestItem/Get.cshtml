@@ -21,6 +21,9 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.TestItemCategoryId)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.IsDeleted)
             </th>
             <th></th>
@@ -33,6 +36,9 @@
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TestItemCategory.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.IsDeleted)

@@ -84,12 +84,20 @@ namespace CamelDotNet.Lib
                 var propertyNames = tmp[0].Split('.');
 
                 Expression left = pe;
+                Expression right = null;
                 foreach (var prop in propertyNames)
                 {
                     left = Expression.PropertyOrField(left, prop);
-                }
 
-                var right = Expression.Constant(target);
+                    if (prop.Contains("Id"))
+                    {
+                        right = Expression.Constant(Int32.Parse(target));
+                    }
+                    else
+                    {
+                        right = Expression.Constant(target);
+                    }
+                }
 
                 BinaryExpression call = null;
                 if (tmp[1] == "=")
@@ -131,6 +139,92 @@ namespace CamelDotNet.Lib
 
             c.ViewBag.RV = rv;
             return q.Skip(((tmpTotalPage > 0 ? page : 1) - 1) * size).Take(size);
+        }
+    }
+
+    public class UserCommon<Model> where Model : CamelDotNetUser 
+    {
+        public static IQueryable<Model> GetQuery(UnitOfWork db, bool includeSoftDeleted = false, string filter = null, bool noTrack = false)
+        {
+            IQueryable<Model> result;
+
+            var rep = (GenericRepository<Model>)(typeof(UnitOfWork).GetProperty(typeof(Model).Name + "Repository").GetValue(db));
+
+            result = rep.Get(noTrack);
+
+            if (!includeSoftDeleted)
+            {
+                result = result.Where(a => a.IsDeleted == false);
+            }
+
+            //filter
+            if (filter != null)
+            {
+                Dictionary<string, string> filterDic = new Dictionary<string, string>();
+                if (!string.IsNullOrWhiteSpace(filter))
+                {
+                    var conditions = filter.Substring(0, filter.Length - 1).Split(';');
+                    foreach (var item in conditions)
+                    {
+                        var tmp = item.Split(':');
+                        if (!string.IsNullOrWhiteSpace(tmp[1]))
+                        {
+                            filterDic.Add(tmp[0], tmp[1]);
+                        }
+                    }
+                }
+
+                foreach (var item in filterDic)
+                {
+                    result = Common<Model>.DynamicFilter(result, item.Key, item.Value);
+                }
+            }
+            //end filter
+            return result;
+        }
+    }
+
+    public class TestConfigCommon<Model> where Model : TestConfig
+    {
+        public static IQueryable<Model> GetQuery(UnitOfWork db, bool includeSoftDeleted = false, string filter = null, bool noTrack = false)
+        {
+            IQueryable<Model> result;
+
+            var rep = (GenericRepository<Model>)(typeof(UnitOfWork).GetProperty(typeof(Model).Name + "Repository").GetValue(db));
+
+            result = rep.Get(noTrack);
+
+            if (!includeSoftDeleted)
+            {
+                result = result.Where(a => a.IsDeleted == false);
+            }
+
+            result = result.Where(a => a.Client.IsDeleted == false && a.ProductType.IsDeleted == false);
+
+            //filter
+            if (filter != null)
+            {
+                Dictionary<string, string> filterDic = new Dictionary<string, string>();
+                if (!string.IsNullOrWhiteSpace(filter))
+                {
+                    var conditions = filter.Substring(0, filter.Length - 1).Split(';');
+                    foreach (var item in conditions)
+                    {
+                        var tmp = item.Split(':');
+                        if (!string.IsNullOrWhiteSpace(tmp[1]))
+                        {
+                            filterDic.Add(tmp[0], tmp[1]);
+                        }
+                    }
+                }
+
+                foreach (var item in filterDic)
+                {
+                    result = Common<Model>.DynamicFilter(result, item.Key, item.Value);
+                }
+            }
+            //end filter
+            return result;
         }
     }
 
@@ -212,6 +306,100 @@ namespace CamelDotNet.Lib
 
     public class Common
     {
+        public static List<ProductType> GetProductTypeList(string keyWord = null)
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetProductTypeQuery(db, keyWord, true).ToList();
+            }
+        }
+        public static IQueryable<ProductType> GetProductTypeQuery(UnitOfWork db, string keyWord = null, bool noTrack = false)
+        {
+            IQueryable<ProductType> result;
+
+            var rep = db.ProductTypeRepository;
+
+            result = rep.Get(noTrack);
+
+            result = result.Where(a => a.IsDeleted == false);
+
+            if (!String.IsNullOrWhiteSpace(keyWord))
+            {
+                keyWord = keyWord.ToUpper();
+                result = result.Where(a => a.Name.ToUpper().Contains(keyWord));
+            }
+
+            return result;
+        }
+        public static List<Client> GetClientList(string keyWord = null)
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetClientQuery(db, keyWord, true).ToList();
+            }
+        }
+        public static IQueryable<Client> GetClientQuery(UnitOfWork db, string keyWord = null, bool noTrack = false)
+        {
+            IQueryable<Client> result;
+
+            var rep = db.ClientRepository;
+
+            result = rep.Get(noTrack);
+
+            result = result.Where(a => a.IsDeleted == false);
+
+            if (!String.IsNullOrWhiteSpace(keyWord))
+            {
+                keyWord = keyWord.ToUpper();
+                result = result.Where(a => a.Name.ToUpper().Contains(keyWord));
+            }
+
+            return result;
+        }
+
+        public static List<TestItemCategory> GetTestItemCategoryList(string keyWord = null)
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetTestItemCategoryQuery(db, keyWord, true).ToList();
+            }
+        }
+        public static IQueryable<TestItemCategory> GetTestItemCategoryQuery(UnitOfWork db, string keyWord = null, bool noTrack = false)
+        {
+            IQueryable<TestItemCategory> result;
+
+            var rep = db.TestItemCategoryRepository;
+
+            result = rep.Get(noTrack);
+
+            if (!String.IsNullOrWhiteSpace(keyWord))
+            {
+                keyWord = keyWord.ToUpper();
+                result = result.Where(a => a.Name.ToUpper().Contains(keyWord));
+            }
+
+            return result;
+        }
+        public static List<CamelDotNetRole> GetRoleList(string keyWord = null) 
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetRoleQuery(db, keyWord, true).ToList();
+            }
+        }
+
+        public static IQueryable<CamelDotNetRole> GetRoleQuery(UnitOfWork db, string keyWord = null, bool noTrack = false) 
+        {
+            IQueryable<CamelDotNetRole> result;
+            var rep = db.CamelDotNetRoleRepository;
+            result = rep.Get(noTrack);
+            if (!String.IsNullOrWhiteSpace(keyWord))
+            {
+                keyWord = keyWord.ToUpper();
+                result = result.Where(a => a.Name.ToUpper().Contains(keyWord));
+            }
+            return result;
+        }
         public static List<Process> GetProcessList(string keyWord = null) 
         {
             using(var db = new UnitOfWork())

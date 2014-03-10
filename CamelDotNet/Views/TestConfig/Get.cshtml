@@ -1,0 +1,91 @@
+﻿@model IEnumerable<TestConfig>
+@{
+    string returnUrl = Url.Action((((RouteValueDictionary)(ViewBag.RV))["returnRoot"]).ToString(), (RouteValueDictionary)(ViewBag.RV));
+}
+<p>
+    @using (Html.BeginForm("Create", (string)ViewBag.Controller))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.Hidden("returnUrl", returnUrl)
+        <input type="submit" value="新建" />
+    }
+</p>
+
+@Html.Partial("PageLink")
+
+<table>
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductTypeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsDeleted)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Client.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductType.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsDeleted)
+                </td>
+                <td>
+                    <div class="groupOperation">
+                        @if (item.IsDeleted)
+                        {
+                            using (Html.BeginForm("Restore", (string)ViewBag.Controller))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                @Html.Hidden("id", item.Id)
+                                @Html.Hidden("returnUrl", returnUrl)
+                                <input type="submit" value="恢复" />
+                            }
+                        }
+                        else
+                        {
+                            using (Html.BeginForm("Copy", (string)ViewBag.Controller))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                @Html.Hidden("id", item.Id)
+                                @Html.Hidden("returnUrl", returnUrl)
+                                <input type="submit" value="复制" />
+                            }
+                            using (Html.BeginForm("Details", (string)ViewBag.Controller))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                @Html.Hidden("id", item.Id)
+                                @Html.Hidden("returnUrl", returnUrl)
+                                <input type="submit" value="详情" />
+                            }
+                            using (Html.BeginForm("Delete", (string)ViewBag.Controller))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                @Html.Hidden("id", item.Id)
+                                @Html.Hidden("returnUrl", returnUrl)
+                                <input type="submit" value="删除" />
+                            }
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

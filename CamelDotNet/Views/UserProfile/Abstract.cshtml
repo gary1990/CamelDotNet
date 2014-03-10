@@ -1,0 +1,25 @@
+﻿@model CamelDotNetUser
+<div class="editor-label">
+    @Html.LabelFor(model => model.JobNumber)
+</div>
+<div class="editor-field">
+    @Html.DisplayFor(model => model.JobNumber)
+</div>
+<div class="editor-label">
+    @Html.LabelFor(model => model.UserName)
+</div>
+<div class="editor-field">
+    @Html.DisplayFor(model => model.UserName)
+</div>
+<div class="editor-label">
+    @Html.LabelFor(model => model.CamelDotNetRoleId)
+</div>
+<div class="editor-field">
+    @Html.DisplayFor(model => model.CamelDotNetRole.Name)
+</div>
+<div class="editor-label">
+    @Html.LabelFor(model => model.IsDeleted)
+</div>
+<div class="editor-field">
+    @Html.DisplayFor(model => model.IsDeleted)
+</div>
