@@ -1,14 +1,24 @@
-﻿using CamelDotNet.Models;
+﻿using AutoMapper;
+using CamelDotNet.Models;
+using CamelDotNet.Models.Common;
+using CamelDotNet.Models.DAL;
+using CamelDotNet.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml.Serialization;
+using System.Data.Entity;
+using CamelDotNet.Models.Base;
+using Microsoft.AspNet.Identity;
 
 namespace CamelDotNet.Controllers
 {
     public class TestConfigController : TestConfigModelController<TestConfig>
     {
+        private CamelDotNetDBContext db = new CamelDotNetDBContext();
+
         public List<string> path = new List<string>();
         public TestConfigController() 
         {
@@ -18,6 +28,199 @@ namespace CamelDotNet.Controllers
             ViewBag.Name = "测试方案";
             ViewBag.Title = "测试方案";
             ViewBag.Controller = "TestConfig";  
+        }
+
+        [ChildActionOnly]
+        public virtual PartialViewResult GetTestItemConfigEdit(TestItemConfig item, int parentOrder)
+        {
+            Mapper.CreateMap<TestItemConfig, TestItemConfigEdit>();
+            TestItemConfigEdit testItemConfigEdit = new TestItemConfigEdit();
+            Mapper.Map(item, testItemConfigEdit);
+            ViewBag.ParentOrder = parentOrder;
+            return PartialView(ViewPath1 + ViewPath + ViewPath2 + ViewPathEditorTempletes + ViewPath2 + "TestItemConfigEdit.cshtml", testItemConfigEdit);
+        }
+
+        [ChildActionOnly]
+        public virtual PartialViewResult GetTestItemConfigEditFeedBack(TestItemConfigEdit item, int parentOrder)
+        {
+            ViewBag.ParentOrder = parentOrder;
+            return PartialView(ViewPath1 + ViewPath + ViewPath2 + ViewPathEditorTempletes + ViewPath2 + "TestItemConfigEdit.cshtml", item);
+        }
+
+        [ChildActionOnly]
+        public virtual PartialViewResult GetPerConfigEdit(PerConfig item, string tick)
+        {
+            Mapper.CreateMap<PerConfig, PerConfigEdit>();
+            PerConfigEdit perConfigEdit = new PerConfigEdit();
+            Mapper.Map(item, perConfigEdit);
+            ViewBag.PerConfigEditType = typeof(PerConfig);
+            ViewBag.Tick = tick.ToString();
+            return PartialView(ViewPath1 + ViewPath + ViewPath2 + ViewPathEditorTempletes + ViewPath2+"PerConfigEdit.cshtml", perConfigEdit);
+        }
+
+        [ChildActionOnly]
+        public virtual PartialViewResult GetPerConfigEditFeedBack(PerConfigEdit item, string tick)
+        {
+            ViewBag.PerConfigEditType = typeof(PerConfig);
+            ViewBag.Tick = tick.ToString();
+            return PartialView(ViewPath1 + ViewPath + ViewPath2 + ViewPathEditorTempletes + ViewPath2 + "PerConfigEdit.cshtml", item);
+        }
+
+        [ChildActionOnly]
+        public virtual PartialViewResult GetPerConfigEdit1()
+        {
+            var nestedObject = Activator.CreateInstance(typeof(PerConfigEdit));
+            return PartialView("~/Views/TestConfig/EditorTemplates/PerConfigEdit.cshtml", nestedObject);
+        }
+        //public virtual PartialViewResult Abstract(int id)
+        //{
+        //    var result = GR.GetByID(id);
+        //    return PartialView(ViewPath1 + ViewPath + ViewPath2 + "Abstract.cshtml", result);
+        //}
+        //public PartialViewResult GetTestItemConfigEdit1(int Id)
+        //{
+        //    TestItemConfig model
+        //    Mapper.CreateMap<TestItemConfig, TestItemConfigEdit>();
+        //    TestItemConfigEdit testItemConfigEdit = new TestItemConfigEdit();
+        //    Mapper.Map(model, testItemConfigEdit);
+
+        //    return PartialView("~/Views/TestConfig/EditorTemplates/TestItemConfigEdit.cshtml", testItemConfigEdit);
+        //}
+
+        public ActionResult ClientUserCheck(string userName = null, string passWord = null) 
+        {
+            if (userName == null || passWord == null)
+            {
+                SingleResultXml result = new SingleResultXml()
+                {
+                    Message = "用户名或密码不能为空"
+                };
+
+                return new XmlResult<SingleResultXml>()
+                {
+                    Data = result
+                };
+            }
+            else
+            {
+                var user = db.UserManager.Find(userName, passWord);
+                if (user == null)
+                {
+                    SingleResultXml result = new SingleResultXml()
+                    {
+                        Message = "用户名或密码错误"
+                    };
+
+                    return new XmlResult<SingleResultXml>()
+                    {
+                        Data = result
+                    };
+                }
+                else
+                {
+                    if (user.IsDeleted != false)
+                    {
+                        SingleResultXml result = new SingleResultXml()
+                        {
+                            Message = "该用户被禁用"
+                        };
+
+                        return new XmlResult<SingleResultXml>()
+                        {
+                            Data = result
+                        };
+                    }
+                }
+            }
+
+            SingleResultXml sucessResult = new SingleResultXml();
+
+            return new XmlResult<SingleResultXml>()
+            {
+                Data = sucessResult
+            };
+        }
+
+        public ActionResult GetTestConfig(string userName = null, string passWord = null) 
+        {
+            ClientUserCheck(userName, passWord);
+
+            List<TestConfig> testConfigs = db.TestConfig
+                .Where(a => a.IsDeleted == false)
+                .Where(a => a.ProductType.IsDeleted == false)
+                .Where(a => a.Client.IsDeleted == false)
+                .Include(a => a.ProductType)
+                .Include(a => a.Client)
+                .Include(a => a.TestItemConfigs.Select(b => b.TestItem).Select(c => c.TestItemCategory))
+                .Include(a => a.TestItemConfigs.Select(b => b.PerConfigs))
+                .ToList();
+
+            TestConfigListXml testConfigXmlList = new TestConfigListXml();
+
+            foreach(var testConfigItem in testConfigs)
+            {
+                TestConfigXml testConfigXml = new TestConfigXml();
+
+                ProductTypeXml productTypeXml = new ProductTypeXml 
+                {
+                    Id = testConfigItem.ProductTypeId,
+                    Name = testConfigItem.ProductType.Name
+                };
+                testConfigXml.ProductTypeXml = productTypeXml;
+                ClientXml clientXml = new ClientXml 
+                { 
+                    Id = testConfigItem.ClientId,
+                    Name = testConfigItem.Client.Name
+                };
+                testConfigXml.ClientXml = clientXml;
+
+                foreach(var testItemConfig in testConfigItem.TestItemConfigs)
+                {
+                    TestItemConfigXml testItemConfigXml = new TestItemConfigXml
+                    {
+                        TestItemXml = new TestItemXml
+                        {
+                            Id = testItemConfig.TestItemId,
+                            Name = testItemConfig.TestItem.Name,
+                            Category = testItemConfig.TestItem.TestItemCategory.Name
+                        },
+                        VersionDate = testItemConfig.VersionDate.ToString("yyyyMMddHHmmss"),
+                        PerConfigXmls = new List<PerConfigXml> { }
+                    };
+
+                    foreach(var perConfig in testItemConfig.PerConfigs)
+                    {
+                        PerConfigXml perConfigXml = new PerConfigXml() 
+                        { 
+                            Channel = perConfig.Channel,
+                            Trace = perConfig.Trace,
+                            StartF = perConfig.StartF,
+                            StopF = perConfig.StopF,
+                            ScanPoint = perConfig.ScanPoint,
+                            ScanTime = perConfig.ScanTime,
+                            TransportSpeed = perConfig.TransportSpeed,
+                            FreqPoint = perConfig.FreqPoint,
+                            LimitLine = perConfig.LimitLine
+                        };
+
+                        testItemConfigXml.PerConfigXmls.Add(perConfigXml);
+                    }
+                    testConfigXml.TestItemConfigXmls.Add(testItemConfigXml);
+                }
+
+                testConfigXmlList.TestConfigXmls.Add(testConfigXml);
+            }
+
+            return new XmlResult<TestConfigListXml>() 
+            {
+                Data = testConfigXmlList
+            };
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
 	}
 }

@@ -16,6 +16,23 @@ function addNestedForm(container, counter, ticks, content) {
     var pattern = new RegExp(ticks, "gi");
     content = content.replace(pattern, nextIndex);
     $(container).append(content);
+    var $form = $('form');
+    $form.removeData("validator").removeData("unobtrusiveValidation");
+    $.validator.unobtrusive.parse($form);
+}
+
+function addNestedFormGary(element, ParentContaianer, container, counter, ticksParent, ticksThis, content) {
+    var nextIndex = $(element).closest(ParentContaianer).find(container).find(counter).length;
+    var pattern = new RegExp(ticksThis, "gi");
+    content = content.replace(pattern, nextIndex);
+    var temp = $(element).closest(ParentContaianer).find(container).children(":first").attr("data-valmsg-for");
+    var parentNum = temp.substring(temp.indexOf("[") + 1, temp.indexOf("]"));
+    var patternParent = new RegExp(ticksParent, "gi");
+    content = content.replace(patternParent, parentNum);
+    $(element).closest(ParentContaianer).find(container).append(content);
+    var $form = $('form');                
+    $form.removeData("validator").removeData("unobtrusiveValidation");
+    $.validator.unobtrusive.parse($form);
 }
 
 function approve(relatedId, value) {

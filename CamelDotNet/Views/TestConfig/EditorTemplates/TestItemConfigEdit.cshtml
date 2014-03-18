@@ -1,0 +1,79 @@
+﻿@model TestItemConfigEdit
+
+@{
+    string tmp = "";
+    if(Model.Delete == true)
+    {
+        tmp = "display:none";
+    }
+
+    var parentCount = ViewBag.ParentOrder;
+}
+
+<div class="TestItemConfigEdit" style="width:100%; float:left; @tmp">
+    @Html.HiddenFor(model => model.Delete, new { @class = "mark-for-delete"})
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.TestConfigId)
+    <div class="multiAddItem">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TestItemId)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(model => model.TestItemId, new SelectList(Common.GetTestItemList(), "Id", "Name"), String.Empty)
+            @Html.ValidationMessageFor(model => model.TestItemId)
+        </div>
+    </div>
+    <div class="multiAddItem" style="display:none">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.VersionDate)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.VersionDate)
+            @Html.ValidationMessageFor(model => model.VersionDate)
+        </div>
+    </div>
+    <div class="multiAddItem">
+        @Html.LinkToRemoveNestedForm("移除测试项", "div.TestItemConfigEdit", "input.mark-for-delete")
+    </div>
+    <div id="PerConfigEdits" class="infoAddition" style="clear: both; width: 90%">
+        @Html.ValidationMessageFor(model => model.PerConfigEdits)
+        @*@Html.EditorFor(model => model.PerConfigEdits)*@
+        @{
+            if(Model.PerConfigs != null && Model.PerConfigs.Count() != 0)
+            {
+                int parentOrder = ViewBag.ParentOrder;
+                int thisOrder = 0;
+                foreach (var item in Model.PerConfigs)
+                {
+                    string tick = DateTime.Now.Ticks.ToString();
+                    MvcHtmlString perConfigEditPartial = Html.Action("GetPerConfigEdit", "TestConfig", new { item, tick});
+                    @Html.ReplacePerConfigEditPartail(perConfigEditPartial, "TestItemConfigEdits", "PerConfigEdits", parentOrder, thisOrder, tick);
+                    thisOrder++;
+                }
+            }
+
+            if (((Model.PerConfigEdits != null) && (Model.PerConfigEdits.Count() != 0)))
+            {
+                int parentOrder = ViewBag.ParentOrder;
+                int thisOrder = 0;
+                foreach (var item in Model.PerConfigEdits)
+                {
+                    string tick = DateTime.Now.Ticks.ToString();
+                    MvcHtmlString perConfigEditPartial = Html.Action("GetPerConfigEditFeedBack", "TestConfig", new { item, tick });
+                    @Html.ReplacePerConfigEditPartail(perConfigEditPartial, "TestItemConfigEdits", "PerConfigEdits", parentOrder, thisOrder, tick);
+                    thisOrder++;
+                }
+            }
+        }
+    </div>
+    <div style="clear: both">
+        @{
+            string tick1 = DateTime.Now.Ticks.ToString();
+            MvcHtmlString realModelPartial = Html.Action("GetPerConfigEdit", "TestConfig", new { tick = tick1});
+            @Html.ReplacePerConfigEditPartailNull(realModelPartial, "添加指标", ".TestItemConfigEdit", "#PerConfigEdits", ".PerConfigEdit", "TestItemConfigEdits", "PerConfigEdits", tick1);
+        }    
+    </div>
+    <div class="header" style="clear: both">
+        <h2>&nbsp;</h2>
+    </div>
+</div>

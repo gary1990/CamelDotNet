@@ -1,4 +1,5 @@
 ﻿using CamelDotNet.Lib;
+using CamelDotNet.Models.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,15 @@ namespace CamelDotNet.Filter
         {
             var httpContext = filterContext.HttpContext;
 
+            string temp = httpContext.Request.RequestContext.RouteData.GetRequiredString("controller") + "_" + httpContext.Request.RequestContext.RouteData.GetRequiredString("action");
+
+            AllowPermisson allowPermisson = new AllowPermisson();
+
+            if(allowPermisson.Allowed.Contains(temp))
+            {
+                return;
+            }
+
             if (httpContext.Request.RequestContext.RouteData.GetRequiredString("controller") == "Account" && httpContext.Request.RequestContext.RouteData.GetRequiredString("action") == "Login")
             {
                 return;
@@ -37,7 +47,6 @@ namespace CamelDotNet.Filter
             //}
 
             //permission
-            string temp = httpContext.Request.RequestContext.RouteData.GetRequiredString("controller") + "_" + httpContext.Request.RequestContext.RouteData.GetRequiredString("action");
             //var s = Common.GetCurPermissionList().Contains(temp);
             if (Common1.GetCurPermissionList().Contains(temp))
             {

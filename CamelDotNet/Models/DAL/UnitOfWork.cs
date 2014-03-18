@@ -21,7 +21,8 @@ namespace CamelDotNet.Models.DAL
         private GenericRepository<ProductType> productTypeRepository;
         private GenericRepository<TestItemCategory> testItemCategoryRepository;
         private GenericRepository<TestConfig> testConfigRepository;
-        private GenericRepository<TestItemConfig> testItemConfig;
+        private GenericRepository<TestItemConfig> testItemConfigRepository;
+        private GenericRepository<PerConfig> perConfigRepository;
         public GenericRepository<TestItem> TestItemRepository 
         {
             get 
@@ -151,15 +152,27 @@ namespace CamelDotNet.Models.DAL
             }
         }
 
-        public GenericRepository<TestItemConfig> TestItemConfig
+        public GenericRepository<TestItemConfig> TestItemConfigRepository
         {
             get
             {
-                if (this.testItemConfig == null)
+                if (this.testItemConfigRepository == null)
                 {
-                    this.testItemConfig = new GenericRepository<TestItemConfig>(context);
+                    this.testItemConfigRepository = new GenericRepository<TestItemConfig>(context);
                 }
-                return testItemConfig;
+                return testItemConfigRepository;
+            }
+        }
+
+        public GenericRepository<PerConfig> PerConfigRepository
+        {
+            get
+            {
+                if (this.perConfigRepository == null)
+                {
+                    this.perConfigRepository = new GenericRepository<PerConfig>(context);
+                }
+                return perConfigRepository;
             }
         }
 

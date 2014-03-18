@@ -1,4 +1,5 @@
-﻿using CamelDotNet.Lib;
+﻿using AutoMapper;
+using CamelDotNet.Lib;
 using CamelDotNet.Models;
 using CamelDotNet.Models.Base;
 using CamelDotNet.Models.DAL;
@@ -8,9 +9,11 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Core;
 using System.Linq;
+using System.Transactions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -25,6 +28,7 @@ namespace CamelDotNet.Controllers
         public string ViewPath1 = "~/Views/";
         public string ViewPath = "TestConfig";
         public string ViewPathBase = "TestConfig";
+        public string ViewPathEditorTempletes = "EditorTemplates";
         public string ViewPath2 = "/";
 
         public TestConfigModelController()
@@ -42,12 +46,12 @@ namespace CamelDotNet.Controllers
         public virtual PartialViewResult Get(string returnRoot, string actionAjax = "", int page = 1, bool includeSoftDeleted = false, string filter = null)
         {
             var results = TestConfigCommon<Model>.GetQuery(UW, includeSoftDeleted, filter);
-            
+
             if (!includeSoftDeleted)
             {
                 results = results.Where(a => a.IsDeleted == false);
             }
-            
+
             results = results.OrderBy(a => a.Client.Name).ThenBy(a => a.ProductType.Name);
 
             var rv = new RouteValueDictionary { { "tickTime", DateTime.Now.ToLongTimeString() }, { "returnRoot", returnRoot }, { "actionAjax", actionAjax }, { "page", page }, { "includeSoftDeleted", includeSoftDeleted }, { "filter", filter } };
@@ -116,9 +120,10 @@ namespace CamelDotNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public virtual ActionResult Create(CreateTestConfig model, string returnUrl = "Index")
+        public virtual ActionResult Create(string returnUrl = "Index")
         {
-            ViewBag.ReturnUrl = returnUrl;
+            //EditTestConfig model = new EditTestConfig();
+            //ViewBag.ReturnUrl = returnUrl;
             return View(ViewPath1 + ViewPath + ViewPath2 + "Create.cshtml");
         }
 
@@ -162,66 +167,236 @@ namespace CamelDotNet.Controllers
         //    return View(ViewPath1 + ViewPath + ViewPath2 + "Create.cshtml", model);
         //}
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public virtual ActionResult Edit(string id = null, string returnUrl = "Index")
-        //{
-        //    var result = UserCommon<Model>.GetQuery(UW).Where(a => a.Id == id).SingleOrDefault();
-        //    if (result == null)
-        //    {
-        //        Common.RMError(this);
-        //        return Redirect(Url.Content(returnUrl));
-        //    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual ActionResult Edit(int id, string returnUrl = "Index")
+        {
+            var testConfig = TestConfigCommon<Model>.GetQuery(UW).Where(a => a.Id == id).Include(a => a.TestItemConfigs.Select(b => b.PerConfigs)).SingleOrDefault();
 
-        //    ViewBag.ReturnUrl = returnUrl;
+            if (testConfig == null)
+            {
+                Common.RMError(this);
+                return Redirect(Url.Content(returnUrl));
+            }
 
-        //    return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", result);
-        //}
+            Mapper.CreateMap<TestConfig, TestConfigEdit>();
+            TestConfigEdit testConfigEdit = new TestConfigEdit();
+            Mapper.Map(testConfig, testConfigEdit);
 
-        ////
-        //// POST: /Model/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public virtual ActionResult EditSave(Model model, string returnUrl = "Index")
-        //{
-        //    //检查记录在权限范围内
-        //    var result = UserCommon<Model>.GetQuery(UW).Where(a => a.Id == model.Id).SingleOrDefault();
-        //    if (result == null)
-        //    {
-        //        //Common.RMError(this);
-        //        return Redirect(Url.Content(returnUrl));
-        //    }
-        //    //end 检查记录在权限范围内
+            ViewBag.ReturnUrl = returnUrl;
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            result.Edit(model);
-        //            UW.CamelSave();
-        //            Common.RMOk(this, "记录:" + result + "保存成功!");
-        //            return Redirect(Url.Content(returnUrl));
-        //        }
-        //        catch (UpdateException e)
-        //        {
-        //            if (e.InnerException.Message.Contains("Cannot insert duplicate key row"))
-        //            {
-        //                ModelState.AddModelError(string.Empty, "相同名称的记录已存在,保存失败!");
-        //            }
-        //            else
-        //            {
-        //                ModelState.AddModelError(string.Empty, "编辑记录失败!" + e.ToString());
-        //            }
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            ModelState.AddModelError(string.Empty, "编辑记录失败!" + e.ToString());
-        //        }
-        //    }
-        //    ViewBag.ReturnUrl = returnUrl;
+            return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
+        }
 
-        //    return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", model);
-        //}
+        //
+        // POST: /Model/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual ActionResult EditSave(TestConfigEdit testConfigEdit, string returnUrl = "Index")
+        {
+            ViewBag.ReturnUrl = returnUrl;
+
+            if (!(testConfigEdit.TestItemConfigEdits.Where(a => a.Delete == false).Count() == 0))
+            {
+                var result = TestConfigCommon<Model>.GetQuery(UW)
+                .Include(a => a.TestItemConfigs.Select(b => b.PerConfigs))
+                .Where(a => a.Id == testConfigEdit.Id && a.IsDeleted == false)
+                .SingleOrDefault();
+                if (result != null)
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        try
+                        {
+                            result.ClientId = testConfigEdit.ClientId;
+                            result.ProductTypeId = testConfigEdit.ProductTypeId;
+                            foreach (var testItemConfigEdit in testConfigEdit.TestItemConfigEdits)
+                            {
+                                if (testItemConfigEdit.Delete == true)//delete
+                                {
+                                    if (testItemConfigEdit.Id != 0)//exist and delete
+                                    {
+                                        TestItemConfig testItemConfigRemoveItem = result.TestItemConfigs.Where(a => a.Id == testItemConfigEdit.Id && a.TestConfigId == testItemConfigEdit.TestConfigId).Single();
+                                        if (testItemConfigRemoveItem != null)
+                                        {
+                                            List<PerConfig> perConfigRemoveItems = UW.context.PerConfig.Where(a => a.TestItemConfigId == testItemConfigEdit.Id).ToList();
+                                            foreach (var item in perConfigRemoveItems)
+                                            {
+                                                UW.context.PerConfig.Remove(item);
+                                            }
+                                            UW.context.TestItemConfig.Remove(testItemConfigRemoveItem);
+                                        }
+                                        else
+                                        {
+                                            ModelState.AddModelError(string.Empty, "未找到对应测试项配置记录,测试项ID：" + testItemConfigEdit.TestItemId);
+                                            return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
+                                        }
+                                    }
+                                }
+                                else //do not delete
+                                {
+                                    if (!(testItemConfigEdit.PerConfigEdits.Where(a => a.Delete == false).Count() == 0))
+                                    {
+                                        if (testItemConfigEdit.Id != 0)//edit
+                                        {
+                                            TestItemConfig editTestItemConfig = result.TestItemConfigs.Where(a => a.Id == testItemConfigEdit.Id && a.TestConfigId == testItemConfigEdit.TestConfigId).Single();
+                                            if (editTestItemConfig != null)
+                                            {
+                                                var modifyTime = DateTime.Now;
+                                                if (editTestItemConfig.TestItemId != testItemConfigEdit.TestItemId)
+                                                {
+                                                    editTestItemConfig.TestItemId = testItemConfigEdit.TestItemId;
+                                                    editTestItemConfig.VersionDate = modifyTime;
+                                                }
+                                                foreach (var perConfigEdit in testItemConfigEdit.PerConfigEdits)
+                                                {
+                                                    if (perConfigEdit.Delete == true)//perconfig delete
+                                                    {
+                                                        if (perConfigEdit.Id != 0)//exist
+                                                        {
+                                                            PerConfig perConfig = UW.context.PerConfig.Where(a => a.Id == perConfigEdit.Id).Single();
+                                                            if (perConfig != null)
+                                                            {
+                                                                UW.context.PerConfig.Remove(perConfig);
+                                                            }
+                                                            else
+                                                            {
+                                                                ModelState.AddModelError(string.Empty, "未找到对应指标记录,指标ID：" + perConfigEdit.Id);
+                                                                return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
+                                                            }
+                                                        }
+                                                    }
+                                                    else //do not delete
+                                                    {
+                                                        if (perConfigEdit.Id != 0)//modify perconfig
+                                                        {
+                                                            PerConfig perConfig = UW.context.PerConfig.Where(a => a.Id == perConfigEdit.Id).Single();
+                                                            if (perConfig != null)
+                                                            {
+                                                                if (perConfig.Channel != perConfigEdit.Channel ||
+                                                                   perConfig.Trace != perConfigEdit.Trace ||
+                                                                   perConfig.StartF != perConfigEdit.StartF ||
+                                                                   perConfig.StopF != perConfigEdit.StopF ||
+                                                                   perConfig.ScanPoint != perConfigEdit.ScanPoint ||
+                                                                   perConfig.ScanTime != perConfigEdit.ScanTime ||
+                                                                   perConfig.TransportSpeed != perConfigEdit.TransportSpeed ||
+                                                                   perConfig.FreqPoint != perConfigEdit.FreqPoint ||
+                                                                   perConfig.LimitLine != perConfigEdit.LimitLine)
+                                                                {
+                                                                    perConfig.Channel = perConfigEdit.Channel;
+                                                                    perConfig.Trace = perConfigEdit.Trace;
+                                                                    perConfig.StartF = perConfigEdit.StartF;
+                                                                    perConfig.StopF = perConfigEdit.StopF;
+                                                                    perConfig.ScanPoint = perConfigEdit.ScanPoint;
+                                                                    perConfig.ScanTime = perConfigEdit.ScanTime;
+                                                                    perConfig.TransportSpeed = perConfigEdit.TransportSpeed;
+                                                                    perConfig.FreqPoint = perConfigEdit.FreqPoint;
+                                                                    perConfig.LimitLine = perConfigEdit.LimitLine;
+                                                                    editTestItemConfig.VersionDate = modifyTime;
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                ModelState.AddModelError(string.Empty, "未找到对应指标记录,指标ID：" + perConfigEdit.Id);
+                                                                return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
+                                                            }
+                                                        }
+                                                        else//add
+                                                        {
+                                                            PerConfig perConfigAdd = new PerConfig
+                                                            {
+                                                                Channel = perConfigEdit.Channel,
+                                                                Trace = perConfigEdit.Trace,
+                                                                StartF = perConfigEdit.StartF,
+                                                                StopF = perConfigEdit.StopF,
+                                                                ScanPoint = perConfigEdit.ScanPoint,
+                                                                ScanTime = perConfigEdit.ScanTime,
+                                                                TransportSpeed = perConfigEdit.TransportSpeed,
+                                                                FreqPoint = perConfigEdit.FreqPoint,
+                                                                LimitLine = perConfigEdit.LimitLine,
+                                                                TestItemConfigId = testItemConfigEdit.Id
+                                                            };
+                                                            UW.context.PerConfig.Add(perConfigAdd);
+                                                            editTestItemConfig.VersionDate = modifyTime;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                ModelState.AddModelError(string.Empty, "未找到对应测试项配置记录,测试项ID：" + testItemConfigEdit.TestItemId);
+                                                return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
+                                            }
+                                        }
+                                        else //add TestItemConfig And PerConfig
+                                        {
+                                            TestItemConfig testItemConfigAdd = new TestItemConfig
+                                            {
+                                                TestConfigId = testConfigEdit.Id,
+                                                TestItemId = testItemConfigEdit.TestItemId,
+                                                VersionDate = DateTime.Now
+                                            };
+                                            UW.context.TestItemConfig.Add(testItemConfigAdd);
+                                            UW.CamelSave();
+                                            
+                                            foreach (var perconfigAdd in testItemConfigEdit.PerConfigEdits)
+                                            {
+                                                if (perconfigAdd.Delete != true)
+                                                {
+                                                    PerConfig perConfigAdd = new PerConfig
+                                                    {
+                                                        Channel = perconfigAdd.Channel,
+                                                        Trace = perconfigAdd.Trace,
+                                                        StartF = perconfigAdd.StartF,
+                                                        StopF = perconfigAdd.StopF,
+                                                        ScanPoint = perconfigAdd.ScanPoint,
+                                                        ScanTime = perconfigAdd.ScanTime,
+                                                        TransportSpeed = perconfigAdd.TransportSpeed,
+                                                        FreqPoint = perconfigAdd.FreqPoint,
+                                                        LimitLine = perconfigAdd.LimitLine,
+                                                        TestItemConfigId = testItemConfigAdd.Id
+                                                    };
+                                                    
+                                                    UW.context.PerConfig.Add(perConfigAdd);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ModelState.AddModelError(string.Empty, "当前测试项的指标不能全空");
+                                        return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
+                                    }
+                                }
+                            }
+
+                            UW.CamelSave();
+                        }
+                        catch (DataException)
+                        {
+                            ModelState.AddModelError(string.Empty, "记录更新失败");
+                            return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
+                        }
+                        scope.Complete();
+                    }
+
+                    Common.RMOk(this, "保存成功!");
+                    return Redirect(Url.Content(returnUrl));
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "不存在此测试方案或已停用");
+                    return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "所选客户当前型号产品的测试不能全空");
+                return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
+            }
+
+            //return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
+        }
 
         //[HttpPost]
         //[ValidateAntiForgeryToken]
@@ -380,7 +555,7 @@ namespace CamelDotNet.Controllers
         }
 
         [ChildActionOnly]
-        public virtual PartialViewResult AbstractEdit(string id)
+        public virtual PartialViewResult AbstractEdit(int id)
         {
             var result = GR.GetByID(id);
             return PartialView(ViewPath1 + ViewPathBase + ViewPath2 + "AbstractEdit.cshtml", result);

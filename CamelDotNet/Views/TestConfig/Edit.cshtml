@@ -1,0 +1,63 @@
+﻿@model TestConfigEdit
+
+@{
+    ViewBag.Title = "编辑";
+}
+
+<h2>@ViewBag.Name:@ViewBag.Title</h2>
+
+@using (Html.BeginForm("EditSave", (string)ViewBag.Controller))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    @Html.Hidden("returnUrl", (string)ViewBag.ReturnUrl)
+    
+    @Html.Action("AbstractEdit", (string)ViewBag.Controller, new { id = Model.Id })
+    
+    <div class="header" style="clear: both">
+        <h2>@Html.DisplayNameFor(model => model.TestItemConfigEdits)</h2>
+    </div>
+    <div id="TestItemConfigEdits" class="infoAddition" style="clear: both; width: 90%">
+        @Html.ValidationMessageFor(model => model.TestItemConfigEdits)
+        @*@Html.EditorFor(model => model.TestItemConfigEdits)*@
+        @{
+            if(Model.TestItemConfigs != null && Model.TestItemConfigs.Count() != 0)
+            {
+                int parentOrder = 0;
+                foreach (var item in Model.TestItemConfigs)
+                {
+                    MvcHtmlString testItemConfigEditPartial = Html.Action("GetTestItemConfigEdit", "TestConfig", new { item, parentOrder });
+                    @Html.ReplaceTestItemConfigEditPartial(testItemConfigEditPartial, "TestItemConfigEdits", parentOrder)
+                    parentOrder++;
+                }
+            }
+            
+            if(Model.TestItemConfigEdits != null && Model.TestItemConfigEdits.Count() != 0)
+            {
+                int parentOrder = 0;
+                foreach (var item in Model.TestItemConfigEdits)
+                {
+                    MvcHtmlString testItemConfigEditPartial = Html.Action("GetTestItemConfigEditFeedBack", "TestConfig", new { item, parentOrder });
+                    @Html.ReplaceTestItemConfigEditPartial(testItemConfigEditPartial, "TestItemConfigEdits", parentOrder)
+                    parentOrder++;
+                }
+            }
+        }
+    </div>
+    <div style="clear: both">
+        @Html.LinkToAddNestedForm("添加测试项", "#TestItemConfigEdits", ".TestItemConfigEdit", "TestItemConfigEdits", typeof(TestItemConfigEdit))
+    </div>
+    <div style="clear: both">
+        <input type="submit" value="保存" />
+    </div>
+}
+
+<div>
+    <a href="@Url.Content((string)ViewBag.ReturnUrl)">取消</a>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script type="text/javascript" src="@Url.Content("~/Scripts/custom.js")"></script>
+}

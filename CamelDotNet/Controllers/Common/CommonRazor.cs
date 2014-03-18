@@ -1,5 +1,7 @@
-﻿using System;
+﻿using CamelDotNet.Models.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -127,13 +129,126 @@ namespace System.Web.Mvc.Html
 
         }
 
-        public static IHtmlString LinkToAddNestedForm<TModel>(this HtmlHelper<TModel> htmlHelper, string linkText, string containerElement, string counterElement, string collectionProperty, Type nestedType)
+        public static MvcHtmlString ReplacePerConfigEditPartailNull(this HtmlHelper helper, MvcHtmlString initModelContext, string linkText, string parentContainerElement, string containerElement, string counterElement, string parentProperty, string collectionProperty, string tick = "") 
+        {
+            var ticksParent = DateTime.UtcNow.Ticks;
+            var partial = initModelContext.ToHtmlString().JsEncode();
+            partial = partial.Replace(tick,"");
+            partial = partial.Replace("name=\\\"", "name=\\\"" + parentProperty + "[" + ticksParent + "].");
+            partial = partial.Replace("data-valmsg-for=\\\"", "data-valmsg-for=\\\"" + parentProperty + "[" + ticksParent + "].");
+
+            var ticksThis = DateTime.UtcNow.AddTicks(10).Ticks;
+            partial = partial.Replace("name=\\\"" + parentProperty + "[" + ticksParent + "]" + ".", "name=\\\"" + parentProperty + "[" + ticksParent + "]" + "." + collectionProperty + "[" + ticksThis + "].");
+            partial = partial.Replace("data-valmsg-for=\\\"" + parentProperty + "[" + ticksParent + "]" + ".", "data-valmsg-for=\\\"" + parentProperty + "[" + ticksParent + "]" + "." + collectionProperty + "[" + ticksThis + "].");
+            var js = string.Format("javascript:addNestedFormGary(this,'{0}','{1}','{2}','{3}','{4}','{5}');return false;", parentContainerElement, containerElement, counterElement, ticksParent, ticksThis, partial);
+
+            TagBuilder tb = new TagBuilder("a");
+
+            tb.Attributes.Add("href", "#");
+
+            tb.Attributes.Add("onclick", js);
+
+            tb.InnerHtml = linkText;
+
+            var tag = tb.ToString(TagRenderMode.Normal);
+
+            return MvcHtmlString.Create(tag);
+        }
+
+        //public static MvcHtmlString RepalceRealModelToAddNestedForm(this HtmlHelper helper, MvcHtmlString initModelContext, string linkText, string parentContainerElement, string containerElement, string counterElement, string parentProperty, string collectionProperty)
+        //{
+        //    var ticksParent = DateTime.UtcNow.Ticks;
+        //    var partial = initModelContext.ToHtmlString().JsEncode();
+        //    partial = partial.Replace("name=\\\"", "name=\\\"" + parentProperty + "[" + ticksParent + "].");
+        //    partial = partial.Replace("data-valmsg-for=\\\"", "data-valmsg-for=\\\"" + parentProperty + "[" + ticksParent + "].");
+
+        //    var ticksThis = DateTime.UtcNow.AddTicks(10).Ticks;
+        //    partial = partial.Replace("name=\\\"" + parentProperty + "[" + ticksParent + "]" + ".", "name=\\\"" + parentProperty + "[" + ticksParent + "]" + "." + collectionProperty + "[" + ticksThis + "].");
+        //    partial = partial.Replace("data-valmsg-for=\\\"" + parentProperty + "[" + ticksParent + "]" + ".", "data-valmsg-for=\\\"" + parentProperty + "[" + ticksParent + "]" + "." + collectionProperty + "[" + ticksThis + "].");
+        //    var js = string.Format("javascript:addNestedFormGary(this,'{0}','{1}','{2}','{3}','{4}','{5}');return false;", parentContainerElement, containerElement, counterElement, ticksParent, ticksThis, partial);
+
+        //    TagBuilder tb = new TagBuilder("a");
+
+        //    tb.Attributes.Add("href", "#");
+
+        //    tb.Attributes.Add("onclick", js);
+
+        //    tb.InnerHtml = linkText;
+
+        //    var tag = tb.ToString(TagRenderMode.Normal);
+
+        //    return MvcHtmlString.Create(tag);
+        //}
+
+        public static IHtmlString LinkToAddNestedFormGary<TModel>(this HtmlHelper<TModel> htmlHelper, string linkText, string parentContainerElement,string containerElement, string counterElement,string parentProperty, string collectionProperty, Type nestedType)
         {
 
-            var ticks = DateTime.UtcNow.Ticks;
+            var ticksParent = DateTime.UtcNow.Ticks;
 
             var nestedObject = Activator.CreateInstance(nestedType);
 
+            var partial = htmlHelper.EditorFor(x => nestedObject).ToHtmlString().JsEncode();
+
+            partial = partial.Replace("id=\\\"nestedObject", "id=\\\"" + parentProperty + "_" + ticksParent + "_");
+
+            partial = partial.Replace("name=\\\"nestedObject", "name=\\\"" + parentProperty + "[" + ticksParent + "]");
+
+            partial = partial.Replace("data-valmsg-for=\\\"nestedObject", "data-valmsg-for=\\\"" + parentProperty + "[" + ticksParent + "]");
+
+            //partial = partial.Replace("id=\\\"nestedObject", "id=\\\"" + parentProperty + "_" + ticksParent);
+
+            //partial = partial.Replace("name=\\\"nestedObject", "name=\\\"" + parentProperty + "[" + ticksParent + "]");
+
+            //partial = partial.Replace("data-valmsg-for=\\\"nestedObject", "data-valmsg-for=\\\"" + parentProperty + "[" + ticksParent + "]");
+
+            var ticksThis = DateTime.UtcNow.Ticks;
+
+            partial = partial.Replace("id=\\\"" + parentProperty + "_" + ticksParent + "__" + "nestedObject"+"_", "id=\\\"" + parentProperty + "_" + ticksParent +"_"+ collectionProperty + "_" + ticksThis);
+
+            partial = partial.Replace("name=\\\"" + parentProperty + "[" + ticksParent + "]" + "." + "nestedObject", "name=\\\"" + parentProperty + "[" + ticksParent + "]" + "." + collectionProperty + "[" + ticksThis + "]");
+
+            partial = partial.Replace("data-valmsg-for=\\\"" + parentProperty + "[" + ticksParent + "]" + "." + "nestedObject", "data-valmsg-for=\\\"" + parentProperty + "[" + ticksParent + "]" + "." + collectionProperty + "[" + ticksThis + "]");
+
+            var js = string.Format("javascript:addNestedFormGary(this,'{0}','{1}','{2}','{3}','{4}','{5}');return false;", parentContainerElement, containerElement, counterElement, ticksParent, ticksThis, partial);
+
+            TagBuilder tb = new TagBuilder("a");
+
+            tb.Attributes.Add("href", "#");
+
+            tb.Attributes.Add("onclick", js);
+
+            tb.InnerHtml = linkText;
+
+            var tag = tb.ToString(TagRenderMode.Normal);
+
+            return MvcHtmlString.Create(tag);
+
+        }
+
+        public static IHtmlString ReplaceTestItemConfigEditPartial(this HtmlHelper htmlHelper, MvcHtmlString partial, string containerElement, int thisOrder) 
+        {
+            var content = partial.ToHtmlString();
+            content = content.Replace("name=\"","name=\""+containerElement+"["+thisOrder+"].");
+            content = content.Replace("data-valmsg-for=\"", "data-valmsg-for=\""+containerElement+"["+thisOrder+"].");
+            content = content.Replace(containerElement+"["+thisOrder+"].*","");
+            return MvcHtmlString.Create(content);
+        }
+
+        public static IHtmlString ReplacePerConfigEditPartail(this HtmlHelper htmlHelper, MvcHtmlString partial, string parentContainerElement, string containerElment,int parentOrder, int thisOrder,string tick = "") 
+        {
+            var content = partial.ToHtmlString();
+            content = content.Replace(tick,"");
+            content = content.Replace("name=\"", "name=\"*" + parentContainerElement + "[" + parentOrder + "]." + containerElment + "[" + thisOrder + "].");
+            content = content.Replace("data-valmsg-for=\"", "data-valmsg-for=\"*" + parentContainerElement + "[" + parentOrder + "]." + containerElment + "[" + thisOrder + "].");
+            return MvcHtmlString.Create(content);
+        }
+
+        public static IHtmlString LinkToAddNestedForm<TModel>(this HtmlHelper<TModel> htmlHelper, string linkText, string containerElement, string counterElement, string collectionProperty, Type nestedType)
+        {
+            var ticks = DateTime.UtcNow.Ticks;
+
+            var nestedObject = Activator.CreateInstance(nestedType);
+            
             var partial = htmlHelper.EditorFor(x => nestedObject).ToHtmlString().JsEncode();
 
             partial = partial.Replace("id=\\\"nestedObject", "id=\\\"" + collectionProperty + "_" + ticks + "_");
@@ -294,6 +409,7 @@ namespace System.Web.Mvc.Html
         }
 
         private static readonly SelectListItem[] SingleEmptyItem = new[] { new SelectListItem { Text = "", Value = "" } };
+        
     }
 
     public static class AuthorizeActionLinkExtention 
@@ -318,4 +434,51 @@ namespace System.Web.Mvc.Html
             return (((List<string>)HttpContext.Current.Session["PermissionList"]).Contains(controllerActionName));
         }
     }
+
+    //LabelExtensions
+    public static class LabelExtensions
+    {
+        public static MvcHtmlString Label(this HtmlHelper html, string expression, string id = "", bool generatedId = false)
+        {
+            return LabelHelper(html, ModelMetadata.FromStringExpression(expression, html.ViewData), expression, id, generatedId);
+        }
+
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
+        public static MvcHtmlString PPLabelFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string id = "", bool generatedId = false)
+        {
+            return LabelHelper(html, ModelMetadata.FromLambdaExpression(expression, html.ViewData), ExpressionHelper.GetExpressionText(expression), id, generatedId);
+        }
+
+        internal static MvcHtmlString LabelHelper(HtmlHelper html, ModelMetadata metadata, string htmlFieldName, string id, bool generatedId)
+        {
+            string labelText = metadata.DisplayName ?? metadata.PropertyName ?? htmlFieldName.Split('.').Last();
+            if (String.IsNullOrEmpty(labelText))
+            {
+                return MvcHtmlString.Empty;
+            }
+            var sb = new StringBuilder();
+            sb.Append(labelText);
+            if (metadata.IsRequired)
+            {
+                sb.Append("*");
+            }
+
+            var tag = new TagBuilder("label");
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                tag.Attributes.Add("id", id);
+            }
+            else if (generatedId)
+            {
+                tag.Attributes.Add("id", html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldId(htmlFieldName) + "_Label");
+            }
+
+            tag.Attributes.Add("for", html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldId(htmlFieldName));
+            tag.SetInnerText(sb.ToString());
+
+            return MvcHtmlString.Create(tag.ToString(TagRenderMode.Normal));
+        }
+    }
+
+    
 }

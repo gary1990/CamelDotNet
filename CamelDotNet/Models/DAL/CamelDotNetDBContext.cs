@@ -31,6 +31,7 @@ namespace CamelDotNet.Models.DAL
         public DbSet<TestItemCategory> TestItemCategory { get; set; }
         public DbSet<TestConfig> TestConfig { get; set; }
         public DbSet<TestItemConfig> TestItemConfig { get; set; }
+        public DbSet<PerConfig> PerConfig { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -205,6 +206,7 @@ namespace CamelDotNet.Models.DAL
 
             var clients = new List<Client>()
             {
+                new Client{Name = "General"},
                 new Client{Name = "C1"},
                 new Client{Name = "C2"},
                 new Client{Name = "C3", IsDeleted = true},
@@ -212,21 +214,6 @@ namespace CamelDotNet.Models.DAL
                 new Client{Name = "Client1"},
             };
             clients.ForEach(a => db.Client.Add(a));
-            db.SaveChanges();
-
-            var testConfigs = new List<TestConfig>() 
-            {
-                new TestConfig{ClientId = 1, ProductTypeId = 1},
-                new TestConfig{ClientId = 1, ProductTypeId = 2},
-                new TestConfig{ClientId = 1, ProductTypeId = 3},
-                new TestConfig{ClientId = 2, ProductTypeId = 1},
-                new TestConfig{ClientId = 2, ProductTypeId = 2},
-                new TestConfig{ClientId = 2, ProductTypeId = 3},
-                new TestConfig{ClientId = 3, ProductTypeId = 1},
-                new TestConfig{ClientId = 3, ProductTypeId = 2},
-                new TestConfig{ClientId = 3, ProductTypeId = 3},
-            };
-            testConfigs.ForEach(a => db.TestConfig.Add(a));
             db.SaveChanges();
 
             var testItemCategory = new List<TestItemCategory>()
@@ -246,6 +233,41 @@ namespace CamelDotNet.Models.DAL
                 new TestItem{Name = "外观不合格", TestItemCategoryId = 2 },
             };
             testItems.ForEach(a => db.TestItem.Add(a));
+            db.SaveChanges();
+
+            var testConfigs = new List<TestConfig>()
+            {
+                new TestConfig{ClientId = 1, ProductTypeId = 1},
+                //new TestConfig{ClientId = 1, ProductTypeId = 2},
+                //new TestConfig{ClientId = 1, ProductTypeId = 3},
+                //new TestConfig{ClientId = 2, ProductTypeId = 1},
+                //new TestConfig{ClientId = 2, ProductTypeId = 2},
+                //new TestConfig{ClientId = 2, ProductTypeId = 3},
+                //new TestConfig{ClientId = 3, ProductTypeId = 1},
+                //new TestConfig{ClientId = 3, ProductTypeId = 2},
+                //new TestConfig{ClientId = 3, ProductTypeId = 3},
+            };
+            testConfigs.ForEach(a => db.TestConfig.Add(a));
+            db.SaveChanges();
+
+            var testItemConfigs = new List<TestItemConfig>()
+            {
+                new TestItemConfig{ TestConfigId = 1, TestItemId = 1, VersionDate = DateTime.Now},
+                //new TestItemConfig{ TestConfigId = 1, TestItemId = 2, VersionDate = DateTime.Now},
+            };
+            testItemConfigs.ForEach(a => db.TestItemConfig.Add(a));
+            db.SaveChanges();
+
+            var perConfigs = new List<PerConfig>() 
+            {
+                new PerConfig{ TestItemConfigId = 1, Channel = 1, Trace = 1, ScanPoint = 1, ScanTime = 1, StartF = 1, StopF = 1, TransportSpeed = 1, LimitLine = 1},
+                new PerConfig{ TestItemConfigId = 1, Channel = 11, Trace = 11, ScanPoint = 11, ScanTime = 11, StartF = 11, StopF = 11, LimitLine = 11},
+                new PerConfig{ TestItemConfigId = 1, Channel = 111, Trace = 111, ScanPoint = 111, StartF = 111, StopF = 111, TransportSpeed = 111, LimitLine = 111},
+                //new PerConfig{ TestItemConfigId = 2, Channel = 2, Trace = 2, ScanPoint = 2, ScanTime = 2, StartF = 2, StopF = 2, TransportSpeed = 2, LimitLine = 2},
+                //new PerConfig{ TestItemConfigId = 2, Channel = 22, Trace = 22, ScanPoint = 22, ScanTime = 22, StartF = 22, StopF = 22, LimitLine = 22},
+                //new PerConfig{ TestItemConfigId = 2, Channel = 222, Trace = 222, ScanPoint = 222, StartF = 222, StopF = 222, TransportSpeed = 222, LimitLine = 222},
+            };
+            perConfigs.ForEach(a => db.PerConfig.Add(a));
             db.SaveChanges();
 
             var adminRole = new CamelDotNetRole{Name = "Admin"};

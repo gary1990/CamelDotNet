@@ -1,0 +1,60 @@
+﻿@model TestItemConfigEdit
+
+@{
+    string tmp = "";
+    if(Model.Delete == true)
+    {
+        tmp = "display:none";
+    }
+}
+
+<div class="TestItemConfigEdit" style="width:100%; float:left; @tmp">
+    @Html.HiddenFor(model => model.Delete, new { @class = "mark-for-delete"})
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.TestConfigId)
+    <div class="multiAddItem">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TestItemId)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(model => model.TestItemId, new SelectList(Common.GetTestItemList(), "Id", "Name"), String.Empty)
+            @*@Html.DropDownList("TestItemId", "")*@
+            @Html.ValidationMessageFor(model => model.TestItemId)
+        </div>
+    </div>
+    <div class="multiAddItem" style="display:none">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.VersionDate)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.VersionDate)
+            @Html.ValidationMessageFor(model => model.VersionDate)
+        </div>
+    </div>
+    <div class="multiAddItem">
+        @Html.LinkToRemoveNestedForm("移除测试项", "div.TestItemConfigEdit", "input.mark-for-delete")
+    </div>
+    @*<div class="header" style="clear: both">
+        <h2>@Html.DisplayNameFor(model => model.PerConfigEdits)</h2>
+    </div>*@
+    <div id="PerConfigEdits" class="infoAddition" style="clear: both; width: 90%">
+        @Html.ValidationMessageFor(model => model.PerConfigEdits)
+        @Html.EditorFor(model => model.PerConfigEdits)
+        @{
+            if(Model.PerConfigs != null)
+            {
+                foreach (var item in Model.PerConfigs)
+                {
+                    //((CamelDotNet.Controllers.TestConfigController)this.ViewContext.Controller).GetPerConfigEdit(item);
+                    //Html.Action("GetPerConfigEdit", "TestConfig", item);
+                }
+            }
+        }
+    </div>
+    <div style="clear: both">
+        @Html.LinkToAddNestedFormGary("添加指标", ".TestItemConfigEdit", "#PerConfigEdits", ".PerConfigEdit", "TestItemConfigEdits", "PerConfigEdits", typeof(PerConfigEdit))
+    </div>
+    <div class="header" style="clear: both">
+        <h2>&nbsp;</h2>
+    </div>
+</div>

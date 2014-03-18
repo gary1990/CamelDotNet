@@ -306,6 +306,32 @@ namespace CamelDotNet.Lib
 
     public class Common
     {
+        public static List<TestItem> GetTestItemList(string keyWord = null)
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetTestItemQuery(db, keyWord, true).ToList();
+            }
+        }
+        public static IQueryable<TestItem> GetTestItemQuery(UnitOfWork db, string keyWord = null, bool noTrack = false)
+        {
+            IQueryable<TestItem> result;
+
+            var rep = db.TestItemRepository;
+
+            result = rep.Get(noTrack);
+
+            result = result.Where(a => a.IsDeleted == false);
+
+            if (!String.IsNullOrWhiteSpace(keyWord))
+            {
+                keyWord = keyWord.ToUpper();
+                result = result.Where(a => a.Name.ToUpper().Contains(keyWord));
+            }
+
+            return result;
+        }
+
         public static List<ProductType> GetProductTypeList(string keyWord = null)
         {
             using (var db = new UnitOfWork())
