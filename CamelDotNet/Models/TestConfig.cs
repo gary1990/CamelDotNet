@@ -13,7 +13,7 @@ namespace CamelDotNet.Models
         public TestConfig() 
         {
             this.IsDeleted = false;
-            this.TestItemConfigs = new List<TestItemConfig>() { };
+            this.TestItemConfigs = new List<TestItemConfig>{ };
         }
         public int Id { get; set; }
         [DisplayName("产品型号")]
@@ -35,7 +35,6 @@ namespace CamelDotNet.Models
         {
             this.ClientId = testConfig.ClientId;
             this.ProductTypeId = testConfig.ProductTypeId;
-            this.TestItemConfigs = testConfig.TestItemConfigs;
         }
     }
 }

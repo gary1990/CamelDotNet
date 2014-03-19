@@ -166,6 +166,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ApiController.cs" />
     <Compile Include="Controllers\BaseController\TestConfigModelController.cs" />
     <Compile Include="Controllers\BaseController\UserModelController.cs" />
     <Compile Include="Controllers\BaseController\BaseModelController.cs" />
@@ -608,7 +609,7 @@
     <Content Include="Scripts\ckeditor\skins\moono\images\mini.png" />
     <Content Include="Scripts\ckeditor\styles.js" />
     <Content Include="Scripts\custom.js" />
-    <None Include="Properties\PublishProfiles\testdeploy.pubxml" />
+    <None Include="Properties\PublishProfiles\192.168.1.231.pubxml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
@@ -752,11 +753,16 @@
     <Content Include="Views\TestConfig\EditorTemplates\TestItemConfigEdit.cshtml" />
     <Content Include="Views\TestConfig\TestItemConfigEdit.cshtml" />
     <Content Include="Views\TestConfig\_TestItemConfigEditIEnum.cshtml" />
+    <Content Include="Views\TestConfig\Create.cshtml" />
+    <Content Include="Views\TestConfig\EditorTemplates\TestConfig.cshtml" />
+    <Content Include="Views\TestConfig\Delete.cshtml" />
+    <Content Include="Views\TestConfig\Restore.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\ImportTemplate\" />
     <Folder Include="Content\UploadedFolder\Template\" />
+    <Folder Include="Views\Api\" />
     <Folder Include="Views\Client\" />
     <Folder Include="Views\Common\" />
     <Folder Include="Views\ProductType\" />

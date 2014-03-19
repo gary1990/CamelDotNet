@@ -12,6 +12,7 @@ namespace CamelDotNet.Models.Common
             this.Allowed = new List<string> 
             {
                 "TestConfig_GetTestConfig",
+                "Api_TestStation",
             };
         }
         public List<string> Allowed { get; set; }

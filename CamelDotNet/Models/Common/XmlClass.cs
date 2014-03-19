@@ -18,6 +18,26 @@ namespace CamelDotNet.Models.Common
         public string Name { get; set; }
     }
 
+    public class TestStationXml
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Process { get; set; }
+    }
+
+    [XmlRoot("Result")]
+    public class TestStationListXml
+    {
+        public TestStationListXml()
+        {
+            Message = "true";
+            TestStationXmls = new List<TestStationXml> { };
+        }
+        public string Message { get; set; }
+        [XmlElement("TestStation")]
+        public List<TestStationXml> TestStationXmls { get; set; } 
+    }
+
     public class TestItemXml
     {
         public int Id { get; set; }

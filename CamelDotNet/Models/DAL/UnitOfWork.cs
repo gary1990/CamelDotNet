@@ -202,6 +202,19 @@ namespace CamelDotNet.Models.DAL
             context.SaveChanges();
         }
 
+        public void CamelTestConfigSave()
+        {
+            foreach (var deletedEntity in context.ChangeTracker.Entries<TestConfig>())
+            {
+                if (deletedEntity.State == EntityState.Deleted)
+                {
+                    deletedEntity.State = EntityState.Unchanged;
+                    deletedEntity.Entity.IsDeleted = true;
+                }
+            }
+            context.SaveChanges();
+        }
+
         private bool disposed = false;
         protected virtual void Dispose(bool disposing) 
         {

@@ -79,7 +79,7 @@ namespace CamelDotNet.Controllers
         [ValidateAntiForgeryToken]
         public virtual ActionResult CopySave(int id, string returnUrl = "Index")
         {
-            var result = TestConfigCommon<Model>.GetQuery(UW).Where(a => a.Id == id).SingleOrDefault();
+            var result = UW.context.TestConfig.Where(a => a.Id == id).Include(a => a.TestItemConfigs.Select(b => b.PerConfigs)).SingleOrDefault();
             if (result == null)
             {
                 Common.RMError(this);
@@ -89,83 +89,98 @@ namespace CamelDotNet.Controllers
             {
                 TestConfig newItem = new TestConfig();
                 newItem.Copy(result);
-                UW.TestConfigRepository.context.Entry(newItem).State = EntityState.Added;
+                newItem = CreateNewTestConfig(newItem, result);
+                UW.context.TestConfig.Add(newItem);
                 UW.CamelSave();
-                Common.RMOk(this, "复制成功！");
-                return Redirect(Url.Content(returnUrl));
+                Common.RMWarn(this, "复制成功,但方案中存在相同记录，请务必编辑");
+                return this.Edit(newItem.Id, returnUrl);
             }
             catch (Exception e)
             {
-                Common.RMError(this, "复制成功!" + e.ToString());
+                Common.RMError(this, "复制失败!" + e.ToString());
             }
 
             return Redirect(Url.Content(returnUrl));
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public virtual ActionResult Details(string id = null, string returnUrl = "Index")
-        //{
-        //    var result = UserCommon<Model>.GetQuery(UW).Where(a => a.Id == id).SingleOrDefault();
-        //    if (result == null)
-        //    {
-        //        Common.RMError(this);
-        //        return Redirect(Url.Content(returnUrl));
-        //    }
-
-        //    ViewBag.ReturnUrl = returnUrl;
-
-        //    return View(ViewPath1 + ViewPath + ViewPath2 + "Details.cshtml", result);
-        //}
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public virtual ActionResult Create(string returnUrl = "Index")
         {
-            //EditTestConfig model = new EditTestConfig();
-            //ViewBag.ReturnUrl = returnUrl;
+            ViewBag.ReturnUrl = returnUrl;
             return View(ViewPath1 + ViewPath + ViewPath2 + "Create.cshtml");
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public virtual ActionResult CreateSave(RegisterViewModel model, string returnUrl = "Index")
-        //{
-        //    var UserManager = new UserManager<CamelDotNetUser>(new UserStore<CamelDotNetUser>(UW.context));
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual ActionResult CreateSave(TestConfig model, string returnUrl = "Index")
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var result = UW.context.TestConfig.Where(a => a.Client.Name.ToUpper() == "GENERAL" || a.ClientId == 1)
+                        .Where(a => a.ProductTypeId == model.ProductTypeId).Include(a => a.TestItemConfigs.Select(b => b.PerConfigs)).SingleOrDefault();
+                    if (result != null)
+                    {
+                        model = CreateNewTestConfig(model, result);
+                        UW.context.TestConfig.Add(model);
+                        UW.CamelSave();
+                        Common.RMOk(this, "新增成功！");
+                        return Redirect(Url.Content(returnUrl));
+                    }
+                    else
+                    {
+                        UW.context.TestConfig.Add(model);
+                        UW.CamelSave();
+                        Common.RMWarn(this,"通用客户中没有对应型号产品的配置,已生成空方案，请务必编辑");
+                        return this.Edit(model.Id,returnUrl);
+                    } 
+                }
+                catch (UpdateException e)
+                {
+                    if (e.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                    {
+                        ModelState.AddModelError(string.Empty, "相同名称的记录已存在,保存失败!");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "新建记录失败!" + e.ToString());
+                    }
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError(string.Empty, "新建记录失败!" + e.ToString());
+                }
+            }
+            
+            return View(ViewPath1 + ViewPath + ViewPath2 + "Create.cshtml", model);
+        }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            var user = new CamelDotNetUser();
-        //            user.UserName = model.UserName;
-        //            user.JobNumber = model.JobNumber;
-        //            user.CamelDotNetRoleId = model.CamelDotNetRoleId;
-        //            var userResult = UserManager.Create(user, model.Password);
-        //            UW.CamelUserSave();
+        private TestConfig CreateNewTestConfig(TestConfig newTestConfig, TestConfig testConfigSelected)
+        {
+            foreach(var testItemConfigSelected in testConfigSelected.TestItemConfigs)
+            {
+                TestItemConfig testItemConfigNew = new TestItemConfig();
+                testItemConfigNew.TestConfigId = 0;
+                testItemConfigNew.TestItemId = testItemConfigSelected.TestItemId;
+                testItemConfigNew.VersionDate = DateTime.Now;
+                newTestConfig.TestItemConfigs.Add(testItemConfigNew);
+                foreach (var perConfigSeleted in testItemConfigSelected.PerConfigs)
+                {
+                    Mapper.CreateMap<PerConfig, PerConfig>();
+                    PerConfig perConfigNew = new PerConfig();
+                    Mapper.Map(perConfigSeleted, perConfigNew);
+                    perConfigNew.Id = 0;
+                    perConfigNew.TestItemConfigId = 0;
+                    perConfigNew.TestItemConfig = null;
+                    testItemConfigNew.PerConfigs.Add(perConfigNew);
+                }
+            }
 
-        //            Common.RMOk(this, "记录:" + model.UserName + "新建成功!");
-        //            return Redirect(Url.Content(returnUrl));
-        //        }
-        //        catch (UpdateException e)
-        //        {
-        //            if (e.InnerException.Message.Contains("Cannot insert duplicate key row"))
-        //            {
-        //                ModelState.AddModelError(string.Empty, "相同名称的记录已存在,保存失败!");
-        //            }
-        //            else
-        //            {
-        //                ModelState.AddModelError(string.Empty, "新建记录失败!" + e.ToString());
-        //            }
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            ModelState.AddModelError(string.Empty, "新建记录失败!" + e.ToString());
-        //        }
-        //    }
-        //    ViewBag.ReturnUrl = returnUrl;
-        //    return View(ViewPath1 + ViewPath + ViewPath2 + "Create.cshtml", model);
-        //}
+            return newTestConfig;
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -398,154 +413,90 @@ namespace CamelDotNet.Controllers
             //return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public virtual ActionResult Delete(string id = null, string returnUrl = "Index")
-        //{
-        //    //检查记录在权限范围内
-        //    var result = UserCommon<Model>.GetQuery(UW).Where(a => a.Id == id).SingleOrDefault();
-        //    if (result == null)
-        //    {
-        //        Common.RMError(this);
-        //        return Redirect(Url.Content(returnUrl));
-        //    }
-        //    //end 检查记录在权限范围内
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual ActionResult Delete(int id, string returnUrl = "Index")
+        {
+            //检查记录在权限范围内
+            var result = TestConfigCommon<Model>.GetQuery(UW).Where(a => a.Id == id).SingleOrDefault();
+            if (result == null)
+            {
+                Common.RMError(this);
+                return Redirect(Url.Content(returnUrl));
+            }
+            //end 检查记录在权限范围内
 
-        //    ViewBag.ReturnUrl = returnUrl;
+            ViewBag.ReturnUrl = returnUrl;
 
-        //    return View(ViewPath1 + ViewPath + ViewPath2 + "Delete.cshtml", result);
-        //}
+            return View(ViewPath1 + ViewPath + ViewPath2 + "Delete.cshtml", result);
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual ActionResult DeleteSave(int id, string returnUrl = "Index")
+        {
+            //检查记录在权限范围内
+            var result = TestConfigCommon<Model>.GetQuery(UW).Where(a => a.Id == id).SingleOrDefault();
+            if (result == null)
+            {
+                Common.RMError(this);
+                return Redirect(Url.Content(returnUrl));
+            }
+            //end 检查记录在权限范围内
+            var removeName = result.ToString();
+            try
+            {
+                GR.Delete(id);
+                UW.CamelTestConfigSave();
+                Common.RMOk(this, "记录:" + removeName + "删除成功!");
+                return Redirect(Url.Content(returnUrl));
+            }
+            catch (Exception e)
+            {
+                Common.RMError(this, "记录" + removeName + "删除失败!" + e.ToString());
+            }
+            return Redirect(Url.Content(returnUrl));
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual ActionResult Restore(int id, string returnUrl = "Index")
+        {
+            var result = TestConfigCommon<Model>.GetQuery(UW, true).Where(a => a.Id == id && a.IsDeleted == true).SingleOrDefault();
+            if (result == null)
+            {
+                Common.RMError(this);
+                return Redirect(Url.Content(returnUrl));
+            }
+            ViewBag.ReturnUrl = returnUrl;
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public virtual ActionResult DeleteSave(string id, string returnUrl = "Index")
-        //{
-        //    //检查记录在权限范围内
-        //    var result = UserCommon<Model>.GetQuery(UW).Where(a => a.Id == id).SingleOrDefault();
-        //    if (result == null)
-        //    {
-        //        Common.RMError(this);
-        //        return Redirect(Url.Content(returnUrl));
-        //    }
-        //    //end 检查记录在权限范围内
-        //    var removeName = result.ToString();
-        //    try
-        //    {
-        //        GR.Delete(id);
-        //        UW.CamelUserSave();
-        //        Common.RMOk(this, "记录:" + removeName + "删除成功!");
-        //        return Redirect(Url.Content(returnUrl));
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Common.RMError(this, "记录" + removeName + "删除失败!" + e.ToString());
-        //    }
-        //    return Redirect(Url.Content(returnUrl));
-        //}
+            return View(ViewPath1 + ViewPath + ViewPath2 + "Restore.cshtml", result);
+        }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public virtual ActionResult Restore(string id = null, string returnUrl = "Index")
-        //{
-        //    //检查记录在权限范围内
-        //    var result = UserCommon<Model>.GetQuery(UW, true).Where(a => a.Id == id && a.IsDeleted == true).SingleOrDefault();
-        //    if (result == null)
-        //    {
-        //        Common.RMError(this);
-        //        return Redirect(Url.Content(returnUrl));
-        //    }
-        //    //end 检查记录在权限范围内
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual ActionResult RestoreSave(Model model, string returnUrl = "Index")
+        {
+            var result = TestConfigCommon<Model>.GetQuery(UW, true).Where(a => a.Id == model.Id && a.IsDeleted == true).SingleOrDefault();
+            if (result == null)
+            {
+                Common.RMError(this);
+                return Redirect(Url.Content(returnUrl));
+            }
 
-        //    ViewBag.ReturnUrl = returnUrl;
-
-        //    return View(ViewPath1 + ViewPath + ViewPath2 + "Restore.cshtml", result);
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public virtual ActionResult RestoreSave(Model model, string returnUrl = "Index")
-        //{
-        //    var result = UserCommon<Model>.GetQuery(UW, true).Where(a => a.Id == model.Id && a.IsDeleted == true).SingleOrDefault();
-        //    if (result == null)
-        //    {
-        //        Common.RMError(this);
-        //        return Redirect(Url.Content(returnUrl));
-        //    }
-
-        //    try
-        //    {
-        //        result.IsDeleted = false;
-        //        UW.CamelSave();
-        //        Common.RMOk(this, "记录:" + result + "恢复成功!");
-        //        return Redirect(Url.Content(returnUrl));
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Common.RMOk(this, "记录" + result + "恢复失败!" + e.ToString());
-        //    }
-        //    return Redirect(Url.Content(returnUrl));
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult ResetPassword(string id, string returnUrl = "Index")
-        //{
-        //    var UserManager = new UserManager<CamelDotNetUser>(new UserStore<CamelDotNetUser>(UW.context));
-        //    var result = UserManager.FindById(id);
-        //    if (result == null)
-        //    {
-        //        Common.RMError(this);
-        //        return Redirect(Url.Content(returnUrl));
-        //    }
-
-        //    ResetPasswordModel model = new ResetPasswordModel() { Id = result.Id, UserName = result.UserName };
-
-        //    ViewBag.ReturnUrl = returnUrl;
-
-        //    return View(ViewPath1 + ViewPath + ViewPath2 + "ResetPassword.cshtml", model);
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult ResetPasswordSave(ResetPasswordModel model,string returnUrl = "Index")
-        //{
-        //    var UserManager = new UserManager<CamelDotNetUser>(new UserStore<CamelDotNetUser>(UW.context));
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            CamelDotNetUser user = UserManager.FindById(model.Id);
-        //            string HashNewPassword = UserManager.PasswordHasher.HashPassword(model.NewPassword);
-        //            UserStore<CamelDotNetUser> store = new UserStore<CamelDotNetUser>(new CamelDotNetDBContext());
-        //            store.SetPasswordHashAsync(user, HashNewPassword);
-        //            store.UpdateAsync(user);
-        //            //UserManager.ChangePassword<CamelDotNetUser>(user.Id,user.PasswordHash,HashNewPassword);
-        //            //UserManager.Update<CamelDotNetUser>(user);
-        //            UW.CamelUserSave();
-
-        //            Common.RMOk(this, "记录:" + user.UserName + "重置密码成功！");
-        //            return Redirect(Url.Content(returnUrl));
-        //        }
-        //        catch (UpdateException e)
-        //        {
-        //            if (e.InnerException.Message.Contains("Cannot insert duplicate key row"))
-        //            {
-        //                ModelState.AddModelError(string.Empty, "相同名称的记录已存在,保存失败!");
-        //            }
-        //            else
-        //            {
-        //                ModelState.AddModelError(string.Empty, "新建记录失败!" + e.ToString());
-        //            }
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            ModelState.AddModelError(string.Empty, "新建记录失败!" + e.ToString());
-        //        }
-        //    }
-        //    return View(ViewPath1 + ViewPath + ViewPath2 + "ResetPassword.cshtml", model);
-        //}
+            try
+            {
+                result.IsDeleted = false;
+                UW.CamelTestConfigSave();
+                Common.RMOk(this, "记录:" + result + "恢复成功!");
+                return Redirect(Url.Content(returnUrl));
+            }
+            catch (Exception e)
+            {
+                Common.RMOk(this, "记录" + result + "恢复失败!" + e.ToString());
+            }
+            return Redirect(Url.Content(returnUrl));
+        }
 
         [ChildActionOnly]
         public virtual PartialViewResult Abstract(int id)

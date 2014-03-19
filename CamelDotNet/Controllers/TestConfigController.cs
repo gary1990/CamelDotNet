@@ -72,20 +72,6 @@ namespace CamelDotNet.Controllers
             var nestedObject = Activator.CreateInstance(typeof(PerConfigEdit));
             return PartialView("~/Views/TestConfig/EditorTemplates/PerConfigEdit.cshtml", nestedObject);
         }
-        //public virtual PartialViewResult Abstract(int id)
-        //{
-        //    var result = GR.GetByID(id);
-        //    return PartialView(ViewPath1 + ViewPath + ViewPath2 + "Abstract.cshtml", result);
-        //}
-        //public PartialViewResult GetTestItemConfigEdit1(int Id)
-        //{
-        //    TestItemConfig model
-        //    Mapper.CreateMap<TestItemConfig, TestItemConfigEdit>();
-        //    TestItemConfigEdit testItemConfigEdit = new TestItemConfigEdit();
-        //    Mapper.Map(model, testItemConfigEdit);
-
-        //    return PartialView("~/Views/TestConfig/EditorTemplates/TestItemConfigEdit.cshtml", testItemConfigEdit);
-        //}
 
         public ActionResult ClientUserCheck(string userName = null, string passWord = null) 
         {

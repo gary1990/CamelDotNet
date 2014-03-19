@@ -450,7 +450,7 @@ namespace CamelDotNet.Lib
             return result;
         }
         //带消息提示的返回索引页面
-        public static void RMError(Controller controller, string msg = "权限范围内没有找到对应记录")
+        public static void RMError(Controller controller, string msg = "没有找到对应记录")
         {
             Msg message = new Msg { MsgType = MsgType.ERROR, Content = msg };
             controller.TempData["msg"] = message;
