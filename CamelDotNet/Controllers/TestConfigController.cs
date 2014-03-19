@@ -127,9 +127,46 @@ namespace CamelDotNet.Controllers
             };
         }
 
+        private bool CheckUser(string userName = null, string passWord = null) 
+        {
+            bool result = true;
+            if (userName != null && passWord != null)
+            {
+                var user = db.UserManager.Find(userName, passWord);
+                if (user == null)
+                {
+                    result = false;
+                }
+                else
+                {
+                    if (user.IsDeleted != false)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else 
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
         public ActionResult GetTestConfig(string userName = null, string passWord = null) 
         {
-            ClientUserCheck(userName, passWord);
+            if (!CheckUser(userName, passWord)) 
+            {
+                SingleResultXml result = new SingleResultXml()
+                {
+                    Message = "用户名或密码错误"
+                };
+
+                return new XmlResult<SingleResultXml>()
+                {
+                    Data = result
+                };
+            }
 
             List<TestConfig> testConfigs = db.TestConfig
                 .Where(a => a.IsDeleted == false)
