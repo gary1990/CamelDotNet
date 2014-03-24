@@ -32,6 +32,10 @@ namespace CamelDotNet.Models.DAL
         public DbSet<TestConfig> TestConfig { get; set; }
         public DbSet<TestItemConfig> TestItemConfig { get; set; }
         public DbSet<PerConfig> PerConfig { get; set; }
+        public DbSet<SerialNumber> SerialNumber { get; set; }
+        public DbSet<VnaRecord> VnaRecord { get; set; }
+        public DbSet<VnaTestItemRecord> VnaTestItemRecord { get; set; }
+        public DbSet<VnaTestItemPerRecord> VnaTestItemPerRecord { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -42,14 +46,23 @@ namespace CamelDotNet.Models.DAL
             modelBuilder.Entity<CamelDotNetRole>().ToTable("CamelRole");
 
             modelBuilder.Entity<CamelDotNetRole>().HasMany(a => a.Permissions).WithMany(b => b.CamelDotNetRoles).Map(c => c.MapLeftKey("CamelDotNetRoleId").MapRightKey("PermissionId").ToTable("CamelRolePermission"));
-            //modelBuilder.Entity<TestStation>().Map(a => a.)
         }
     }
 
-    public class CamelDotNetInitializer : DropCreateDatabaseIfModelChanges<CamelDotNetDBContext>
+    public class ProcedureCreation 
+    {
+        public static void Create(CamelDotNetDBContext context) 
+        {
+            context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Serialnumber ON TestEquipment(Serialnumber)");
+        }
+    }
+
+    public class CamelDotNetInitializer : DropCreateDatabaseAlways<CamelDotNetDBContext>
     {
         protected override void Seed(CamelDotNetDBContext db)
         {
+            ProcedureCreation.Create(db);
+
             var permissions = new List<Permission>() 
             { 
                 new Permission{Name = "主页", ActionName="Index", ControllerName = "Home"},
@@ -125,6 +138,9 @@ namespace CamelDotNet.Models.DAL
                 new Permission{Name = "客户-详情", ActionName="Details", ControllerName = "Client"},
 
                 new Permission{Name = "质量追溯", ActionName="Index", ControllerName = "QualityTracingHome"},
+                new Permission{Name = "VNA测试", ActionName="Index", ControllerName = "VnaTestRecord"},
+                new Permission{Name = "VNA测试-查询", ActionName="Get", ControllerName = "VnaTestRecord"},
+
                 new Permission{Name = "报表管理", ActionName="Index", ControllerName = "ReportHome"},
 
                 new Permission{Name = "系统管理", ActionName="Index", ControllerName = "SystemHome"},
@@ -230,7 +246,7 @@ namespace CamelDotNet.Models.DAL
                 new TestItem{Name = "驻波2", TestItemCategoryId = 1},
                 new TestItem{Name = "衰减", Formular = "A+B = C", TestItemCategoryId = 1},
                 new TestItem{Name = "时域阻抗", TestItemCategoryId = 1 },
-                new TestItem{Name = "外观不合格", TestItemCategoryId = 2 },
+                new TestItem{ Id = 20, Name = "外观不合格", TestItemCategoryId = 2 },
             };
             testItems.ForEach(a => db.TestItem.Add(a));
             db.SaveChanges();
@@ -269,6 +285,8 @@ namespace CamelDotNet.Models.DAL
             };
             perConfigs.ForEach(a => db.PerConfig.Add(a));
             db.SaveChanges();
+
+            
 
             var adminRole = new CamelDotNetRole{Name = "Admin"};
             foreach(var item in permissions)
@@ -311,6 +329,25 @@ namespace CamelDotNet.Models.DAL
             tester001.CamelDotNetRole = vnaTesterRole;
             UserManager.Create(tester001, password);
 
+            db.SaveChanges();
+
+
+            var serialNumbers = new List<SerialNumber>() 
+            {
+                new SerialNumber{ Number = "20140321001"},
+                new SerialNumber{ Number = "20140321002"},
+                new SerialNumber{ Number = "20140321003"},
+            };
+            serialNumbers.ForEach(a => db.SerialNumber.Add(a));
+            db.SaveChanges();
+
+            var vnaRecords = new List<VnaRecord>()
+            {
+                new VnaRecord{ SerialNumberId = 1, ProductTypeId = 1, CamelDotNetUserId = UserManager.FindByName("VNAT001").Id, TestTime = new DateTime(2014,03,20,16,28,20), InnerLength = 12.3M, OuterLength = 19.7M, OrderNumber = "123412", DrillingCrew = "34134", Temperature = 18M, TestEquipmentId = 1, TestStationId = 1, ReelNumber = "12343", Remark = "werqr", WorkGroup = "morning"},
+                new VnaRecord{ SerialNumberId = 2, ProductTypeId = 1, CamelDotNetUserId = UserManager.FindByName("VNAT001").Id, TestTime = new DateTime(2014,03,21,14,28,20), InnerLength = 11.3M, OuterLength = 18.7M, OrderNumber = "123512", DrillingCrew = "34124", Temperature = 18M, TestEquipmentId = 1, TestStationId = 1, ReelNumber = "12243", Remark = "werqr", WorkGroup = "morning"},
+                new VnaRecord{ SerialNumberId = 3, ProductTypeId = 2, CamelDotNetUserId = UserManager.FindByName("Admin").Id, TestTime = new DateTime(2014,03,21,14,28,20), InnerLength = 11.3M, OuterLength = 18.7M, OrderNumber = "123511", DrillingCrew = "341245", Temperature = 18M, TestEquipmentId = 2, TestStationId = 2, ReelNumber = "122435", Remark = "werqr", WorkGroup = "morning",TestResult = true},
+            };
+            vnaRecords.ForEach(a => db.VnaRecord.Add(a));
             db.SaveChanges();
 
             base.Seed(db);

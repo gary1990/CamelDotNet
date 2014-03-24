@@ -23,6 +23,10 @@ namespace CamelDotNet.Models.DAL
         private GenericRepository<TestConfig> testConfigRepository;
         private GenericRepository<TestItemConfig> testItemConfigRepository;
         private GenericRepository<PerConfig> perConfigRepository;
+        private GenericRepository<SerialNumber> serialNumberRepository;
+        private GenericRepository<VnaRecord> vnaRecordRepository;
+        private GenericRepository<VnaTestItemRecord> vnaTestItemRecordRepository;
+        private GenericRepository<VnaTestItemPerRecord> vnaTestItemPerRecordRepository;
         public GenericRepository<TestItem> TestItemRepository 
         {
             get 
@@ -173,6 +177,54 @@ namespace CamelDotNet.Models.DAL
                     this.perConfigRepository = new GenericRepository<PerConfig>(context);
                 }
                 return perConfigRepository;
+            }
+        }
+
+        public GenericRepository<SerialNumber> SerialNumberRepository
+        {
+            get
+            {
+                if (this.serialNumberRepository == null)
+                {
+                    this.serialNumberRepository = new GenericRepository<SerialNumber>(context);
+                }
+                return serialNumberRepository;
+            }
+        }
+
+        public GenericRepository<VnaRecord> VnaRecordRepository
+        {
+            get
+            {
+                if (this.vnaRecordRepository == null)
+                {
+                    this.vnaRecordRepository = new GenericRepository<VnaRecord>(context);
+                }
+                return vnaRecordRepository;
+            }
+        }
+
+        public GenericRepository<VnaTestItemRecord> VnaTestItemRecordRepository
+        {
+            get
+            {
+                if (this.vnaTestItemRecordRepository == null)
+                {
+                    this.vnaTestItemRecordRepository = new GenericRepository<VnaTestItemRecord>(context);
+                }
+                return vnaTestItemRecordRepository;
+            }
+        }
+
+        public GenericRepository<VnaTestItemPerRecord> VnaTestItemPerRecordRepository
+        {
+            get
+            {
+                if (this.vnaTestItemPerRecordRepository == null)
+                {
+                    this.vnaTestItemPerRecordRepository = new GenericRepository<VnaTestItemPerRecord>(context);
+                }
+                return vnaTestItemPerRecordRepository;
             }
         }
 

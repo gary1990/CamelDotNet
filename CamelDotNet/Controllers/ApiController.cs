@@ -14,7 +14,7 @@ namespace CamelDotNet.Controllers
     {
         private CamelDotNetDBContext db = new CamelDotNetDBContext();
 
-        public ActionResult TestStation() 
+        public ActionResult TestStation()
         {
             List<TestStation> result = db.TestStation.Where(a => a.IsDeleted == false).Include(a => a.Process).ToList();
             TestStationListXml testStaitonXmlList = new TestStationListXml();

@@ -5,6 +5,7 @@ using CamelDotNet.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -84,9 +85,9 @@ namespace CamelDotNet.Controllers
                     Common.RMOk(this, "记录:" + model + "新建成功!");
                     return Redirect(Url.Content(returnUrl));
                 }
-                catch (UpdateException e)
+                catch (DbUpdateException e)
                 {
-                    if (e.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                    if (e.InnerException.InnerException.Message.Contains("Cannot insert duplicate key row"))
                     {
                         ModelState.AddModelError(string.Empty, "相同名称的记录已存在,保存失败!");
                     }

@@ -12,6 +12,7 @@ using System.Web.Security;
 using Microsoft.AspNet.Identity;
 using CamelDotNet.Models.ViewModels;
 using CamelDotNet.Models;
+using System.Globalization;
 namespace CamelDotNet.Lib
 {
     public class Common<Model> where Model : class
@@ -88,10 +89,25 @@ namespace CamelDotNet.Lib
                 foreach (var prop in propertyNames)
                 {
                     left = Expression.PropertyOrField(left, prop);
+                    var type = left.Type.Name;
 
-                    if (prop.Contains("Id"))
+                    if (type == "Int32")
                     {
                         right = Expression.Constant(Int32.Parse(target));
+                    }
+                    else if(type == "DateTime")
+                    {
+                        DateTime targetParse;
+                        if (!DateTime.TryParseExact(target, "yyyyMMdd hhmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out targetParse)) 
+                        {
+                            targetParse = DateTime.Now;
+                        }
+                        right = Expression.Constant(targetParse);
+                    }
+                    else if (type == "Boolean")
+                    {
+                        Boolean targetBoolean = Convert.ToBoolean(target);
+                        right = Expression.Constant(targetBoolean);
                     }
                     else
                     {
@@ -228,6 +244,46 @@ namespace CamelDotNet.Lib
         }
     }
 
+    public class VnaRecordCommon<Model> where Model : VnaRecord
+    {
+        public static IQueryable<Model> GetQuery(UnitOfWork db, bool includeSoftDeleted = false, string filter = null, bool noTrack = false)
+        {
+            IQueryable<Model> result;
+
+            var rep = (GenericRepository<Model>)(typeof(UnitOfWork).GetProperty(typeof(Model).Name + "Repository").GetValue(db));
+
+            result = rep.Get(noTrack);
+
+            result = result.Where(a => a.CamelDotNetUser.IsDeleted == false && a.ProductType.IsDeleted == false && a.TestEquipment.IsDeleted == false && 
+                a.TestStation.IsDeleted == false);
+            
+            //filter
+            if (filter != null)
+            {
+                Dictionary<string, string> filterDic = new Dictionary<string, string>();
+                if (!string.IsNullOrWhiteSpace(filter))
+                {
+                    var conditions = filter.Substring(0, filter.Length - 1).Split(';');
+                    foreach (var item in conditions)
+                    {
+                        var tmp = item.Split(':');
+                        if (!string.IsNullOrWhiteSpace(tmp[1]))
+                        {
+                            filterDic.Add(tmp[0], tmp[1]);
+                        }
+                    }
+                }
+
+                foreach (var item in filterDic)
+                {
+                    result = Common<Model>.DynamicFilter(result, item.Key, item.Value);
+                }
+            }
+            //end filter
+            return result;
+        }
+    }
+
     public class BaseCommon<Model> where Model : BaseModel
     {
         //query and list
@@ -306,6 +362,57 @@ namespace CamelDotNet.Lib
 
     public class Common
     {
+        public static List<CamelDotNetUser> GetCamelDotNetUserList(string keyWord = null)
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetCamelDotNetUserQuery(db, keyWord, true).ToList();
+            }
+        }
+        public static IQueryable<CamelDotNetUser> GetCamelDotNetUserQuery(UnitOfWork db, string keyWord = null, bool noTrack = false)
+        {
+            IQueryable<CamelDotNetUser> result;
+
+            var rep = db.CamelDotNetUserRepository;
+
+            result = rep.Get(noTrack);
+
+            result = result.Where(a => a.IsDeleted == false);
+
+            if (!String.IsNullOrWhiteSpace(keyWord))
+            {
+                keyWord = keyWord.ToUpper();
+                result = result.Where(a => a.UserName.ToUpper().Contains(keyWord));
+            }
+
+            return result;
+        }
+        public static List<TestStation> GetTestStationList(string keyWord = null)
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetTestStationQuery(db, keyWord, true).ToList();
+            }
+        }
+        public static IQueryable<TestStation> GetTestStationQuery(UnitOfWork db, string keyWord = null, bool noTrack = false)
+        {
+            IQueryable<TestStation> result;
+
+            var rep = db.TestStationRepository;
+
+            result = rep.Get(noTrack);
+
+            result = result.Where(a => a.IsDeleted == false);
+
+            if (!String.IsNullOrWhiteSpace(keyWord))
+            {
+                keyWord = keyWord.ToUpper();
+                result = result.Where(a => a.Name.ToUpper().Contains(keyWord));
+            }
+
+            return result;
+        }
+
         public static List<TestItem> GetTestItemList(string keyWord = null)
         {
             using (var db = new UnitOfWork())

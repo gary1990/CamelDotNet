@@ -1,0 +1,86 @@
+﻿@Html.IndexPageInit()
+<h2>@ViewBag.Name</h2>
+@using (Ajax.BeginForm(null, null, (AjaxOptions)ViewBag.AjaxOpts, new { id = "searchForm" }))
+{
+    <table>
+        <tr>
+            <td>
+                <span class="searchLabel">测试时间</span>
+            </td>
+            <td>
+                <span class="searchLabel">测试站</span>
+            </td>
+            <td>
+                <span class="searchLabel">机台</span>
+            </td>
+            <td>
+                <span class="searchLabel">测试员</span>
+            </td>
+            <td>
+                <span class="searchLabel">产品型号</span>
+            </td>
+            <td>
+                <span class="searchLabel">不合格</span>
+            </td>
+            <td>
+                <span class="searchLabel">盘号</span>
+            </td>
+            <td>
+                <span class="searchLabel">工单号</span>
+            </td>
+            <td>
+                <span class="searchLabel">序列号</span>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            @Html.Hidden("returnRoot", (string)ViewBag.ReturnRoot)
+            @Html.Hidden("actionAjax", (string)ViewBag.Action)
+            @Html.Hidden("filter")
+            <td>
+                @Html.TextBox("TestTime@>=", null, new { @class = "filter", style = "width: 100px;" })
+                至
+                @Html.TextBox("TestTime@<=", null, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.DropDownList("TestStationId@=", new SelectList(Common.GetTestStationList(), "Id", "Name"), String.Empty, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.TextBox("DrillingCrew@%", null, new { @class = "filter", style = "width: 100px;"})
+            </td>
+            <td>
+                @Html.DropDownList("CamelDotNetUserId@=", new SelectList(Common.GetCamelDotNetUserList(), "Id", "UserName"), String.Empty, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.DropDownList("ProductTypeId@=", new SelectList(Common.GetProductTypeList(), "Id", "Name"), String.Empty, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.CheckBox("TestResult@=", false, new { @class = "filter"})
+            </td>
+            <td>
+                @Html.TextBox("ReelNumber@%", null, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.TextBox("OrderNumber@%", null, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.TextBox("SerialNumber.Number@%", null, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
+                <button type="submit">查询</button>
+            </td>
+        </tr>
+    </table>
+}
+<div id="AjaxBody">
+    @Html.Action((string)ViewBag.Action, (RouteValueDictionary)(ViewBag.RV))
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/cw")
+    <script>
+        $(document).ready(function () {
+            $("#searchForm").submit(function (e) { setFilter(); });
+        });
+    </script>
+}

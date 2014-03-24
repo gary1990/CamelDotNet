@@ -1,0 +1,102 @@
+﻿@model IEnumerable<VnaRecord>
+@{
+    string returnUrl = Url.Action((((RouteValueDictionary)(ViewBag.RV))["returnRoot"]).ToString(), (RouteValueDictionary)(ViewBag.RV));
+}
+
+@Html.Partial("PageLink")
+
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.SerialNumberId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductTypeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CamelDotNetUserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestEquipmentId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestStationId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DrillingCrew)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReelNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestResult)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <div class="groupOperation">
+                        @{
+                            using (Html.BeginForm("Detail", (string)ViewBag.Controller))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("id", item.Id)
+                                @Html.Hidden("returnUrl", returnUrl)
+                                <input type="submit" value="详情" />
+                            }
+                        }
+                    </div>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SerialNumber.Number)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductType.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TestTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CamelDotNetUser.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TestEquipment.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TestStation.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DrillingCrew)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReelNumber)
+                </td>
+                <td>
+                    @if(!item.TestResult)
+                    {
+                        <span style="color:green;">合格</span>
+                    }
+                    else
+                    {
+                        <span style="color:red;">不合格</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

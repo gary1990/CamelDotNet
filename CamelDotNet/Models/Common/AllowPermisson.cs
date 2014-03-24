@@ -13,6 +13,7 @@ namespace CamelDotNet.Models.Common
             {
                 "TestConfig_GetTestConfig",
                 "Api_TestStation",
+                "VnaTestRecord_UploadVnaRecord",
             };
         }
         public List<string> Allowed { get; set; }

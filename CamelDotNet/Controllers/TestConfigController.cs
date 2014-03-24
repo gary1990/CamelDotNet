@@ -75,55 +75,34 @@ namespace CamelDotNet.Controllers
 
         public ActionResult ClientUserCheck(string userName = null, string passWord = null) 
         {
+            SingleResultXml result = new SingleResultXml()
+            {
+                Message = "true"
+            };
+
             if (userName == null || passWord == null)
             {
-                SingleResultXml result = new SingleResultXml()
-                {
-                    Message = "用户名或密码不能为空"
-                };
-
-                return new XmlResult<SingleResultXml>()
-                {
-                    Data = result
-                };
+                result.Message = "用户名或密码不能为空";
             }
             else
             {
                 var user = db.UserManager.Find(userName, passWord);
                 if (user == null)
                 {
-                    SingleResultXml result = new SingleResultXml()
-                    {
-                        Message = "用户名或密码错误"
-                    };
-
-                    return new XmlResult<SingleResultXml>()
-                    {
-                        Data = result
-                    };
+                    result.Message = "用户名或密码错误";
                 }
                 else
                 {
                     if (user.IsDeleted != false)
                     {
-                        SingleResultXml result = new SingleResultXml()
-                        {
-                            Message = "该用户被禁用"
-                        };
-
-                        return new XmlResult<SingleResultXml>()
-                        {
-                            Data = result
-                        };
+                        result.Message = "该用户被禁用";
                     }
                 }
             }
 
-            SingleResultXml sucessResult = new SingleResultXml();
-
             return new XmlResult<SingleResultXml>()
             {
-                Data = sucessResult
+                Data = result
             };
         }
 
@@ -153,13 +132,49 @@ namespace CamelDotNet.Controllers
             return result;
         }
 
-        public ActionResult GetTestConfig(string userName = null, string passWord = null) 
+        private bool CheckEquipment(string equipmentSn)
+        {
+            bool result = true;
+            if (equipmentSn == null)
+            {
+                result = false;
+            }
+            else 
+            {
+                equipmentSn = equipmentSn.ToString().Trim();
+                if (equipmentSn != null && equipmentSn != "")
+                {
+                    var equipment = db.TestEquipment.Where(a => a.Serialnumber == equipmentSn && a.IsDeleted == false).SingleOrDefault();
+                    if (equipment == null)
+                    {
+                        result = false;
+                    }
+                }
+            } 
+
+            return result;
+        }
+
+        public ActionResult GetTestConfig(string userName = null, string passWord = null, string equipmentSn = null) 
         {
             if (!CheckUser(userName, passWord)) 
             {
                 SingleResultXml result = new SingleResultXml()
                 {
                     Message = "用户名或密码错误"
+                };
+
+                return new XmlResult<SingleResultXml>()
+                {
+                    Data = result
+                };
+            }
+
+            if(!CheckEquipment(equipmentSn))
+            {
+                SingleResultXml result = new SingleResultXml()
+                {
+                    Message = "仪器验证失败"
                 };
 
                 return new XmlResult<SingleResultXml>()
