@@ -15,11 +15,11 @@ namespace CamelDotNet.Models
         public int Id { get; set; }
         public int VnaTestItemRecordId { get; set; }
         [DisplayName("频点")]
-        public decimal? XValue { get; set; }
+        public string XValue { get; set; }
         [DisplayName("测试值")]
-        public decimal? YValue { get; set; }
+        public string YValue { get; set; }
         [DisplayName("计算值")]
-        public decimal? RValue { get; set; }
+        public string RValue { get; set; }
         [DisplayName("测试结果")]
         public bool TestitemPerResult { get; set; }
         public virtual VnaTestItemRecord VnaTestItemRecord { get; set; }

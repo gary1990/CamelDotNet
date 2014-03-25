@@ -14,6 +14,7 @@ namespace CamelDotNet.Models
             VnaTestItemRecords = new List<VnaTestItemRecord> { };
             TestResult = false;
             BarCodeUsed = false;
+            NoStatistics = false;
         }
         public int Id { get; set; }
         [Required]
@@ -56,6 +57,8 @@ namespace CamelDotNet.Models
         public decimal InnerLength { get; set; }
         [DisplayName("外端计米")]
         public decimal OuterLength { get; set; }
+        [DisplayName("不统计")]
+        public bool NoStatistics { get; set; }
         [DisplayName("备注")]
         public string Remark { get; set; }
         [DisplayName("条码使用与否")]

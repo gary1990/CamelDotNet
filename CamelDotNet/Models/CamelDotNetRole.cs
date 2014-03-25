@@ -11,7 +11,7 @@ namespace CamelDotNet.Models
 {
     public class CamelDotNetRole : BaseModel, IEditable<CamelDotNetRole>
     {
-        public CamelDotNetRole() 
+        public CamelDotNetRole()
         {
             this.Permissions = new List<Permission>() { };
         }

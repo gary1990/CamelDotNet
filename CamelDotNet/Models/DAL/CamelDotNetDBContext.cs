@@ -53,6 +53,7 @@ namespace CamelDotNet.Models.DAL
     {
         public static void Create(CamelDotNetDBContext context) 
         {
+            context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Name ON ProductType(Name)");
             context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Serialnumber ON TestEquipment(Serialnumber)");
         }
     }
@@ -63,7 +64,7 @@ namespace CamelDotNet.Models.DAL
         {
             ProcedureCreation.Create(db);
 
-            var permissions = new List<Permission>() 
+            var permissions = new List<Permission>()
             { 
                 new Permission{Name = "主页", ActionName="Index", ControllerName = "Home"},
                 new Permission{Name = "测试管理", ActionName="Index", ControllerName = "TestManageHome"},
@@ -195,6 +196,7 @@ namespace CamelDotNet.Models.DAL
                 new TestStation{Name = "TS2",ProcessId = db.Process.Where(a => a.Name == "绝缘").SingleOrDefault().Id},
                 new TestStation{Name = "TS3",ProcessId = db.Process.Where(a => a.Name == "护套").SingleOrDefault().Id},
                 new TestStation{Name = "TS11",ProcessId = db.Process.Where(a => a.Name == "焊接").SingleOrDefault().Id},
+                new TestStation{Name = "teststation2",ProcessId = db.Process.Where(a => a.Name == "焊接").SingleOrDefault().Id},
             };
             testStations.ForEach(a => db.TestStation.Add(a));
             db.SaveChanges();
@@ -204,7 +206,7 @@ namespace CamelDotNet.Models.DAL
                 new TestEquipment{Name = "TE1", Serialnumber = "MY-123456"},
                 new TestEquipment{Name = "TE2", Serialnumber = "MY-908097"},
                 new TestEquipment{Name = "TE3", Serialnumber = "MY-668678"},
-                new TestEquipment{Name = "TE4", Serialnumber = "MY-515767"},
+                new TestEquipment{Name = "TE4", Serialnumber = "MY42100275"},
             };
             testEquipments.ForEach(a => db.TestEquipment.Add(a));
             db.SaveChanges();
@@ -216,6 +218,7 @@ namespace CamelDotNet.Models.DAL
                 new ProductType{Name = "PT3", IsDeleted = true},
                 new ProductType{Name = "PT11"},
                 new ProductType{Name = "Prodctype1"},
+                new ProductType{Name = "producttype2"},
             };
             productTypes.ForEach(a => db.ProductType.Add(a));
             db.SaveChanges();
@@ -242,11 +245,76 @@ namespace CamelDotNet.Models.DAL
 
             var testItems = new List<TestItem>()
             {
+                new TestItem{Name = "偏心", TestItemCategoryId = 2 },
+                new TestItem{Name = "内导体划伤", TestItemCategoryId = 2 },
+                new TestItem{Name = "外径不稳", TestItemCategoryId = 2 },
+                new TestItem{Name = "粘附力", TestItemCategoryId = 2 },
+                new TestItem{Name = "同心度", TestItemCategoryId = 2 },
+                new TestItem{Name = "电容不合格", TestItemCategoryId = 2 },
+                new TestItem{Name = "芯线焦料", TestItemCategoryId = 2 },
+                new TestItem{Name = "泡孔", TestItemCategoryId = 2 },
+                new TestItem{Name = "焊接性能不合格退下", TestItemCategoryId = 2 },
+                new TestItem{Name = "凹陷", TestItemCategoryId = 2 },
+                new TestItem{Name = "轧纹轴承爆裂", TestItemCategoryId = 2 },
+                new TestItem{Name = "外径", TestItemCategoryId = 2 },
+                new TestItem{Name = "有小洞", TestItemCategoryId = 2 },
+                new TestItem{Name = "撞伤", TestItemCategoryId = 2 },
+                new TestItem{Name = "内端进水", TestItemCategoryId = 2 },
+                new TestItem{Name = "节距", TestItemCategoryId = 2 },
+                new TestItem{Name = "图像异常", TestItemCategoryId = 2 },
+                new TestItem{Name = "划痕/划伤", TestItemCategoryId = 2 },
+                new TestItem{Name = "起车线", TestItemCategoryId = 2 },
+                new TestItem{Name = "轧开", TestItemCategoryId = 2 },
+                new TestItem{Name = "粘附物较多", TestItemCategoryId = 2 },
+                new TestItem{Name = "芯线竹节", TestItemCategoryId = 2 },
+                new TestItem{Name = "绝缘芯线偏心", TestItemCategoryId = 2 },
+                new TestItem{Name = "段长不足", TestItemCategoryId = 2 },
+                new TestItem{Name = "铜带用错0.2当成0.17", TestItemCategoryId = 2 },
+                new TestItem{Name = "内端打折", TestItemCategoryId = 2 },
+                new TestItem{Name = "盘具用错", TestItemCategoryId = 2 },
+                new TestItem{Name = "螺纹不清", TestItemCategoryId = 2 },
+                new TestItem{Name = "排线乱", TestItemCategoryId = 2 },
+                new TestItem{Name = "焦料", TestItemCategoryId = 2 },
+                new TestItem{Name = "盘具被铲坏", TestItemCategoryId = 2 },
+                new TestItem{Name = "盘具中心无铁皮", TestItemCategoryId = 2 },
+                new TestItem{Name = "小洞", TestItemCategoryId = 2 },
+                new TestItem{Name = "作业卡书写错误", TestItemCategoryId = 2 },
+                new TestItem{Name = "偏心", TestItemCategoryId = 2 },
+                new TestItem{Name = "刮伤、划痕", TestItemCategoryId = 2 },
+                new TestItem{Name = "打印间隔", TestItemCategoryId = 2 },
+                new TestItem{Name = "印字", TestItemCategoryId = 2 },
+                new TestItem{Name = "23外导体挤护成22", TestItemCategoryId = 2 },
+                new TestItem{Name = "铜管用错", TestItemCategoryId = 2 },
+                new TestItem{Name = "混料", TestItemCategoryId = 2 },
+                new TestItem{Name = "绝缘电容不合格", TestItemCategoryId = 2 },
+                new TestItem{Name = "外导体开焊", TestItemCategoryId = 2 },
+                new TestItem{Name = "外导体刮伤", TestItemCategoryId = 2 },
+                new TestItem{Name = "外导体凹陷", TestItemCategoryId = 2 },
+                new TestItem{Name = "线压扁", TestItemCategoryId = 2 },
+                new TestItem{Name = "线不整圆", TestItemCategoryId = 2 },
+                new TestItem{Name = "竹节", TestItemCategoryId = 2 },
+                new TestItem{Name = "护套破损", TestItemCategoryId = 2 },
+                new TestItem{Name = "火花机报警", TestItemCategoryId = 2 },
+                new TestItem{Name = "抗拉强度", TestItemCategoryId = 2 },
+                new TestItem{Name = "短路", TestItemCategoryId = 2 },
+                new TestItem{Name = "脱胶", TestItemCategoryId = 2 },
+                new TestItem{Name = "外护不良、毛糙", TestItemCategoryId = 2 },
+                new TestItem{Name = "段长不合格", TestItemCategoryId = 2 },
+                new TestItem{Name = "外护塑化不良", TestItemCategoryId = 2 },
+                new TestItem{Name = "气孔", TestItemCategoryId = 2 },
+                new TestItem{Name = "间隔性有水", TestItemCategoryId = 2 },
+                new TestItem{Name = "伸长率", TestItemCategoryId = 2 },
+                new TestItem{Name = "水印", TestItemCategoryId = 2 },
+                new TestItem{Name = "氧化", TestItemCategoryId = 2 },
+                new TestItem{Name = "包", TestItemCategoryId = 2 },
+                new TestItem{Name = "击穿", TestItemCategoryId = 2 },
+                new TestItem{Name = "备注", TestItemCategoryId = 2 },
                 new TestItem{Name = "驻波1", TestItemCategoryId = 1},
                 new TestItem{Name = "驻波2", TestItemCategoryId = 1},
                 new TestItem{Name = "衰减", Formular = "A+B = C", TestItemCategoryId = 1},
                 new TestItem{Name = "时域阻抗", TestItemCategoryId = 1 },
-                new TestItem{ Id = 20, Name = "外观不合格", TestItemCategoryId = 2 },
+                new TestItem{Name = "TDR电长度", TestItemCategoryId = 1 },
+                new TestItem{Name = "回波损耗1", TestItemCategoryId = 1 },
             };
             testItems.ForEach(a => db.TestItem.Add(a));
             db.SaveChanges();
@@ -320,7 +388,7 @@ namespace CamelDotNet.Models.DAL
             UserManager.Create(userAdmin, password);
 
             name = "VNAT001";
-            jobNumber = "GC1000";
+            jobNumber = "no004";
             password = "123456";
 
             var tester001 = new CamelDotNetUser();
