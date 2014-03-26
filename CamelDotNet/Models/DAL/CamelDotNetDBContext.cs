@@ -58,7 +58,7 @@ namespace CamelDotNet.Models.DAL
         }
     }
 
-    public class CamelDotNetInitializer : DropCreateDatabaseAlways<CamelDotNetDBContext>
+    public class CamelDotNetInitializer : DropCreateDatabaseIfModelChanges<CamelDotNetDBContext>
     {
         protected override void Seed(CamelDotNetDBContext db)
         {
@@ -141,6 +141,7 @@ namespace CamelDotNet.Models.DAL
                 new Permission{Name = "质量追溯", ActionName="Index", ControllerName = "QualityTracingHome"},
                 new Permission{Name = "VNA测试", ActionName="Index", ControllerName = "VnaTestRecord"},
                 new Permission{Name = "VNA测试-查询", ActionName="Get", ControllerName = "VnaTestRecord"},
+                new Permission{Name = "VNA测试-详情", ActionName="Details", ControllerName = "VnaTestRecord"},
 
                 new Permission{Name = "报表管理", ActionName="Index", ControllerName = "ReportHome"},
 
@@ -336,7 +337,7 @@ namespace CamelDotNet.Models.DAL
 
             var testItemConfigs = new List<TestItemConfig>()
             {
-                new TestItemConfig{ TestConfigId = 1, TestItemId = 1, VersionDate = DateTime.Now},
+                new TestItemConfig{ TestConfigId = 1, TestItemId = db.TestItem.Where(a => a.Name == "驻波1").SingleOrDefault().Id, VersionDate = DateTime.Now},
                 //new TestItemConfig{ TestConfigId = 1, TestItemId = 2, VersionDate = DateTime.Now},
             };
             testItemConfigs.ForEach(a => db.TestItemConfig.Add(a));

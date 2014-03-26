@@ -413,6 +413,32 @@ namespace CamelDotNet.Lib
             return result;
         }
 
+        public static List<TestItem> GetTestItemElecList(string keyWord = null)
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetTestItemElecQuery(db, keyWord, true).ToList();
+            }
+        }
+        public static IQueryable<TestItem> GetTestItemElecQuery(UnitOfWork db, string keyWord = null, bool noTrack = false)
+        {
+            IQueryable<TestItem> result;
+
+            var rep = db.TestItemRepository;
+
+            result = rep.Get(noTrack);
+
+            result = result.Where(a => a.IsDeleted == false && a.TestItemCategory.Name == "电器性能");
+
+            if (!String.IsNullOrWhiteSpace(keyWord))
+            {
+                keyWord = keyWord.ToUpper();
+                result = result.Where(a => a.Name.ToUpper().Contains(keyWord));
+            }
+
+            return result;
+        }
+
         public static List<TestItem> GetTestItemList(string keyWord = null)
         {
             using (var db = new UnitOfWork())

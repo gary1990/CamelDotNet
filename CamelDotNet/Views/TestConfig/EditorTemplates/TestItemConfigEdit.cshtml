@@ -19,7 +19,7 @@
             @Html.LabelFor(model => model.TestItemId)
         </div>
         <div class="editor-field">
-            @Html.DropDownListFor(model => model.TestItemId, new SelectList(Common.GetTestItemList(), "Id", "Name"), String.Empty)
+            @Html.DropDownListFor(model => model.TestItemId, new SelectList(Common.GetTestItemElecList(), "Id", "Name"), String.Empty)
             @Html.ValidationMessageFor(model => model.TestItemId)
         </div>
     </div>

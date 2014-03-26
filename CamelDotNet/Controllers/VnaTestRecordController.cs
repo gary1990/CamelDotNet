@@ -27,7 +27,7 @@ namespace CamelDotNet.Controllers
             ViewBag.path = path;
             ViewBag.Name = "VNA测试";
             ViewBag.Title = "VNA测试";
-            ViewBag.Controller = "VnaRecord";  
+            ViewBag.Controller = "VnaTestRecord";  
         }
 
         public ActionResult UploadVnaRecord()
@@ -409,7 +409,7 @@ namespace CamelDotNet.Controllers
                                 {
                                     testItemResult = true;
                                 }
-                                var imagePath = uploadTime + slash + testItemName + "-img.png";
+                                var imagePath = uploadTime + slash + fileNameWithoutEx + slash + testItemName + "-img.png";
                                 int testItemRecordId;
                                 try 
                                 {

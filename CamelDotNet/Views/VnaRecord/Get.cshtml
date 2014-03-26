@@ -49,7 +49,7 @@
                 <td>
                     <div class="groupOperation">
                         @{
-                            using (Html.BeginForm("Detail", (string)ViewBag.Controller))
+                            using (Html.BeginForm("Details", (string)ViewBag.Controller,FormMethod.Post,new { target = "_blank" }))
                             {
                                 @Html.AntiForgeryToken()
                                 @Html.Hidden("id", item.Id)

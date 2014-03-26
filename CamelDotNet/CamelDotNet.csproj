@@ -770,6 +770,7 @@
     <Content Include="Views\QualityTracingHome\Index.cshtml" />
     <Content Include="Views\VnaRecord\Index.cshtml" />
     <Content Include="Views\VnaRecord\Get.cshtml" />
+    <Content Include="Views\VnaRecord\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

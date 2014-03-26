@@ -1,0 +1,121 @@
+﻿@model VnaRecord
+
+@{
+    ViewBag.Title = "详情";
+}
+
+<h2>@ViewBag.Name:@ViewBag.Title</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductTypeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SerialNumberId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReelNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestResult)
+            </th>
+            <th>
+                制造长度
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DrillingCrew)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CamelDotNetUserId)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @Html.DisplayFor(model => model.ProductType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.SerialNumber.Number)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.ReelNumber)
+            </td>
+            <td>
+                @{
+                    if(Model.TestResult)
+                    {
+                        <span>不合格</span>
+                    }
+                    else 
+                    {
+                        <span>合格</span>
+                    }
+                }
+            </td>
+            <td>
+                @Math.Abs(Model.InnerLength-Model.OuterLength)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.TestTime)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.DrillingCrew)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.CamelDotNetUser.UserName)
+            </td>
+        </tr>
+    </tbody>
+</table>
+@{   
+    int i = 1;
+    foreach(var item in Model.VnaTestItemRecords)
+    {
+        <div>测试项 @i:@item.TestItem.Name</div>
+        if(item.VnaTestItemPerRecords.Count() != 0)
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>频点</th>
+                        <th>测试值</th>
+                        <th>计算值</th>
+                        <th>结果</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var perItem in item.VnaTestItemPerRecords)
+                    {
+                        <tr>
+                            <td>@perItem.XValue</td>
+                            <td>@perItem.YValue</td>
+                            <td>@perItem.RValue</td>
+                            <td>
+                                @if (perItem.TestitemPerResult)
+                                {
+                                    <span>不合格</span>
+                                }
+                                else 
+                                {
+                                    <span>合格</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <img src="@Url.Content("~/Content/UploadedFolder/VnaRecord/" + item.ImagePath)" />
+        }
+        i++;
+        <hr/>
+    }
+}
+<p>
+    <a href="@Url.Content((string)ViewBag.ReturnUrl)">返回</a>
+</p>

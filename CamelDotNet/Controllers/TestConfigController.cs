@@ -122,6 +122,13 @@ namespace CamelDotNet.Controllers
                     {
                         return false;
                     }
+                    else 
+                    {
+                        if (user.CamelDotNetRole.Name != "VnaTester")
+                        {
+                            result = false;
+                        }
+                    }
                 }
             }
             else 
