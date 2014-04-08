@@ -93,11 +93,11 @@ namespace CamelDotNet.Models.Common
         public int? Trace { get; set; }
         public decimal StartF { get; set; }
         public decimal StopF { get; set; }
-        public decimal ScanPoint { get; set; }
+        public int? ScanPoint { get; set; }
         public decimal? ScanTime { get; set; }
         public decimal? TransportSpeed { get; set; }
         public decimal? FreqPoint { get; set; }
-        public decimal LimitLine { get; set; }
+        public decimal? LimitLine { get; set; }
     }
 
     [XmlRoot("Result")]

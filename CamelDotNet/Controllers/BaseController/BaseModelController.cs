@@ -23,7 +23,7 @@ namespace CamelDotNet.Controllers
         public string ViewPathBase = "BaseModel";
         public string ViewPath2 = "/";
 
-        public BaseModelController() 
+        public BaseModelController()
         {
             UW = new UnitOfWork();
             GR = (GenericRepository<Model>)(typeof(UnitOfWork).GetProperty(typeof(Model).Name + "Repository").GetValue(UW));
@@ -154,6 +154,17 @@ namespace CamelDotNet.Controllers
                     else
                     {
                         ModelState.AddModelError(string.Empty, "编辑记录失败!" + e.ToString());
+                    }
+                }
+                catch (DbUpdateException e)
+                {
+                    if (e.InnerException.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                    {
+                        ModelState.AddModelError(string.Empty, "相同名称的记录已存在,保存失败!");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "新建记录失败!" + e.ToString());
                     }
                 }
                 catch (Exception e)

@@ -62,23 +62,9 @@ namespace CamelDotNet.Controllers
         [ValidateAntiForgeryToken]
         public virtual ActionResult Copy(int id, string returnUrl = "Index")
         {
-            var result = TestConfigCommon<Model>.GetQuery(UW).Where(a => a.Id == id).SingleOrDefault();
-            if (result == null)
-            {
-                Common.RMError(this);
-                return Redirect(Url.Content(returnUrl));
-            }
-
             ViewBag.ReturnUrl = returnUrl;
+            ViewBag.Title = "复制需编辑";
 
-            return View(ViewPath1 + ViewPath + ViewPath2 + "Copy.cshtml", result);
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public virtual ActionResult CopySave(int id, string returnUrl = "Index")
-        {
             var result = UW.context.TestConfig.Where(a => a.Id == id).Include(a => a.TestItemConfigs.Select(b => b.PerConfigs)).SingleOrDefault();
             if (result == null)
             {
@@ -90,10 +76,12 @@ namespace CamelDotNet.Controllers
                 TestConfig newItem = new TestConfig();
                 newItem.Copy(result);
                 newItem = CreateNewTestConfig(newItem, result);
-                UW.context.TestConfig.Add(newItem);
-                UW.CamelSave();
-                Common.RMWarn(this, "复制成功,但方案中存在相同记录，请务必编辑");
-                return this.Edit(newItem.Id, returnUrl);
+
+                Mapper.CreateMap<TestConfig, TestConfigEdit>();
+                TestConfigEdit testConfigEdit = new TestConfigEdit();
+                Mapper.Map(newItem, testConfigEdit);
+
+                return View(ViewPath1 + ViewPath + ViewPath2 + "CreateOrCopy.cshtml", testConfigEdit);
             }
             catch (Exception e)
             {
@@ -101,6 +89,105 @@ namespace CamelDotNet.Controllers
             }
 
             return Redirect(Url.Content(returnUrl));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual ActionResult CreateOrCopySave(TestConfigEdit testConfigEidt, string returnUrl = "Index", string title = "编辑")
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            ViewBag.Title = title;
+
+            var oldRecord = TestConfigCommon<Model>.GetQuery(UW).Where(a => a.Id != testConfigEidt.Id && a.ClientId == testConfigEidt.ClientId && a.ProductTypeId == testConfigEidt.ProductTypeId && a.IsDeleted == false).SingleOrDefault();
+            if (oldRecord != null)
+            {
+                ModelState.AddModelError(string.Empty, "存在客户、产品型号相同的记录");
+                return View(ViewPath1 + ViewPath + ViewPath2 + "CreateOrCopy.cshtml", testConfigEidt);
+            }
+
+            if (!(testConfigEidt.TestItemConfigEdits == null || testConfigEidt.TestItemConfigEdits.Where(a => a.Delete == false).Count() == 0))
+            {
+                using (var scope = new TransactionScope())
+                {
+                    try
+                    {
+                        TestConfig model = new TestConfig() 
+                        {
+                            ClientId = testConfigEidt.ClientId,
+                            ProductTypeId = testConfigEidt.ProductTypeId
+                        };
+                        UW.context.TestConfig.Add(model);
+                        UW.CamelSave();
+
+                        foreach (var testItemConfigEdit in testConfigEidt.TestItemConfigEdits)
+                        {
+                            if (testItemConfigEdit.Delete == true)//delete
+                            {
+                                //do nothing
+                            }
+                            else //do not delete
+                            {
+                                if (!(testItemConfigEdit.PerConfigEdits == null || testItemConfigEdit.PerConfigEdits.Where(a => a.Delete == false).Count() == 0))
+                                {
+                                    TestItemConfig testItemConfigAdd = new TestItemConfig
+                                    {
+                                        TestConfigId = model.Id,
+                                        TestItemId = testItemConfigEdit.TestItemId,
+                                        VersionDate = DateTime.Now
+                                    };
+                                    UW.context.TestItemConfig.Add(testItemConfigAdd);
+                                    UW.CamelSave();
+
+                                    foreach (var perconfigAdd in testItemConfigEdit.PerConfigEdits)
+                                    {
+                                        if (perconfigAdd.Delete != true)
+                                        {
+                                            PerConfig perConfigAdd = new PerConfig
+                                            {
+                                                Channel = perconfigAdd.Channel,
+                                                Trace = perconfigAdd.Trace,
+                                                StartF = perconfigAdd.StartF,
+                                                StartUnitId = perconfigAdd.StartUnitId,
+                                                StopF = perconfigAdd.StopF,
+                                                StopUnitId = perconfigAdd.StopUnitId,
+                                                ScanPoint = perconfigAdd.ScanPoint,
+                                                ScanTime = perconfigAdd.ScanTime,
+                                                TransportSpeed = perconfigAdd.TransportSpeed,
+                                                FreqPoint = perconfigAdd.FreqPoint,
+                                                LimitLine = perconfigAdd.LimitLine,
+                                                TestItemConfigId = testItemConfigAdd.Id
+                                            };
+
+                                            UW.context.PerConfig.Add(perConfigAdd);
+                                        }
+                                    }   
+                                }
+                                else
+                                {
+                                    ModelState.AddModelError(string.Empty, "当前测试项的指标不能全空");
+                                    return View(ViewPath1 + ViewPath + ViewPath2 + "CreateOrCopy.cshtml", testConfigEidt);
+                                }
+                            }
+                        }
+
+                        UW.CamelSave();
+                    }
+                    catch (DataException)
+                    {
+                        ModelState.AddModelError(string.Empty, "记录更新失败");
+                        return View(ViewPath1 + ViewPath + ViewPath2 + "CreateOrCopy.cshtml", testConfigEidt);
+                    }
+                    scope.Complete();
+                }
+
+                Common.RMOk(this, "保存成功!");
+                return Redirect(Url.Content(returnUrl));
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "所选客户当前型号产品的测试不能全空");
+                return View(ViewPath1 + ViewPath + ViewPath2 + "CreateOrCopy.cshtml", testConfigEidt);
+            }
         }
 
         [HttpPost]
@@ -116,6 +203,8 @@ namespace CamelDotNet.Controllers
         public virtual ActionResult CreateSave(TestConfig model, string returnUrl = "Index")
         {
             ViewBag.ReturnUrl = returnUrl;
+            ViewBag.Title = "新增需编辑";
+
             if (ModelState.IsValid)
             {
                 try
@@ -126,17 +215,13 @@ namespace CamelDotNet.Controllers
                     {
                         model = CreateNewTestConfig(model, result);
                         UW.context.TestConfig.Add(model);
-                        UW.CamelSave();
-                        Common.RMOk(this, "新增成功！");
-                        return Redirect(Url.Content(returnUrl));
                     }
-                    else
-                    {
-                        UW.context.TestConfig.Add(model);
-                        UW.CamelSave();
-                        Common.RMWarn(this,"通用客户中没有对应型号产品的配置,已生成空方案，请务必编辑");
-                        return this.Edit(model.Id,returnUrl);
-                    } 
+
+                    Mapper.CreateMap<TestConfig, TestConfigEdit>();
+                    TestConfigEdit testConfigEdit = new TestConfigEdit();
+                    Mapper.Map(model, testConfigEdit);
+
+                    return View(ViewPath1 + ViewPath + ViewPath2 + "CreateOrCopy.cshtml", testConfigEdit);
                 }
                 catch (UpdateException e)
                 {
@@ -202,15 +287,19 @@ namespace CamelDotNet.Controllers
 
             return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
         }
-
-        //
-        // POST: /Model/Edit/5
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public virtual ActionResult EditSave(TestConfigEdit testConfigEdit, string returnUrl = "Index")
         {
             ViewBag.ReturnUrl = returnUrl;
 
+            var oldRecord = TestConfigCommon<Model>.GetQuery(UW).Where(a => a.Id != testConfigEdit.Id && a.ClientId == testConfigEdit.ClientId && a.ProductTypeId == testConfigEdit.ProductTypeId && a.IsDeleted == false).SingleOrDefault();
+            if (oldRecord != null)
+            {
+                ModelState.AddModelError(string.Empty, "存在客户、产品型号相同的记录");
+                return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
+            }
             if (!(testConfigEdit.TestItemConfigEdits.Where(a => a.Delete == false).Count() == 0))
             {
                 var result = TestConfigCommon<Model>.GetQuery(UW)
@@ -291,7 +380,9 @@ namespace CamelDotNet.Controllers
                                                                 if (perConfig.Channel != perConfigEdit.Channel ||
                                                                    perConfig.Trace != perConfigEdit.Trace ||
                                                                    perConfig.StartF != perConfigEdit.StartF ||
+                                                                   perConfig.StartUnitId != perConfigEdit.StartUnitId ||
                                                                    perConfig.StopF != perConfigEdit.StopF ||
+                                                                   perConfig.StopUnitId != perConfigEdit.StopUnitId ||
                                                                    perConfig.ScanPoint != perConfigEdit.ScanPoint ||
                                                                    perConfig.ScanTime != perConfigEdit.ScanTime ||
                                                                    perConfig.TransportSpeed != perConfigEdit.TransportSpeed ||
@@ -301,7 +392,9 @@ namespace CamelDotNet.Controllers
                                                                     perConfig.Channel = perConfigEdit.Channel;
                                                                     perConfig.Trace = perConfigEdit.Trace;
                                                                     perConfig.StartF = perConfigEdit.StartF;
+                                                                    perConfig.StartUnitId = perConfigEdit.StartUnitId;
                                                                     perConfig.StopF = perConfigEdit.StopF;
+                                                                    perConfig.StopUnitId = perConfigEdit.StopUnitId;
                                                                     perConfig.ScanPoint = perConfigEdit.ScanPoint;
                                                                     perConfig.ScanTime = perConfigEdit.ScanTime;
                                                                     perConfig.TransportSpeed = perConfigEdit.TransportSpeed;
@@ -323,7 +416,9 @@ namespace CamelDotNet.Controllers
                                                                 Channel = perConfigEdit.Channel,
                                                                 Trace = perConfigEdit.Trace,
                                                                 StartF = perConfigEdit.StartF,
+                                                                StartUnitId = perConfigEdit.StartUnitId,
                                                                 StopF = perConfigEdit.StopF,
+                                                                StopUnitId = perConfigEdit.StopUnitId,
                                                                 ScanPoint = perConfigEdit.ScanPoint,
                                                                 ScanTime = perConfigEdit.ScanTime,
                                                                 TransportSpeed = perConfigEdit.TransportSpeed,
@@ -363,7 +458,9 @@ namespace CamelDotNet.Controllers
                                                         Channel = perconfigAdd.Channel,
                                                         Trace = perconfigAdd.Trace,
                                                         StartF = perconfigAdd.StartF,
+                                                        StartUnitId = perconfigAdd.StartUnitId,
                                                         StopF = perconfigAdd.StopF,
+                                                        StopUnitId = perconfigAdd.StopUnitId,
                                                         ScanPoint = perconfigAdd.ScanPoint,
                                                         ScanTime = perconfigAdd.ScanTime,
                                                         TransportSpeed = perconfigAdd.TransportSpeed,
@@ -510,6 +607,11 @@ namespace CamelDotNet.Controllers
         {
             var result = GR.GetByID(id);
             return PartialView(ViewPath1 + ViewPathBase + ViewPath2 + "AbstractEdit.cshtml", result);
+        }
+
+        public virtual PartialViewResult AbstractEditCopyOrSave(TestConfigEdit result)
+        {
+            return PartialView(ViewPath1 + ViewPathBase + ViewPath2 + "AbstractEditCopyOrSave.cshtml", result);
         }
 
         protected override void Dispose(bool disposing)

@@ -1,18 +1,16 @@
 ﻿@model TestConfigEdit
 
-@{
-    ViewBag.Title = "编辑";
-}
 
 <h2>@ViewBag.Name:@ViewBag.Title</h2>
 
-@using (Html.BeginForm("EditSave", (string)ViewBag.Controller))
+@using (Html.BeginForm("CreateOrCopySave", (string)ViewBag.Controller))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
     @*@Html.HiddenFor(model => model.Id)*@
     @Html.Hidden("returnUrl", (string)ViewBag.ReturnUrl)
-    @Html.Action("AbstractEdit", (string)ViewBag.Controller, new { id = Model.Id })
+    @Html.Hidden("title", (string)ViewBag.Title)
+    @Html.Action("AbstractEditCopyOrSave", (string)ViewBag.Controller, new { result = Model })
     
     <div class="header" style="clear: both">
         <h2>@Html.DisplayNameFor(model => model.TestItemConfigEdits)</h2>
@@ -58,5 +56,5 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <script type="text/javascript" src="@Url.Content("~/Scripts/custom.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/custom.js")"></script>
 }

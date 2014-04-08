@@ -1,0 +1,74 @@
+﻿@Html.IndexPageInit()
+<h2>@ViewBag.Name</h2>
+@using (Ajax.BeginForm(null, null, (AjaxOptions)ViewBag.AjaxOpts, new { id = "searchForm" }))
+{
+    <table>
+        <tr>
+            <td>
+                <span class="searchLabel">名称</span>
+            </td>
+            <td>
+                <span class="searchLabel">包含已删除项目</span>
+            </td>
+            @*<td>
+                <span class="searchLabel">本地</span>
+            </td>*@
+            <td></td>
+        </tr>
+        <tr>
+            @Html.Hidden("returnRoot", (string)ViewBag.ReturnRoot)
+            @Html.Hidden("actionAjax", (string)ViewBag.Action)
+            @Html.Hidden("filter")
+            <td>
+                @Html.TextBox("Name@%", null, new { @class = "filter" })
+            </td>
+            <td>
+                @Html.CheckBox("includeSoftDeleted", false)
+            </td>
+            @*<td>
+                @Html.CheckBox("isLocal@=", false,new { @class = "filter" })
+            </td>*@
+            <td>
+                <button type="submit" onclick="searchProductType()">查询</button>
+                <button class ="syncBtn" type="submit" onclick="syncProductType()">同步产品型号</button>
+            </td>
+        </tr>
+    </table>
+}
+<div id="AjaxBody">
+    @Html.Action((string)ViewBag.Action, (RouteValueDictionary)(ViewBag.RV))
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/cw")
+    <script>
+        $(document).ready(function () {
+            $("#searchForm").submit(function (e) {
+                setFilter();
+            });
+        });
+        function searchProductType() {
+            $("#searchForm").attr("data-ajax-url", "/ProductType/Get");
+        }
+        function syncProductType() {
+            $("#searchForm").attr("data-ajax-url", "/ProductType/SyncProductType");
+            $(".syncBtn").text("正在同步...");
+        }
+        function syncSuccess()
+        {
+            var curUrl = $("#searchForm").attr("data-ajax-url");
+            if (curUrl == "/ProductType/SyncProductType")
+            {
+                $(".syncBtn").text("同步产品型号");
+            }
+        }
+        function syncFail()
+        {
+            var curUrl = $("#searchForm").attr("data-ajax-url");
+            if (curUrl == "/ProductType/SyncProductType") {
+                alert("同步失败，点击重试");
+                $(".syncBtn").text("重试");
+            }
+        }
+    </script>
+}

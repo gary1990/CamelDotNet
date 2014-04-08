@@ -14,6 +14,13 @@
     @Html.ValidationMessageFor(model => model.UserName)
 </div>
 <div class="editor-label">
+    @Html.LabelFor(model => model.DepartmentId)
+</div>
+<div class="editor-field">
+    @Html.DropDownListFor(model => model.DepartmentId, new SelectList(Common.GetDepartmentList(), "Id", "Name"), String.Empty)
+    @Html.ValidationMessageFor(model => model.DepartmentId)
+</div>
+<div class="editor-label">
     @Html.LabelFor(model => model.Password)
 </div>
 <div class="editor-field">

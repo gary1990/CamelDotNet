@@ -7,6 +7,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
 using CamelDotNet.Models.Common;
+using System.Data.SqlClient;
+using System.Data;
+using System.Transactions;
 
 namespace CamelDotNet.Controllers
 {
@@ -34,6 +37,83 @@ namespace CamelDotNet.Controllers
             {
                 Data = testStaitonXmlList
             };
+        }
+
+        public ActionResult BarCodeUsed(string serialNumber = null)
+        {
+            
+            SingleResultXml result = new SingleResultXml()
+            {
+                Message = "true"
+            };
+            serialNumber = serialNumber.ToString().Trim();
+            if (serialNumber != null && serialNumber != "")
+            {
+                try 
+                {
+                    var serialNumberRecord = db.SerialNumber.Where(a => a.Number == serialNumber).SingleOrDefault();
+                    if (serialNumberRecord != null)
+                    {
+                        using(var scope = new TransactionScope())
+                        {
+                            try
+                            {
+                                var vnaRecords = db.VnaRecord.Where(a => a.SerialNumberId == serialNumberRecord.Id).ToList();
+                                foreach(var item in vnaRecords)
+                                {
+                                    item.BarCodeUsed = true;
+                                }
+                                db.SaveChanges();
+                            }
+                            catch(Exception)
+                            {
+                                result.Message = "更新BarCodeUsed失败";
+                            }
+                            scope.Complete();
+                        } 
+                    }
+                    else
+                    {
+                        result.Message = "数据库中无此缆号";
+                    }
+                }
+                catch(Exception)
+                {
+                    result.Message = "数据库查询缆号失败";
+                }
+            }
+            else 
+            {
+                result.Message = "缆号不能为空";
+            }
+
+            return new XmlResult<SingleResultXml>()
+            {
+                Data = result
+            };
+        }
+
+        public void TestBarCode() 
+        {
+            DataTable table = new DataTable();
+
+            using (SqlConnection connection = new SqlConnection("Data Source=localhost;Initial Catalog=CamelDotNet;User ID=BarCode;Password=BarCode; Integrated Security=True; MultipleActiveResultSets=True"))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * from TestResult_View";
+
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Response.Write(reader[0].ToString()+"=="+reader[1].ToString()+"<br/>");
+                        }
+                    }
+                    connection.Close();
+                }
+            }
         }
 
         protected override void Dispose(bool disposing)

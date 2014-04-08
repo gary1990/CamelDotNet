@@ -11,6 +11,9 @@
                 <span class="searchLabel">用户名</span>
             </td>
             <td>
+                <span class="searchLabel">部门</span>
+            </td>
+            <td>
                 <span class="searchLabel">角色</span>
             </td>
             <td>
@@ -27,6 +30,9 @@
             </td>
             <td>
                 @Html.TextBox("UserName@%", null, new { @class = "filter" })
+            </td>
+            <td>
+                @Html.DropDownList("DepartmentId@=", new SelectList(Common.GetDepartmentList(), "Id", "Name"), String.Empty, new { @class = "filter" })
             </td>
             <td>
                 @Html.DropDownList("CamelDotNetRoleId@=", new SelectList(Common.GetRoleList(), "Id", "Name"), String.Empty, new { @class = "filter" })

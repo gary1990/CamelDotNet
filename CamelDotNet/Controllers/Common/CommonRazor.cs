@@ -47,6 +47,8 @@ namespace System.Web.Mvc.Html
             {
                 UpdateTargetId = "AjaxBody",
                 Url = wvp.Url.Action(htmlHelper.ViewBag.Action),
+                OnSuccess = "syncSuccess",
+                OnFailure = "syncFail",
             };
             return null;
         }

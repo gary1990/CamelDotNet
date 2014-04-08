@@ -177,6 +177,7 @@
     <Compile Include="Controllers\ClientController.cs" />
     <Compile Include="Controllers\Common\CommonController.cs" />
     <Compile Include="Controllers\Common\CommonRazor.cs" />
+    <Compile Include="Controllers\DepartmentController.cs" />
     <Compile Include="Controllers\PermissionController.cs" />
     <Compile Include="Controllers\ProductTypeController.cs" />
     <Compile Include="Controllers\QualityTracingHomeController.cs" />
@@ -208,6 +209,7 @@
     <Compile Include="Models\DAL\CamelDotNetDBContext.cs" />
     <Compile Include="Models\DAL\GenericRepository.cs" />
     <Compile Include="Models\DAL\UnitOfWork.cs" />
+    <Compile Include="Models\Department.cs" />
     <Compile Include="Models\PerConfig.cs" />
     <Compile Include="Models\Process.cs" />
     <Compile Include="Models\ProductType.cs" />
@@ -221,6 +223,7 @@
     <Compile Include="Models\TestItemCategory.cs" />
     <Compile Include="Models\TestItemConfig.cs" />
     <Compile Include="Models\TestStation.cs" />
+    <Compile Include="Models\Unit.cs" />
     <Compile Include="Models\ViewModels\PerConfigEdit.cs" />
     <Compile Include="Models\ViewModels\TestConfigEdit.cs" />
     <Compile Include="Models\ViewModels\Msg.cs" />
@@ -771,6 +774,17 @@
     <Content Include="Views\VnaRecord\Index.cshtml" />
     <Content Include="Views\VnaRecord\Get.cshtml" />
     <Content Include="Views\VnaRecord\Details.cshtml" />
+    <Content Include="Views\TestConfig\CreateOrCopy.cshtml" />
+    <Content Include="Views\TestConfig\AbstractEditCopyOrSave.cshtml" />
+    <Content Include="Views\ProductType\Index.cshtml" />
+    <Content Include="Views\ProductType\Get.cshtml" />
+    <Content Include="Views\ProductType\Create.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\EditProductType.cshtml" />
+    <Content Include="Views\ProductType\Abstract.cshtml" />
+    <Content Include="Views\ProductType\Delete.cshtml" />
+    <Content Include="Views\ProductType\Details.cshtml" />
+    <Content Include="Views\ProductType\Restore.cshtml" />
+    <Content Include="Views\ProductType\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -779,7 +793,7 @@
     <Folder Include="Views\Api\" />
     <Folder Include="Views\Client\" />
     <Folder Include="Views\Common\" />
-    <Folder Include="Views\ProductType\" />
+    <Folder Include="Views\Department\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

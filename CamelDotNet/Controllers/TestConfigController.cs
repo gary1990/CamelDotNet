@@ -198,6 +198,7 @@ namespace CamelDotNet.Controllers
                 .Include(a => a.Client)
                 .Include(a => a.TestItemConfigs.Select(b => b.TestItem).Select(c => c.TestItemCategory))
                 .Include(a => a.TestItemConfigs.Select(b => b.PerConfigs))
+                .Include(a => a.TestItemConfigs.Select(b => b.PerConfigs.Select(c => c.StartUnit)))
                 .ToList();
 
             TestConfigListXml testConfigXmlList = new TestConfigListXml();
@@ -235,6 +236,12 @@ namespace CamelDotNet.Controllers
 
                     foreach(var perConfig in testItemConfig.PerConfigs)
                     {
+                        perConfig.StartF = switchStartStop(perConfig.StartF, perConfig.StartUnit.Name);
+                        perConfig.StopF = switchStartStop(perConfig.StopF, perConfig.StopUnit.Name);
+                        if(perConfig.FreqPoint != null)
+                        {
+                            perConfig.FreqPoint = perConfig.FreqPoint * 1000000;
+                        }
                         PerConfigXml perConfigXml = new PerConfigXml() 
                         { 
                             Channel = perConfig.Channel,
@@ -260,6 +267,22 @@ namespace CamelDotNet.Controllers
             {
                 Data = testConfigXmlList
             };
+        }
+
+        private decimal switchStartStop(decimal number, string unit)
+        {
+            switch(unit)
+            {
+                case "MHz":
+                    number = number * 1000000;
+                    break;
+                case "nS":
+                    number = number / 1000000000;
+                    break;
+                default:
+                    break;
+            }
+            return number;
         }
 
         protected override void Dispose(bool disposing)

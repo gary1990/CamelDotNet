@@ -40,7 +40,6 @@ namespace CamelDotNet.Controllers
         public virtual PartialViewResult Get(string returnRoot, string actionAjax = "", int page = 1, bool includeSoftDeleted = false, string filter = null)
         {
             var results = UserCommon<Model>.GetQuery(UW, includeSoftDeleted, filter);
-            var ss = results.ToList();
 
             if (!includeSoftDeleted)
             {

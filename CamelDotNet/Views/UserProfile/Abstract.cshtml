@@ -12,6 +12,12 @@
     @Html.DisplayFor(model => model.UserName)
 </div>
 <div class="editor-label">
+    @Html.LabelFor(model => model.DepartmentId)
+</div>
+<div class="editor-field">
+    @Html.DisplayFor(model => model.Department.Name)
+</div>
+<div class="editor-label">
     @Html.LabelFor(model => model.CamelDotNetRoleId)
 </div>
 <div class="editor-field">

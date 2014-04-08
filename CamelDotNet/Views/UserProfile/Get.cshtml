@@ -24,6 +24,9 @@
                 @Html.DisplayNameFor(model => model.UserName)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.DepartmentId)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.CamelDotNetRoleId)
             </th>
             <th>
@@ -42,6 +45,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Department.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.CamelDotNetRole.Name)

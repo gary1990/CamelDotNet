@@ -29,7 +29,7 @@
     <header>
         <div class="content-wrapper">
             <div class="float-left">
-                <p class="site-title">@Html.AuthorizeActionLink("Application Name", "Index", "Home")</p>
+                <p class="site-title">@Html.AuthorizeActionLink("质量管理系统-QMS-Cable", "Index", "Home")</p>
             </div>
             <div class="float-right">
                 <section id="login">
@@ -90,6 +90,7 @@
                 {
                     <li class="current">@Html.AuthorizeActionLink("系统管理", "Index", "SystemHome")
                         <ul class="sideMenu">
+                            <li class="@(sideMenuPath == "部门管理" ? "current" : "")">@Html.AuthorizeActionLink("部门管理", "Index", "Department")</li>
                             <li class="@(sideMenuPath == "用户管理" ? "current" : "")">@Html.AuthorizeActionLink("用户管理", "Index", "UserProfile")</li>
                             <li class="@(sideMenuPath == "权限管理" ? "current" : "")">@Html.AuthorizeActionLink("权限管理", "Index", "Permission")</li>
                             <li class="@(sideMenuPath == "角色管理" ? "current" : "")">@Html.AuthorizeActionLink("角色管理", "Index", "Role")</li>

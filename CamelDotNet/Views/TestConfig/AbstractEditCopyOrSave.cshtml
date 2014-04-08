@@ -1,0 +1,21 @@
+﻿@model TestConfigEdit
+<div style="clear: both">
+    <div class="infoBlock" style="width: 22%">
+        @Html.HiddenFor(model => model.Id)
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ClientId)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(model => model.ClientId, new SelectList(Common.GetClientList(), "Id", "Name"), String.Empty)
+            @Html.ValidationMessageFor(model => model.ClientId)
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ProductTypeId)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(model => model.ProductTypeId, new SelectList(Common.GetProductTypeList(), "Id", "Name"), String.Empty)
+            @Html.ValidationMessageFor(model => model.ProductTypeId)
+        </div>
+        @Html.HiddenFor(model => model.IsDeleted)
+    </div>
+</div>

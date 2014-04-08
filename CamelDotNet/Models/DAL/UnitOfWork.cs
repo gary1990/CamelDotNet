@@ -27,6 +27,8 @@ namespace CamelDotNet.Models.DAL
         private GenericRepository<VnaRecord> vnaRecordRepository;
         private GenericRepository<VnaTestItemRecord> vnaTestItemRecordRepository;
         private GenericRepository<VnaTestItemPerRecord> vnaTestItemPerRecordRepository;
+        private GenericRepository<Unit> unitRepository;
+        private GenericRepository<Department> departmentRepository;
         public GenericRepository<TestItem> TestItemRepository 
         {
             get 
@@ -225,6 +227,30 @@ namespace CamelDotNet.Models.DAL
                     this.vnaTestItemPerRecordRepository = new GenericRepository<VnaTestItemPerRecord>(context);
                 }
                 return vnaTestItemPerRecordRepository;
+            }
+        }
+
+        public GenericRepository<Unit> UnitRepository
+        {
+            get
+            {
+                if (this.unitRepository == null)
+                {
+                    this.unitRepository = new GenericRepository<Unit>(context);
+                }
+                return unitRepository;
+            }
+        }
+
+        public GenericRepository<Department> DepartmentRepository
+        {
+            get
+            {
+                if (this.departmentRepository == null)
+                {
+                    this.departmentRepository = new GenericRepository<Department>(context);
+                }
+                return departmentRepository;
             }
         }
 

@@ -36,6 +36,8 @@ namespace CamelDotNet.Models.DAL
         public DbSet<VnaRecord> VnaRecord { get; set; }
         public DbSet<VnaTestItemRecord> VnaTestItemRecord { get; set; }
         public DbSet<VnaTestItemPerRecord> VnaTestItemPerRecord { get; set; }
+        public DbSet<Unit> Unit { get; set; }
+        public DbSet<Department> Department { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -46,6 +48,13 @@ namespace CamelDotNet.Models.DAL
             modelBuilder.Entity<CamelDotNetRole>().ToTable("CamelRole");
 
             modelBuilder.Entity<CamelDotNetRole>().HasMany(a => a.Permissions).WithMany(b => b.CamelDotNetRoles).Map(c => c.MapLeftKey("CamelDotNetRoleId").MapRightKey("PermissionId").ToTable("CamelRolePermission"));
+            modelBuilder.Entity<PerConfig>().Property(a => a.StartF).HasPrecision(11, 5);
+            modelBuilder.Entity<PerConfig>().Property(a => a.StopF).HasPrecision(11, 5);
+            modelBuilder.Entity<PerConfig>().Property(a => a.ScanTime).HasPrecision(11, 5);
+            modelBuilder.Entity<PerConfig>().Property(a => a.TransportSpeed).HasPrecision(11, 5);
+            modelBuilder.Entity<PerConfig>().Property(a => a.FreqPoint).HasPrecision(11, 5);
+            modelBuilder.Entity<PerConfig>().Property(a => a.LimitLine).HasPrecision(11, 5);
+            
         }
     }
 
@@ -53,12 +62,13 @@ namespace CamelDotNet.Models.DAL
     {
         public static void Create(CamelDotNetDBContext context) 
         {
+            context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Name ON Department(Name)");
             context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Name ON ProductType(Name)");
             context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Serialnumber ON TestEquipment(Serialnumber)");
         }
     }
 
-    public class CamelDotNetInitializer : DropCreateDatabaseIfModelChanges<CamelDotNetDBContext>
+    public class CamelDotNetInitializer : DropCreateDatabaseAlways<CamelDotNetDBContext>
     {
         protected override void Seed(CamelDotNetDBContext db)
         {
@@ -80,6 +90,7 @@ namespace CamelDotNet.Models.DAL
                 new Permission{Name = "产品型号-恢复", ActionName="Restore", ControllerName = "ProductType"},
                 new Permission{Name = "产品型号-恢复-确认", ActionName="RestoreSave", ControllerName = "ProductType"},
                 new Permission{Name = "产品型号-详情", ActionName="Details", ControllerName = "ProductType"},
+                new Permission{Name = "产品型号-同步", ActionName="SyncProductType", ControllerName = "ProductType"},
                 new Permission{Name = "测试项", ActionName="Index", ControllerName = "TestItem"},
                 new Permission{Name = "测试项-查询", ActionName="Get", ControllerName = "TestItem"},
                 new Permission{Name = "测试项-新增", ActionName="Create", ControllerName = "TestItem"},
@@ -126,6 +137,7 @@ namespace CamelDotNet.Models.DAL
                 new Permission{Name = "测试方案-恢复", ActionName="Restore", ControllerName = "TestConfig"},
                 new Permission{Name = "测试方案-恢复-确认", ActionName="RestoreSave", ControllerName = "TestConfig"},
                 new Permission{Name = "测试方案-详情", ActionName="Details", ControllerName = "TestConfig"},
+                new Permission{Name = "测试方案-复制/新增需编辑", ActionName="CreateOrCopySave", ControllerName = "TestConfig"},
                 new Permission{Name = "客户", ActionName="Index", ControllerName = "Client"},
                 new Permission{Name = "客户-查询", ActionName="Get", ControllerName = "Client"},
                 new Permission{Name = "客户-新增", ActionName="Create", ControllerName = "Client"},
@@ -146,6 +158,17 @@ namespace CamelDotNet.Models.DAL
                 new Permission{Name = "报表管理", ActionName="Index", ControllerName = "ReportHome"},
 
                 new Permission{Name = "系统管理", ActionName="Index", ControllerName = "SystemHome"},
+                new Permission{Name = "部门管理", ActionName="Index", ControllerName = "Department"},
+                new Permission{Name = "部门管理-查询", ActionName="Get", ControllerName = "Department"},
+                new Permission{Name = "部门管理-新增", ActionName="Create", ControllerName = "Department"},
+                new Permission{Name = "部门管理-新增-保存", ActionName="CreateSave", ControllerName = "Department"},
+                new Permission{Name = "部门管理-编辑", ActionName="Edit", ControllerName = "Department"},
+                new Permission{Name = "部门管理-编辑-保存", ActionName="EditSave", ControllerName = "Department"},
+                new Permission{Name = "部门管理-删除", ActionName="Delete", ControllerName = "Department"},
+                new Permission{Name = "部门管理-删除-确认", ActionName="DeleteSave", ControllerName = "Department"},
+                new Permission{Name = "部门管理-恢复", ActionName="Restore", ControllerName = "Department"},
+                new Permission{Name = "部门管理-恢复-确认", ActionName="RestoreSave", ControllerName = "Department"},
+                new Permission{Name = "部门管理-详情", ActionName="Details", ControllerName = "Department"},
                 new Permission{Name = "用户管理", ActionName="Index", ControllerName = "UserProfile"},
                 new Permission{Name = "用户管理-查询", ActionName="Get", ControllerName = "UserProfile"},
                 new Permission{Name = "用户管理", ActionName="Index", ControllerName = "UserProfile"},
@@ -180,6 +203,24 @@ namespace CamelDotNet.Models.DAL
                 new Permission{Name = "角色管理-恢复-确认", ActionName="RestoreSave", ControllerName = "Role"},
             };
             permissions.ForEach(a => db.Permission.Add(a));
+            db.SaveChanges();
+
+            var departments = new List<Department>()
+            {
+                new Department{Name = "管理部"},
+                new Department{Name = "生产部"},
+                new Department{Name = "质量部"},
+                new Department{Name = "技术部"},
+            };
+            departments.ForEach(a => db.Department.Add(a));
+            db.SaveChanges();
+
+            var units = new List<Unit>()
+            {
+                new Unit{Name = "MHz"},
+                new Unit{Name = "nS"},
+            };
+            units.ForEach(a => db.Unit.Add(a));
             db.SaveChanges();
 
             var processes = new List<Process>()
@@ -220,6 +261,7 @@ namespace CamelDotNet.Models.DAL
                 new ProductType{Name = "PT11"},
                 new ProductType{Name = "Prodctype1"},
                 new ProductType{Name = "producttype2"},
+                new ProductType{Name = "K3PT1", isLocal = false},
             };
             productTypes.ForEach(a => db.ProductType.Add(a));
             db.SaveChanges();
@@ -345,9 +387,9 @@ namespace CamelDotNet.Models.DAL
 
             var perConfigs = new List<PerConfig>() 
             {
-                new PerConfig{ TestItemConfigId = 1, Channel = 1, Trace = 1, ScanPoint = 1, ScanTime = 1, StartF = 1, StopF = 1, TransportSpeed = 1, LimitLine = 1},
-                new PerConfig{ TestItemConfigId = 1, Channel = 11, Trace = 11, ScanPoint = 11, ScanTime = 11, StartF = 11, StopF = 11, LimitLine = 11},
-                new PerConfig{ TestItemConfigId = 1, Channel = 111, Trace = 111, ScanPoint = 111, StartF = 111, StopF = 111, TransportSpeed = 111, LimitLine = 111},
+                new PerConfig{ TestItemConfigId = 1, Channel = 1, Trace = 1, ScanPoint = 1, ScanTime = 1M, StartF = 1.001M, StartUnitId = 1, StopF = 1M, StopUnitId = 1, TransportSpeed = 1M, LimitLine = 1M},
+                new PerConfig{ TestItemConfigId = 1, Channel = 1, Trace = 2, ScanPoint = 2, ScanTime = 11M, StartF = 11M, StartUnitId = 1, StopF = 11M, StopUnitId = 1, LimitLine = 11M},
+                new PerConfig{ TestItemConfigId = 1, Channel = 1, Trace = 2, ScanPoint = 2, ScanTime = 111M, StartF = 111M, StartUnitId = 1, StopF = 111M, StopUnitId = 1, TransportSpeed = 111M, LimitLine = 111M},
                 //new PerConfig{ TestItemConfigId = 2, Channel = 2, Trace = 2, ScanPoint = 2, ScanTime = 2, StartF = 2, StopF = 2, TransportSpeed = 2, LimitLine = 2},
                 //new PerConfig{ TestItemConfigId = 2, Channel = 22, Trace = 22, ScanPoint = 22, ScanTime = 22, StartF = 22, StopF = 22, LimitLine = 22},
                 //new PerConfig{ TestItemConfigId = 2, Channel = 222, Trace = 222, ScanPoint = 222, StartF = 222, StopF = 222, TransportSpeed = 222, LimitLine = 222},
@@ -386,6 +428,7 @@ namespace CamelDotNet.Models.DAL
             userAdmin.UserName = name;
             userAdmin.JobNumber = jobNumber;
             userAdmin.CamelDotNetRole = adminRole;
+            userAdmin.DepartmentId = 1;
             UserManager.Create(userAdmin, password);
 
             name = "VNAT001";
@@ -396,6 +439,7 @@ namespace CamelDotNet.Models.DAL
             tester001.UserName = name;
             tester001.JobNumber = jobNumber;
             tester001.CamelDotNetRole = vnaTesterRole;
+            tester001.DepartmentId = 2;
             UserManager.Create(tester001, password);
 
             db.SaveChanges();

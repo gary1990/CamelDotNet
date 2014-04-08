@@ -9,9 +9,9 @@ namespace CamelDotNet.Models.ViewModels
     public class TestConfigEdit
     {
         public int Id { get; set; }
-
+        [DisplayName("产品型号")]
         public int ProductTypeId { get; set; }
-
+        [DisplayName("测试方案")]
         public int ClientId { get; set; }
 
         public bool IsDeleted { get; set; }

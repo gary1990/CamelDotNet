@@ -37,7 +37,7 @@ namespace CamelDotNet.Controllers
                 Message = "true"
             };
 
-            HttpPostedFileBase file = Request.Files["files"];
+            HttpPostedFileBase file = Request.Files["file"];
             string fileFullName;
             string fileEx;
             string fileNameWithoutEx;

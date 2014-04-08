@@ -582,6 +582,56 @@ namespace CamelDotNet.Lib
 
             return result;
         }
+
+        public static List<Unit> GetUnitList(string keyWord = null)
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetUnitQuery(db, keyWord, true).ToList();
+            }
+        }
+        public static IQueryable<Unit> GetUnitQuery(UnitOfWork db, string keyWord = null, bool noTrack = false)
+        {
+            IQueryable<Unit> result;
+
+            var rep = db.UnitRepository;
+
+            result = rep.Get(noTrack);
+
+            if (!String.IsNullOrWhiteSpace(keyWord))
+            {
+                keyWord = keyWord.ToUpper();
+                result = result.Where(a => a.Name.ToUpper().Contains(keyWord));
+            }
+
+            return result;
+        }
+
+        public static List<Department> GetDepartmentList(string keyWord = null)
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetDepartmentQuery(db, keyWord, true).ToList();
+            }
+        }
+        public static IQueryable<Department> GetDepartmentQuery(UnitOfWork db, string keyWord = null, bool noTrack = false)
+        {
+            IQueryable<Department> result;
+
+            var rep = db.DepartmentRepository;
+
+            result = rep.Get(noTrack);
+
+            result = result.Where(a => a.IsDeleted == false);
+
+            if (!String.IsNullOrWhiteSpace(keyWord))
+            {
+                keyWord = keyWord.ToUpper();
+                result = result.Where(a => a.Name.ToUpper().Contains(keyWord));
+            }
+
+            return result;
+        }
         //带消息提示的返回索引页面
         public static void RMError(Controller controller, string msg = "没有找到对应记录")
         {

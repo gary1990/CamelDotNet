@@ -40,6 +40,15 @@
             @Html.ValidationMessageFor(model => model.StartF)
         </div>
     </div>
+    <div class="multiAddItem" style="margin-top: 4px; height: 65px;">       
+        <div class="editor-label">
+            @Html.PPLabelFor(model => model.StartUnitId)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(model => model.StartUnitId, new SelectList(Common.GetUnitList(), "Id", "Name"))
+            @Html.ValidationMessageFor(model => model.StartUnitId)
+        </div>
+    </div>
     <div class="multiAddItem">
         <div class="editor-label">
             @Html.PPLabelFor(model => model.StopF)
@@ -47,6 +56,15 @@
         <div class="editor-field">
             @Html.EditorFor(model => model.StopF, null, tick + "StopF")
             @Html.ValidationMessageFor(model => model.StopF)
+        </div>
+    </div>
+    <div class="multiAddItem" style="margin-top: 4px; height: 65px;">
+        <div class="editor-label">
+            @Html.PPLabelFor(model => model.StopUnitId)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(model => model.StopUnitId, new SelectList(Common.GetUnitList(), "Id", "Name"))
+            @Html.ValidationMessageFor(model => model.StopUnitId)
         </div>
     </div>
     <div class="multiAddItem">

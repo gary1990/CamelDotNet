@@ -13,6 +13,8 @@ namespace CamelDotNet.Models.Common
             {
                 "TestConfig_GetTestConfig",
                 "Api_TestStation",
+                "Api_TestBarCode",
+                "Api_BarCodeUsed",
                 "VnaTestRecord_UploadVnaRecord",
             };
         }
