@@ -1,0 +1,13 @@
+﻿@model List<DotNet.Highcharts.Highcharts>
+@{
+    ViewBag.Title = "报表管理";
+}
+<h2>报表管理</h2>
+
+@foreach(var chart in Model)
+{
+    @chart
+}
+
+<script src="~/Content/Highcharts-3.0.10/js/highcharts.js"></script>
+<script src="~/Content/Highcharts-3.0.10/js/modules/exporting.js"></script>

@@ -2,15 +2,6 @@
 @{
     string returnUrl = Url.Action((((RouteValueDictionary)(ViewBag.RV))["returnRoot"]).ToString(), (RouteValueDictionary)(ViewBag.RV));
 }
-<p>
-    @using (Html.BeginForm("Create", (string)ViewBag.Controller))
-    {
-        @Html.AntiForgeryToken()
-
-        @Html.Hidden("returnUrl", returnUrl)
-        <input type="submit" value="新建" />
-    }
-</p>
 
 @Html.Partial("PageLink")
 
@@ -65,14 +56,6 @@
                                 @Html.Hidden("id", item.Id)
                                 @Html.Hidden("returnUrl", returnUrl)
                                 <input type="submit" value="详情" />
-                            }
-                            using (Html.BeginForm("Delete", (string)ViewBag.Controller))
-                            {
-                                @Html.AntiForgeryToken()
-
-                                @Html.Hidden("id", item.Id)
-                                @Html.Hidden("returnUrl", returnUrl)
-                                <input type="submit" value="删除" />
                             }
                         }
                     </div>

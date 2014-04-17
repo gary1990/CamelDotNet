@@ -38,6 +38,7 @@ namespace CamelDotNet.Models.DAL
         public DbSet<VnaTestItemPerRecord> VnaTestItemPerRecord { get; set; }
         public DbSet<Unit> Unit { get; set; }
         public DbSet<Department> Department { get; set; }
+        public DbSet<QualityPassRecord> QualityPassRecord { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -54,7 +55,9 @@ namespace CamelDotNet.Models.DAL
             modelBuilder.Entity<PerConfig>().Property(a => a.TransportSpeed).HasPrecision(11, 5);
             modelBuilder.Entity<PerConfig>().Property(a => a.FreqPoint).HasPrecision(11, 5);
             modelBuilder.Entity<PerConfig>().Property(a => a.LimitLine).HasPrecision(11, 5);
-            
+            modelBuilder.Entity<VnaTestItemPerRecord>().Property(a => a.XValue).HasPrecision(30, 15);
+            modelBuilder.Entity<VnaTestItemPerRecord>().Property(a => a.YValue).HasPrecision(30, 15);
+            modelBuilder.Entity<VnaTestItemPerRecord>().Property(a => a.RValue).HasPrecision(30, 15);
         }
     }
 
@@ -68,14 +71,14 @@ namespace CamelDotNet.Models.DAL
         }
     }
 
-    public class CamelDotNetInitializer : DropCreateDatabaseAlways<CamelDotNetDBContext>
+    public class CamelDotNetInitializer : DropCreateDatabaseIfModelChanges<CamelDotNetDBContext>
     {
         protected override void Seed(CamelDotNetDBContext db)
         {
             ProcedureCreation.Create(db);
 
             var permissions = new List<Permission>()
-            { 
+            {
                 new Permission{Name = "主页", ActionName="Index", ControllerName = "Home"},
                 new Permission{Name = "测试管理", ActionName="Index", ControllerName = "TestManageHome"},
                 new Permission{Name = "产品型号", ActionName="Index", ControllerName = "ProductType"},
@@ -156,6 +159,10 @@ namespace CamelDotNet.Models.DAL
                 new Permission{Name = "VNA测试-详情", ActionName="Details", ControllerName = "VnaTestRecord"},
 
                 new Permission{Name = "报表管理", ActionName="Index", ControllerName = "ReportHome"},
+                new Permission{Name = "质量放行", ActionName="Index", ControllerName = "QualityPassRecord"},
+                new Permission{Name = "质量放行-查询", ActionName="Get", ControllerName = "QualityPassRecord"},
+                new Permission{Name = "质量放行-放行", ActionName="Create", ControllerName = "QualityPassRecord"},
+                new Permission{Name = "质量放行-放行-保存", ActionName="CreateSave", ControllerName = "QualityPassRecord"},
 
                 new Permission{Name = "系统管理", ActionName="Index", ControllerName = "SystemHome"},
                 new Permission{Name = "部门管理", ActionName="Index", ControllerName = "Department"},
@@ -207,10 +214,13 @@ namespace CamelDotNet.Models.DAL
 
             var departments = new List<Department>()
             {
-                new Department{Name = "管理部"},
+                new Department{Name = "设备部"},
                 new Department{Name = "生产部"},
                 new Department{Name = "质量部"},
                 new Department{Name = "技术部"},
+                new Department{Name = "采购部"},
+                new Department{Name = "物流部"},
+                new Department{Name = "其他"},
             };
             departments.ForEach(a => db.Department.Add(a));
             db.SaveChanges();
@@ -249,6 +259,7 @@ namespace CamelDotNet.Models.DAL
                 new TestEquipment{Name = "TE2", Serialnumber = "MY-908097"},
                 new TestEquipment{Name = "TE3", Serialnumber = "MY-668678"},
                 new TestEquipment{Name = "TE4", Serialnumber = "MY42100275"},
+                new TestEquipment{Name = "绝缘", Serialnumber = "MY99999999"},
             };
             testEquipments.ForEach(a => db.TestEquipment.Add(a));
             db.SaveChanges();
@@ -280,8 +291,8 @@ namespace CamelDotNet.Models.DAL
 
             var testItemCategory = new List<TestItemCategory>()
             {
-                new TestItemCategory{Name = "电器性能"},
-                new TestItemCategory{Name = "非电器性能"},
+                new TestItemCategory{Name = "电气性能"},
+                new TestItemCategory{Name = "非电气性能"},
             };
             testItemCategory.ForEach(a => db.TestItemCategory.Add(a));
             db.SaveChanges();
@@ -357,7 +368,12 @@ namespace CamelDotNet.Models.DAL
                 new TestItem{Name = "衰减", Formular = "A+B = C", TestItemCategoryId = 1},
                 new TestItem{Name = "时域阻抗", TestItemCategoryId = 1 },
                 new TestItem{Name = "TDR电长度", TestItemCategoryId = 1 },
+                new TestItem{Name = "TDR故障点", TestItemCategoryId = 1 },
                 new TestItem{Name = "回波损耗1", TestItemCategoryId = 1 },
+                new TestItem{Name = "回波损耗2", TestItemCategoryId = 1 },
+                new TestItem{Name = "跳线测试", TestItemCategoryId = 1 },
+                new TestItem{Name = "阻抗落差1", TestItemCategoryId = 1 },
+                new TestItem{Name = "阻抗落差2", TestItemCategoryId = 1 },
             };
             testItems.ForEach(a => db.TestItem.Add(a));
             db.SaveChanges();
@@ -398,8 +414,8 @@ namespace CamelDotNet.Models.DAL
             db.SaveChanges();
 
             
-
-            var adminRole = new CamelDotNetRole{Name = "Admin"};
+            //admin角色
+            var adminRole = new CamelDotNetRole{Name = "系统管理员"};
             foreach(var item in permissions)
             {
                 adminRole.Permissions.Add(item);
@@ -407,8 +423,8 @@ namespace CamelDotNet.Models.DAL
             db.CamelDotNetRole.Add(adminRole);
             db.SaveChanges();
 
-
-            var vnaTesterRole = new CamelDotNetRole { Name = "VnaTester" };
+            //测试员角色
+            var vnaTesterRole = new CamelDotNetRole { Name = "测试人员" };
             List<string> vnaTesterPermission = new List<string> { "主页", "测试管理", };
             foreach (var item in permissions)
             {
@@ -420,27 +436,138 @@ namespace CamelDotNet.Models.DAL
             db.CamelDotNetRole.Add(vnaTesterRole);
             db.SaveChanges();
 
+            //质量工程师角色
+            var qeRole = new CamelDotNetRole { Name = "质量工程师" };
+            List<string> qeRolePermission = new List<string> { "主页", "报表管理", "质量放行", "质量放行-查询", "质量放行-放行", "质量放行-放行-保存" };
+            foreach (var item in permissions)
+            {
+                if (qeRolePermission.Contains(item.Name))
+                {
+                    qeRole.Permissions.Add(item);
+                }
+            }
+            db.CamelDotNetRole.Add(qeRole);
+            db.SaveChanges();
+
+            //技术工程师角色
+            var technologistRole = new CamelDotNetRole { Name = "技术工程师" };
+            List<string> technologistPermission = new List<string> { "主页", "报表管理", "质量放行", "质量放行-查询", "质量放行-放行", "质量放行-放行-保存" };
+            foreach (var item in permissions)
+            {
+                if (technologistPermission.Contains(item.Name))
+                {
+                    technologistRole.Permissions.Add(item);
+                }
+            }
+            db.CamelDotNetRole.Add(technologistRole);
+            db.SaveChanges();
+
+            //质量经理角色
+            var qmRole = new CamelDotNetRole { Name = "质量经理" };
+            List<string> qmPermission = new List<string> { "主页", "报表管理", "质量放行", "质量放行-查询", "质量放行-放行", "质量放行-放行-保存" };
+            foreach (var item in permissions)
+            {
+                if (qmPermission.Contains(item.Name))
+                {
+                    qmRole.Permissions.Add(item);
+                }
+            }
+            db.CamelDotNetRole.Add(qmRole);
+            db.SaveChanges();
+
+            //总工角色
+            var heRole = new CamelDotNetRole { Name = "总工" };
+            List<string> hePermission = new List<string> { "主页", "报表管理", "质量放行", "质量放行-查询", "质量放行-放行", "质量放行-放行-保存" };
+            foreach (var item in permissions)
+            {
+                if (hePermission.Contains(item.Name))
+                {
+                    heRole.Permissions.Add(item);
+                }
+            }
+            db.CamelDotNetRole.Add(heRole);
+            db.SaveChanges();
+
+            //其他人员角色
+            var otherRole = new CamelDotNetRole { Name = "其他人员" };
+            List<string> otherPermission = new List<string> { "主页", "报表管理", };
+            foreach (var item in permissions)
+            {
+                if (otherPermission.Contains(item.Name))
+                {
+                    otherRole.Permissions.Add(item);
+                }
+            }
+            db.CamelDotNetRole.Add(otherRole);
+            db.SaveChanges();
+
             var UserManager = new UserManager<CamelDotNetUser>(new UserStore<CamelDotNetUser>(db));
-            var name = "Admin";
-            var jobNumber = "GC0001";
+            //允许用户名包含非字母、数字
+            UserManager.UserValidator = new UserValidator<CamelDotNetUser>(UserManager) { AllowOnlyAlphanumericUserNames = false };
+            var name = "系统管理员1";
+            var jobNumber = "No001";
             var password = "123456";
             var userAdmin = new CamelDotNetUser();
             userAdmin.UserName = name;
             userAdmin.JobNumber = jobNumber;
             userAdmin.CamelDotNetRole = adminRole;
-            userAdmin.DepartmentId = 1;
+            userAdmin.DepartmentId = db.Department.Where(a => a.Name == "其他").SingleOrDefault().Id;
             UserManager.Create(userAdmin, password);
 
-            name = "VNAT001";
-            jobNumber = "no004";
+            name = "测试员001";
+            jobNumber = "No002";
             password = "123456";
 
             var tester001 = new CamelDotNetUser();
             tester001.UserName = name;
             tester001.JobNumber = jobNumber;
             tester001.CamelDotNetRole = vnaTesterRole;
-            tester001.DepartmentId = 2;
+            tester001.DepartmentId = db.Department.Where(a => a.Name == "生产部").SingleOrDefault().Id;
             UserManager.Create(tester001, password);
+
+            name = "质量工程师1";
+            jobNumber = "No003";
+            password = "123456";
+
+            var qe001 = new CamelDotNetUser();
+            qe001.UserName = name;
+            qe001.JobNumber = jobNumber;
+            qe001.CamelDotNetRole = qeRole;
+            qe001.DepartmentId = db.Department.Where(a => a.Name == "质量部").SingleOrDefault().Id;
+            UserManager.Create(qe001, password);
+
+            name = "技术工程师1";
+            jobNumber = "No004";
+            password = "123456";
+
+            var technologist001 = new CamelDotNetUser();
+            technologist001.UserName = name;
+            technologist001.JobNumber = jobNumber;
+            technologist001.CamelDotNetRole = technologistRole;
+            technologist001.DepartmentId = db.Department.Where(a => a.Name == "技术部").SingleOrDefault().Id;
+            UserManager.Create(technologist001, password);
+
+            name = "质量经理1";
+            jobNumber = "No005";
+            password = "123456";
+
+            var qm001 = new CamelDotNetUser();
+            qm001.UserName = name;
+            qm001.JobNumber = jobNumber;
+            qm001.CamelDotNetRole = qmRole;
+            qm001.DepartmentId = db.Department.Where(a => a.Name == "质量部").SingleOrDefault().Id;
+            UserManager.Create(qm001, password);
+
+            name = "总工1";
+            jobNumber = "No006";
+            password = "123456";
+
+            var he001 = new CamelDotNetUser();
+            he001.UserName = name;
+            he001.JobNumber = jobNumber;
+            he001.CamelDotNetRole = heRole;
+            he001.DepartmentId = db.Department.Where(a => a.Name == "质量部").SingleOrDefault().Id;
+            UserManager.Create(he001, password);
 
             db.SaveChanges();
 
@@ -456,9 +583,9 @@ namespace CamelDotNet.Models.DAL
 
             var vnaRecords = new List<VnaRecord>()
             {
-                new VnaRecord{ SerialNumberId = 1, ProductTypeId = 1, CamelDotNetUserId = UserManager.FindByName("VNAT001").Id, TestTime = new DateTime(2014,03,20,16,28,20), InnerLength = 12.3M, OuterLength = 19.7M, OrderNumber = "123412", DrillingCrew = "34134", Temperature = 18M, TestEquipmentId = 1, TestStationId = 1, ReelNumber = "12343", Remark = "werqr", WorkGroup = "morning"},
-                new VnaRecord{ SerialNumberId = 2, ProductTypeId = 1, CamelDotNetUserId = UserManager.FindByName("VNAT001").Id, TestTime = new DateTime(2014,03,21,14,28,20), InnerLength = 11.3M, OuterLength = 18.7M, OrderNumber = "123512", DrillingCrew = "34124", Temperature = 18M, TestEquipmentId = 1, TestStationId = 1, ReelNumber = "12243", Remark = "werqr", WorkGroup = "morning"},
-                new VnaRecord{ SerialNumberId = 3, ProductTypeId = 2, CamelDotNetUserId = UserManager.FindByName("Admin").Id, TestTime = new DateTime(2014,03,21,14,28,20), InnerLength = 11.3M, OuterLength = 18.7M, OrderNumber = "123511", DrillingCrew = "341245", Temperature = 18M, TestEquipmentId = 2, TestStationId = 2, ReelNumber = "122435", Remark = "werqr", WorkGroup = "morning",TestResult = true},
+                new VnaRecord{ SerialNumberId = 1, ProductTypeId = 1, CamelDotNetUserId = UserManager.FindByName("测试员001").Id, TestTime = new DateTime(2014,03,20,16,28,20), InnerLength = 12.3M, OuterLength = 19.7M, OrderNumber = "123412", DrillingCrew = "34134", Temperature = 18M, TestEquipmentId = 1, TestStationId = 1, ReelNumber = "12343", Remark = "werqr", WorkGroup = "morning", ClientId = 1, OrderNo = "Order1"},
+                new VnaRecord{ SerialNumberId = 2, ProductTypeId = 1, CamelDotNetUserId = UserManager.FindByName("测试员001").Id, TestTime = new DateTime(2014,03,21,14,28,20), InnerLength = 11.3M, OuterLength = 18.7M, OrderNumber = "123512", DrillingCrew = "34124", Temperature = 18M, TestEquipmentId = 1, TestStationId = 1, ReelNumber = "12243", Remark = "werqr", WorkGroup = "morning", ClientId = 1, OrderNo = "Order1"},
+                new VnaRecord{ SerialNumberId = 3, ProductTypeId = 2, CamelDotNetUserId = UserManager.FindByName("测试员001").Id, TestTime = new DateTime(2014,03,21,14,28,20), InnerLength = 11.3M, OuterLength = 18.7M, OrderNumber = "123511", DrillingCrew = "341245", Temperature = 18M, TestEquipmentId = 2, TestStationId = 2, ReelNumber = "122435", Remark = "werqr", WorkGroup = "morning",TestResult = true, ClientId = 1, OrderNo = "Order1"},
             };
             vnaRecords.ForEach(a => db.VnaRecord.Add(a));
             db.SaveChanges();

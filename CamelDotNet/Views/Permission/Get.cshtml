@@ -72,22 +72,6 @@
                                 @Html.Hidden("returnUrl", returnUrl)
                                 <input type="submit" value="编辑" />
                             }
-                            @*using (Html.BeginForm("Details", (string)ViewBag.Controller))
-                            {
-                                @Html.AntiForgeryToken()
-
-                                @Html.Hidden("id", item.Id)
-                                @Html.Hidden("returnUrl", returnUrl)
-                                <input type="submit" value="详情" />
-                            }*@
-                            using (Html.BeginForm("Delete", (string)ViewBag.Controller))
-                            {
-                                @Html.AntiForgeryToken()
-
-                                @Html.Hidden("id", item.Id)
-                                @Html.Hidden("returnUrl", returnUrl)
-                                <input type="submit" value="删除" />
-                            }
                         }
                     </div>
                 </td>

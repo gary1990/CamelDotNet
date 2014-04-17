@@ -4,7 +4,7 @@ $(document).ready(function () {
     aculblankdelete();
     // 次级菜单中，前shownum个链接显示，后面的都隐藏在li.more中，并且为li.more绑定click事件。
     // 该方法于加载页面时使用，shownum默认为6
-    menushowmore(6);
+    menushowmore(4);
     // 操作集合，找到所有类名为groupOperation，
     // 若其中action不多于actionnum个，则不作改变，
     // 多于，则将所有操作都放在groupOperation中的ul.inline-list中
@@ -22,7 +22,7 @@ function showac(a) {
 // 该方法于加载页面时使用，shownum默认为6
 function menushowmore(shownum) {
     if (!shownum) {
-        shownum = 6;
+        shownum = 4;
     }
     $('#menu ul.sideMenu').each(function () {
         if ($(this).children().length > shownum) {

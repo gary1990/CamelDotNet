@@ -37,6 +37,7 @@
             @Html.Hidden("returnRoot", (string)ViewBag.ReturnRoot)
             @Html.Hidden("actionAjax", (string)ViewBag.Action)
             @Html.Hidden("filter")
+            @Html.Hidden("export", false)
             <td>
                 @Html.TextBox("TestTime@>=", null, new { @class = "filter", style = "width: 100px;" })
                 至
@@ -67,7 +68,8 @@
                 @Html.TextBox("SerialNumber.Number@%", null, new { @class = "filter", style = "width: 100px;" })
             </td>
             <td>
-                <button type="submit">查询</button>
+                <button id="btSearch" type="submit">查询</button>
+                <button id="btExport" type="submit">导出</button>
             </td>
         </tr>
     </table>
@@ -81,6 +83,18 @@
     <script>
         $(document).ready(function () {
             $("#searchForm").submit(function (e) { setFilter(); });
+
+            $("#btSearch").click(function () {
+                $("#export").val("False");
+                $("#searchForm").attr("data-ajax", "true")
+                $("#searchForm").attr("data-ajax-url", "/VnaTestRecord/Get");
+            });
+
+            $("#btExport").click(function () {
+                $("#export").val("True");
+                $("#searchForm").attr("data-ajax", "false")
+                $("#searchForm").attr("action", "/VnaTestRecord/Get");
+            });
         });
     </script>
 }

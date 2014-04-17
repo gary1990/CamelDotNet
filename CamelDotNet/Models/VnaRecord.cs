@@ -15,6 +15,7 @@ namespace CamelDotNet.Models
             TestResult = false;
             BarCodeUsed = false;
             NoStatistics = false;
+            isGreenLight = false;
         }
         public int Id { get; set; }
         [Required]
@@ -36,6 +37,9 @@ namespace CamelDotNet.Models
         [DisplayName("工单号")]
         public string OrderNumber { get; set; }
         [Required]
+        [DisplayName("订单编号")]
+        public string OrderNo { get; set; }
+        [Required]
         [DisplayName("机台")]
         public string DrillingCrew { get; set; }
         [Required]
@@ -46,7 +50,7 @@ namespace CamelDotNet.Models
         public string WorkGroup { get; set; }
         [Required]
         [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd hh:mm:ss}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd HH:mm:ss}", ApplyFormatInEditMode = true)]
         [DisplayName("测试时间")]
         public DateTime TestTime { get; set; }
         [DisplayName("测试结果")]
@@ -57,6 +61,10 @@ namespace CamelDotNet.Models
         public decimal InnerLength { get; set; }
         [DisplayName("外端计米")]
         public decimal OuterLength { get; set; }
+        [DisplayName("客户")]
+        public int ClientId { get; set; }
+        [DisplayName("放行")]
+        public bool isGreenLight { get; set; }
         [DisplayName("不统计")]
         public bool NoStatistics { get; set; }
         [DisplayName("备注")]
@@ -71,5 +79,6 @@ namespace CamelDotNet.Models
         public virtual CamelDotNetUser CamelDotNetUser { get; set; }
         public virtual TestStation TestStation { get; set; }
         public virtual TestEquipment TestEquipment { get; set; }
+        public virtual Client Client { get; set; }
     }
 }

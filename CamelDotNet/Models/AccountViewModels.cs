@@ -31,16 +31,16 @@ namespace CamelDotNet.Models
 
     public class LoginViewModel
     {
-        [Required]
-        [Display(Name = "User name")]
+        [Required(ErrorMessage="工号必须填写")]
+        [Display(Name = "工号")]
         public string UserName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "密码必须填写")]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "密码")]
         public string Password { get; set; }
 
-        [Display(Name = "Remember me?")]
+        [Display(Name = "记住我?")]
         public bool RememberMe { get; set; }
     }
 

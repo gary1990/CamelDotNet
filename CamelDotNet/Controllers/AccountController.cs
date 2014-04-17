@@ -16,6 +16,7 @@ namespace CamelDotNet.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        private CamelDotNetDBContext db = new CamelDotNetDBContext();
         public AccountController()
             : this(new UserManager<CamelDotNetUser>(new UserStore<CamelDotNetUser>(new CamelDotNetDBContext())))
         {
@@ -46,16 +47,32 @@ namespace CamelDotNet.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user =  UserManager.Find(model.UserName, model.Password);
-                if (user != null)
+                CamelDotNetUser user = null;
+                try 
                 {
-                    SignIn(user, model.RememberMe);
-                    Session.Clear();
-                    return RedirectToLocal(returnUrl);
+                    user = db.Users.Where(a => a.JobNumber == model.UserName && a.IsDeleted == false).SingleOrDefault();
+                    if (user != null)
+                    {
+                        user = UserManager.Find(user.UserName, model.Password);
+                        if (user != null)
+                        {
+                            SignIn(user, model.RememberMe);
+                            Session.Clear();
+                            return RedirectToLocal(returnUrl);
+                        }
+                        else 
+                        {
+                            ModelState.AddModelError("", "登录失败,请检查工号密码");
+                        } 
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "登录失败,请检查工号密码");
+                    }
                 }
-                else
+                catch(Exception)
                 {
-                    ModelState.AddModelError("", "Invalid username or password.");
+                    ModelState.AddModelError("", "登录失败,请检查工号密码");
                 }
             }
 
@@ -318,6 +335,7 @@ namespace CamelDotNet.Controllers
                 UserManager.Dispose();
                 UserManager = null;
             }
+            db.Dispose();
             base.Dispose(disposing);
         }
 

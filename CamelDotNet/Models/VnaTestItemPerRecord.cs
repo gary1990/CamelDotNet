@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -15,11 +16,14 @@ namespace CamelDotNet.Models
         public int Id { get; set; }
         public int VnaTestItemRecordId { get; set; }
         [DisplayName("频点")]
-        public string XValue { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.#####}", ApplyFormatInEditMode = true)]
+        public decimal? XValue { get; set; }
         [DisplayName("测试值")]
-        public string YValue { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.#####}", ApplyFormatInEditMode = true)]
+        public decimal? YValue { get; set; }
         [DisplayName("计算值")]
-        public string RValue { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.#####}", ApplyFormatInEditMode = true)]
+        public decimal? RValue { get; set; }
         [DisplayName("测试结果")]
         public bool TestitemPerResult { get; set; }
         public virtual VnaTestItemRecord VnaTestItemRecord { get; set; }

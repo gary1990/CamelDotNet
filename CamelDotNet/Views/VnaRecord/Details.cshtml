@@ -33,6 +33,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.CamelDotNetUserId)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientId)
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -70,6 +73,9 @@
             <td>
                 @Html.DisplayFor(model => model.CamelDotNetUser.UserName)
             </td>
+            <td>
+                @Html.DisplayFor(model => model.Client.Name)
+            </td>
         </tr>
     </tbody>
 </table>
@@ -93,9 +99,9 @@
                     @foreach(var perItem in item.VnaTestItemPerRecords)
                     {
                         <tr>
-                            <td>@perItem.XValue</td>
-                            <td>@perItem.YValue</td>
-                            <td>@perItem.RValue</td>
+                            <td>@string.Format("{0:0.###############}", perItem.XValue)</td>
+                            <td>@string.Format("{0:0.###############}", perItem.YValue)</td>
+                            <td>@string.Format("{0:0.###############}", perItem.RValue)</td>
                             <td>
                                 @if (perItem.TestitemPerResult)
                                 {

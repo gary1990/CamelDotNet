@@ -81,6 +81,8 @@ namespace CamelDotNet.Controllers
         public virtual ActionResult CreateSave(RegisterViewModel model, string returnUrl = "Index")
         {
             var UserManager = new UserManager<CamelDotNetUser>(new UserStore<CamelDotNetUser>(UW.context));
+            //允许用户名包含非字母、数字
+            UserManager.UserValidator = new UserValidator<CamelDotNetUser>(UserManager) { AllowOnlyAlphanumericUserNames = false};
 
             if (ModelState.IsValid)
             {
@@ -90,6 +92,7 @@ namespace CamelDotNet.Controllers
                     user.UserName = model.UserName;
                     user.JobNumber = model.JobNumber;
                     user.CamelDotNetRoleId = model.CamelDotNetRoleId;
+                    user.DepartmentId = model.DepartmentId;
                     var userResult = UserManager.Create(user, model.Password);
                     UW.CamelUserSave();
 

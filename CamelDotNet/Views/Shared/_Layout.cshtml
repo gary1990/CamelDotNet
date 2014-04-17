@@ -29,7 +29,7 @@
     <header>
         <div class="content-wrapper">
             <div class="float-left">
-                <p class="site-title">@Html.AuthorizeActionLink("质量管理系统-QMS-Cable", "Index", "Home")</p>
+                <p class="site-title">@Html.AuthorizeActionLink("质量管理系统-电缆版", "Index", "Home")</p>
             </div>
             <div class="float-right">
                 <section id="login">
@@ -48,8 +48,8 @@
                             <li class="@(sideMenuPath == "产品型号" ? "current" : "")">@Html.AuthorizeActionLink("产品型号", "Index", "ProductType")</li>
                             <li class="@(sideMenuPath == "测试项" ? "current" : "")">@Html.AuthorizeActionLink("测试项", "Index", "TestItem")</li>
                             <li class="@(sideMenuPath == "测试站点" ? "current" : "")">@Html.AuthorizeActionLink("测试站点", "Index", "TestStation")</li>
-                            <li class="@(sideMenuPath == "测试设备" ? "current" : "")">@Html.AuthorizeActionLink("测试设备", "Index", "TestEquipment")</li>
                             <li class="@(sideMenuPath == "测试方案" ? "current" : "")">@Html.AuthorizeActionLink("测试方案", "Index", "TestConfig")</li>
+                            <li class="@(sideMenuPath == "测试设备" ? "current" : "")">@Html.AuthorizeActionLink("测试设备", "Index", "TestEquipment")</li>
                             <li class="@(sideMenuPath == "客户" ? "current" : "")">@Html.AuthorizeActionLink("客户", "Index", "Client")</li>
                         </ul>
                     </li>
@@ -65,6 +65,8 @@
                     <li class="current">@Html.AuthorizeActionLink("质量追溯", "Index", "QualityTracingHome")
                         <ul class="sideMenu">
                             <li class="@(sideMenuPath == "VNA测试" ? "current" : "")">@Html.AuthorizeActionLink("VNA测试", "Index", "VnaTestRecord")</li>
+                            <li>@Html.ActionLink("PIM测试","#")</li>
+                            <li>@Html.ActionLink("包装记录", "#")</li>
                         </ul>
                     </li>
                 }
@@ -77,7 +79,7 @@
                 {
                     <li class="current">@Html.AuthorizeActionLink("报表管理", "Index", "ReportHome")
                         <ul class="sideMenu">
-                        
+                            <li class="@(sideMenuPath == "质量放行" ? "current" : "")">@Html.AuthorizeActionLink("质量放行", "Index", "QualityPassRecord")</li>
                         </ul>
                     </li>
                 }
@@ -136,7 +138,7 @@
     <footer>
         <div class="content-wrapper" style="clear: both">
             <div class="float-left">
-                <p>&copy; @DateTime.Now.Year - Gemcycle</p>
+                <p>&copy;Camel Quality Managment</p>
             </div>
         </div>
     </footer>

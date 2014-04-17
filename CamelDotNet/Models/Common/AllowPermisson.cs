@@ -16,6 +16,8 @@ namespace CamelDotNet.Models.Common
                 "Api_TestBarCode",
                 "Api_BarCodeUsed",
                 "VnaTestRecord_UploadVnaRecord",
+                "QualityPassRecord_ExportToExcel",
+                "VnaTestRecord_TestZip",
             };
         }
         public List<string> Allowed { get; set; }

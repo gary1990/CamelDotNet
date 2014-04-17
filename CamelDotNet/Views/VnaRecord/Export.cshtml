@@ -1,0 +1,222 @@
+﻿@model IEnumerable<VnaRecord>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SerialNumberId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductTypeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CamelDotNetUserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestEquipmentId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestStationId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DrillingCrew)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReelNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestResult)
+            </th>
+            <th>偏心</th>
+            <th>内导体划伤</th>
+            <th>外径不稳</th>
+            <th>粘附力</th>
+            <th>同心度</th>
+            <th>电容不合格</th>
+            <th>芯线焦料</th>
+            <th>泡孔</th>
+            <th>焊接性能不合格退下</th>
+            <th>凹陷</th>
+            <th>轧纹轴承爆裂</th>
+            <th>外径</th>
+            <th>有小洞</th>
+            <th>撞伤</th>
+            <th>内端进水</th>
+            <th>节距</th>
+            <th>图像异常</th>
+            <th>划痕/划伤</th>
+            <th>起车线</th>
+            <th>轧开</th>
+            <th>粘附物较多</th>
+            <th>芯线竹节</th>
+            <th>绝缘芯线偏心</th>
+            <th>段长不足</th>
+            <th>铜带用错0.2当成0.17</th>
+            <th>内端打折</th>
+            <th>盘具用错</th>
+            <th>螺纹不清</th>
+            <th>排线乱</th>
+            <th>焦料</th>
+            <th>盘具被铲坏</th>
+            <th>盘具中心无铁皮</th>
+            <th>小洞</th>
+            <th>作业卡书写错误</th>
+            <th>偏心</th>
+            <th>刮伤、划痕</th>
+            <th>打印间隔</th>
+            <th>印字</th>
+            <th>23外导体挤护成22</th>
+            <th>铜管用错</th>
+            <th>混料</th>
+            <th>绝缘电容不合格</th>
+            <th>外导体开焊</th>
+            <th>外导体刮伤</th>
+            <th>外导体凹陷</th>
+            <th>线压扁</th>
+            <th>线不整圆</th>
+            <th>竹节</th>
+            <th>护套破损</th>
+            <th>火花机报警</th>
+            <th>抗拉强度</th>
+            <th>短路</th>
+            <th>脱胶</th>
+            <th>外护不良、毛糙</th>
+            <th>段长不合格</th>
+            <th>外护塑化不良</th>
+            <th>气孔</th>
+            <th>间隔性有水</th>
+            <th>伸长率</th>
+            <th>水印</th>
+            <th>氧化</th>
+            <th>包</th>
+            <th>击穿</th>
+            <th>备注</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SerialNumber.Number)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductType.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TestTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CamelDotNetUser.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TestEquipment.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TestStation.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Client.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DrillingCrew)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReelNumber)
+                </td>
+                <td>
+                    @if(!item.TestResult)
+                    {
+                        <span style="color:green;">合格</span>
+                    }
+                    else
+                    {
+                        <span style="color:red;">不合格</span>
+                    }
+                </td>
+                <td>@Html.DisplayNotElec(item, "偏心")</td>
+                <td>@Html.DisplayNotElec(item, "内导体划伤")</td>
+                <td>@Html.DisplayNotElec(item, "外径不稳")</td>
+                <td>@Html.DisplayNotElec(item, "粘附力")</td>
+                <td>@Html.DisplayNotElec(item, "同心度")</td>
+                <td>@Html.DisplayNotElec(item, "电容不合格")</td>
+                <td>@Html.DisplayNotElec(item, "芯线焦料")</td>
+                <td>@Html.DisplayNotElec(item, "泡孔")</td>
+                <td>@Html.DisplayNotElec(item, "焊接性能不合格退下")</td>
+                <td>@Html.DisplayNotElec(item, "凹陷")</td>
+                <td>@Html.DisplayNotElec(item, "轧纹轴承爆裂")</td>
+                <td>@Html.DisplayNotElec(item, "外径")</td>
+                <td>@Html.DisplayNotElec(item, "有小洞")</td>
+                <td>@Html.DisplayNotElec(item, "撞伤")</td>
+                <td>@Html.DisplayNotElec(item, "内端进水")</td>
+                <td>@Html.DisplayNotElec(item, "节距")</td>
+                <td>@Html.DisplayNotElec(item, "图像异常")</td>
+                <td>@Html.DisplayNotElec(item, "划痕/划伤")</td>
+                <td>@Html.DisplayNotElec(item, "起车线")</td>
+                <td>@Html.DisplayNotElec(item, "轧开")</td>
+                <td>@Html.DisplayNotElec(item, "粘附物较多")</td>
+                <td>@Html.DisplayNotElec(item, "芯线竹节")</td>
+                <td>@Html.DisplayNotElec(item, "绝缘芯线偏心")</td>
+                <td>@Html.DisplayNotElec(item, "段长不足")</td>
+                <td>@Html.DisplayNotElec(item, "铜带用错0.2当成0.17")</td>
+                <td>@Html.DisplayNotElec(item, "内端打折")</td>
+                <td>@Html.DisplayNotElec(item, "盘具用错")</td>
+                <td>@Html.DisplayNotElec(item, "螺纹不清")</td>
+                <td>@Html.DisplayNotElec(item, "排线乱")</td>
+                <td>@Html.DisplayNotElec(item, "焦料")</td>
+                <td>@Html.DisplayNotElec(item, "盘具被铲坏")</td>
+                <td>@Html.DisplayNotElec(item, "盘具中心无铁皮")</td>
+                <td>@Html.DisplayNotElec(item, "小洞")</td>
+                <td>@Html.DisplayNotElec(item, "作业卡书写错误")</td>
+                <td>@Html.DisplayNotElec(item, "偏心")</td>
+                <td>@Html.DisplayNotElec(item, "刮伤、划痕")</td>
+                <td>@Html.DisplayNotElec(item, "打印间隔")</td>
+                <td>@Html.DisplayNotElec(item, "印字")</td>
+                <td>@Html.DisplayNotElec(item, "23外导体挤护成22")</td>
+                <td>@Html.DisplayNotElec(item, "铜管用错")</td>
+                <td>@Html.DisplayNotElec(item, "混料")</td>
+                <td>@Html.DisplayNotElec(item, "绝缘电容不合格")</td>
+                <td>@Html.DisplayNotElec(item, "外导体开焊")</td>
+                <td>@Html.DisplayNotElec(item, "外导体刮伤")</td>
+                <td>@Html.DisplayNotElec(item, "外导体凹陷")</td>
+                <td>@Html.DisplayNotElec(item, "线压扁")</td>
+                <td>@Html.DisplayNotElec(item, "线不整圆")</td>
+                <td>@Html.DisplayNotElec(item, "竹节")</td>
+                <td>@Html.DisplayNotElec(item, "护套破损")</td>
+                <td>@Html.DisplayNotElec(item, "火花机报警")</td>
+                <td>@Html.DisplayNotElec(item, "抗拉强度")</td>
+                <td>@Html.DisplayNotElec(item, "短路")</td>
+                <td>@Html.DisplayNotElec(item, "脱胶")</td>
+                <td>@Html.DisplayNotElec(item, "外护不良、毛糙")</td>
+                <td>@Html.DisplayNotElec(item, "段长不合格")</td>
+                <td>@Html.DisplayNotElec(item, "外护塑化不良")</td>
+                <td>@Html.DisplayNotElec(item, "气孔")</td>
+                <td>@Html.DisplayNotElec(item, "间隔性有水")</td>
+                <td>@Html.DisplayNotElec(item, "伸长率")</td>
+                <td>@Html.DisplayNotElec(item, "水印")</td>
+                <td>@Html.DisplayNotElec(item, "氧化")</td>
+                <td>@Html.DisplayNotElec(item, "包")</td>
+                <td>@Html.DisplayNotElec(item, "击穿")</td>
+                <td>@item.Remark</td>
+            </tr>
+        }
+    </tbody>
+</table>

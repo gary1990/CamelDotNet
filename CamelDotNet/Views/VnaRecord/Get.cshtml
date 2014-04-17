@@ -1,10 +1,14 @@
 ﻿@model IEnumerable<VnaRecord>
 @{
     string returnUrl = Url.Action((((RouteValueDictionary)(ViewBag.RV))["returnRoot"]).ToString(), (RouteValueDictionary)(ViewBag.RV));
+
+    var passPerCont = ViewBag.PassPercent;
 }
-
+@if(passPerCont != null)
+{
+    <div style="text-align:center;font-size:large;color:green;"><marquee direction="left">合格率：@passPerCont%</marquee> </div>
+}
 @Html.Partial("PageLink")
-
 <table>
     <thead>
         <tr>
@@ -28,13 +32,22 @@
                 @Html.DisplayNameFor(model => model.TestStationId)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.ClientId)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.OrderNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderNo)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DrillingCrew)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ReelNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WorkGroup)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.TestResult)
@@ -78,13 +91,22 @@
                     @Html.DisplayFor(modelItem => item.TestStation.Name)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.Client.Name)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.OrderNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderNo)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.DrillingCrew)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ReelNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WorkGroup)
                 </td>
                 <td>
                     @if(!item.TestResult)

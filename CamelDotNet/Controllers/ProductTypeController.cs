@@ -44,12 +44,12 @@ namespace CamelDotNet.Controllers
                             db.ProductType.Remove(record);
                         }
                     }
-                    
-                    using (var connection = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["CamelDotNetK3"].ConnectionString))
+                    //var connection = new SqlConnection("Data Source=127.0.0.1,1433;Network Library=DBMSSOCN;Initial Catalog=AIS20121207075920;User ID=sa;Password=Clps2013;")
+                    using (var connection = new SqlConnection("Data Source=127.0.0.1,1433;Network Library=DBMSSOCN;Initial Catalog=AIS20121207075920;User ID=sa;Password=Clps2013;"))
                     {
                         using (SqlCommand command = connection.CreateCommand())
                         {
-                            command.CommandText = "SELECT DISTINCT a.FModel AS Name,a.FDeleted AS IsDeleted FROM vICItem a WHERE a.FModel IS NOT null GROUP BY a.FModel, a.FDeleted";
+                            command.CommandText = "SELECT DISTINCT a.FName AS Name,a.FDeleted AS IsDeleted FROM vICItem a WHERE a.FName IS NOT null GROUP BY a.FName, a.FDeleted";
                             connection.Open();
                             using (SqlDataReader reader = command.ExecuteReader())
                             {

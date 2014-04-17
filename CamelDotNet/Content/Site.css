@@ -333,9 +333,13 @@ aside {
 
 /* login page */
 #loginForm {
-    border-right: solid 2px #c8c8c8;
-    float: left;
-    width: 55%;
+    /*border-right: solid 2px #c8c8c8;*/
+    /*float: left;
+    width: 55%;*/
+    margin: 0 auto;
+    padding-left: 8px;
+    padding-top: 10px;
+    width: 390px;
 }
 
     #loginForm .validation-error {
@@ -806,4 +810,68 @@ div.pageLink a {
 }
 .green {
     background-color:green;
+}
+
+img.logo {
+    height: 60px;
+    width: 150px;
+}
+
+img.home {
+    height: 581px;
+    width: 1423px;
+}
+
+div.logo_appName {
+    padding-bottom: 130px;
+    width: 390px;
+}
+div.title-div {
+    margin: 0 auto;
+    width: 390px;
+    text-align:center;
+}
+div.appName {
+    color: #767676;
+    display: inline-block;
+    font-family: 'PT Sans',sans-serif,'微软雅黑';
+    font-size: 60px;
+    line-height: 0px;
+    vertical-align: top;
+    height:60px;
+}
+.body-div {
+    background: none repeat scroll 0 0 #E8EAE9;
+    height: 245px;
+    position: relative;
+    width: 100%;
+}
+
+footer.login {
+    background-color : white;
+}
+
+footer-login{
+    color : black;
+    border-bottom : none;
+}
+
+th span.block4 {
+    display:inline-block; 
+    width:60px;
+}
+
+th span.block5 {
+    display:inline-block; 
+    width:70px;
+}
+
+th span.block6 {
+    display:inline-block; 
+    width:80px;
+}
+
+th span.block7 {
+    display:inline-block; 
+    width:95px;
 }

@@ -111,24 +111,26 @@ namespace CamelDotNet.Controllers
             bool result = true;
             if (userName != null && passWord != null)
             {
-                var user = db.UserManager.Find(userName, passWord);
-                if (user == null)
+                try 
                 {
-                    result = false;
-                }
-                else
-                {
-                    if (user.IsDeleted != false)
+                    var user = db.Users.Where(a => a.JobNumber == userName && a.IsDeleted == false && a.CamelDotNetRole.Name == "测试人员").SingleOrDefault();
+                    if (user == null)
                     {
-                        return false;
+                        result = false;
                     }
-                    else 
+                    else
                     {
-                        if (user.CamelDotNetRole.Name != "VnaTester")
+                        var name = user.UserName;
+                        user = db.UserManager.Find(name,passWord);
+                        if (user == null)
                         {
                             result = false;
                         }
                     }
+                }
+                catch(Exception)
+                {
+                    result = false;
                 }
             }
             else 

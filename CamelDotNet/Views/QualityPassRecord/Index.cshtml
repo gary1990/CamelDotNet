@@ -1,0 +1,76 @@
+﻿@Html.IndexPageInit()
+<h2>@ViewBag.Name</h2>
+@using (Ajax.BeginForm(null, null,(AjaxOptions)ViewBag.AjaxOpts, new { id = "searchForm" }))
+{
+    <table>
+        <tr>
+            <td>
+                <span class="searchLabel">测试时间</span>
+            </td>
+            <td>
+                <span class="searchLabel">盘号</span>
+            </td>
+            <td>
+                <span class="searchLabel">产品型号</span>
+            </td>
+            <td>
+                <span class="searchLabel">序列号</span>
+            </td>
+            <td>
+                <span class="searchLabel">已放行</span>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            @Html.Hidden("returnRoot", (string)ViewBag.ReturnRoot)
+            @Html.Hidden("actionAjax", (string)ViewBag.Action)
+            @Html.Hidden("filter")
+            @Html.Hidden("export",false)
+            <td>
+                @Html.TextBox("TestTime@>=", null, new { @class = "filter", style = "width: 100px;" })
+                至
+                @Html.TextBox("TestTime@<=", null, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.TextBox("ReelNumber@%", null, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.DropDownList("ProductTypeId@=", new SelectList(Common.GetProductTypeList(), "Id", "Name"), String.Empty, new { @class = "filter"})
+            </td>
+            <td>
+                @Html.TextBox("SerialNumber.Number@%", null, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.CheckBox("isGreenLight@=", false, new { @class = "filter" })
+            </td>
+            <td>
+                <button id="btSearch" type="submit">查询</button>
+                <button id="btExport" type="submit">导出</button>
+            </td>
+        </tr>
+    </table>
+}
+<div id="AjaxBody">
+    @Html.Action((string)ViewBag.Action, (RouteValueDictionary)(ViewBag.RV))
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/cw")
+    <script>
+        $(document).ready(function () {
+            $("#searchForm").submit(function (e) { setFilter(); });
+            
+            $("#btSearch").click(function () {
+                $("#export").val("False");
+                $("#searchForm").attr("data-ajax", "true")
+                $("#searchForm").attr("data-ajax-url", "/QualityPassRecord/Get");
+            });
+
+            $("#btExport").click(function () {
+                $("#export").val("True");
+                $("#searchForm").attr("data-ajax", "false")
+                $("#searchForm").attr("action", "/QualityPassRecord/Get");
+            });
+        });
+    </script>
+}

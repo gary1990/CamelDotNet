@@ -29,6 +29,7 @@ namespace CamelDotNet.Models.DAL
         private GenericRepository<VnaTestItemPerRecord> vnaTestItemPerRecordRepository;
         private GenericRepository<Unit> unitRepository;
         private GenericRepository<Department> departmentRepository;
+        private GenericRepository<QualityPassRecord> qualityPassRecordRepository;
         public GenericRepository<TestItem> TestItemRepository 
         {
             get 
@@ -251,6 +252,18 @@ namespace CamelDotNet.Models.DAL
                     this.departmentRepository = new GenericRepository<Department>(context);
                 }
                 return departmentRepository;
+            }
+        }
+
+        public GenericRepository<QualityPassRecord> QualityPassRecordRepository
+        {
+            get
+            {
+                if (this.qualityPassRecordRepository == null)
+                {
+                    this.qualityPassRecordRepository = new GenericRepository<QualityPassRecord>(context);
+                }
+                return qualityPassRecordRepository;
             }
         }
 

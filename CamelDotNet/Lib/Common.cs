@@ -13,6 +13,8 @@ using Microsoft.AspNet.Identity;
 using CamelDotNet.Models.ViewModels;
 using CamelDotNet.Models;
 using System.Globalization;
+using System.Data.Entity;
+
 namespace CamelDotNet.Lib
 {
     public class Common<Model> where Model : class
@@ -98,7 +100,7 @@ namespace CamelDotNet.Lib
                     else if(type == "DateTime")
                     {
                         DateTime targetParse;
-                        if (!DateTime.TryParseExact(target, "yyyyMMdd hhmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out targetParse)) 
+                        if (!DateTime.TryParseExact(target, "yyyyMMdd HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out targetParse)) 
                         {
                             targetParse = DateTime.Now;
                         }
@@ -143,7 +145,7 @@ namespace CamelDotNet.Lib
 
         }
 
-        public static IQueryable<Model> Page(Controller c, RouteValueDictionary rv, IQueryable<Model> q, int size = 2)
+        public static IQueryable<Model> Page(Controller c, RouteValueDictionary rv, IQueryable<Model> q, int size = 20)
         {
             var tmpPage = rv.Where(a => a.Key == "page").Select(a => a.Value).SingleOrDefault();
             int page = int.Parse(tmpPage.ToString());
@@ -428,7 +430,7 @@ namespace CamelDotNet.Lib
 
             result = rep.Get(noTrack);
 
-            result = result.Where(a => a.IsDeleted == false && a.TestItemCategory.Name == "电器性能");
+            result = result.Where(a => a.IsDeleted == false && a.TestItemCategory.Name == "电气性能");
 
             if (!String.IsNullOrWhiteSpace(keyWord))
             {

@@ -1,0 +1,82 @@
+﻿@model QualityPassRecord
+@{
+    var curUserRole = ViewBag.CurUserRole;
+}
+
+@Html.HiddenFor(model => model.Id)
+
+@*@Html.Action("AbstractEdit", Model.Id)*@
+
+@if (curUserRole == "质量工程师" || curUserRole == "技术工程师")
+{
+    <div class="editor-label">
+    @Html.LabelFor(model => model.QeSuggestion)
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.QeSuggestion)
+        @Html.ValidationMessageFor(model => model.QeSuggestion)
+    </div>
+    <div class="editor-label">
+        @Html.LabelFor(model => model.DepartmentId)
+    </div>
+    <div class="editor-field">
+        @Html.DropDownListFor(model => model.DepartmentId, new SelectList(Common.GetDepartmentList(), "Id", "Name"), String.Empty)
+        @Html.ValidationMessageFor(model => model.DepartmentId)
+    </div>
+    <div class="editor-label">
+        @Html.LabelFor(model => model.TechnologistSuggestion)
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.TechnologistSuggestion)
+        @Html.ValidationMessageFor(model => model.TechnologistSuggestion)
+    </div>
+}
+@if(curUserRole == "质量经理")
+{
+    <div class="editor-label">
+        @Html.LabelFor(model => model.QmSuggestion)
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.QmSuggestion)
+        @Html.ValidationMessageFor(model => model.QmSuggestion)
+    </div>
+    <div class="editor-label">
+        @Html.LabelFor(model => model.NeedHmApprove)
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.NeedHmApprove)
+        @Html.ValidationMessageFor(model => model.NeedHmApprove)
+    </div>
+    if(Model.HmId == null)
+    {
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ChangePass)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.ChangePass)
+            @Html.ValidationMessageFor(model => model.ChangePass)
+        </div>
+    }
+    else 
+    {
+        @Html.HiddenFor(model => model.ChangePass)
+    }
+}
+
+@if(curUserRole == "总工")
+{
+    <div class="editor-label">
+        @Html.LabelFor(model => model.ChangePass)
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.ChangePass)
+        @Html.ValidationMessageFor(model => model.ChangePass)
+    </div>
+    <div class="editor-label">
+        @Html.LabelFor(model => model.HmSuggestion)
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.HmSuggestion)
+        @Html.ValidationMessageFor(model => model.HmSuggestion)
+    </div>
+}

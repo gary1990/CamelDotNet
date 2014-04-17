@@ -27,7 +27,19 @@ namespace CamelDotNet.Controllers
             ViewBag.path = path;
             ViewBag.Name = "VNA测试";
             ViewBag.Title = "VNA测试";
-            ViewBag.Controller = "VnaTestRecord";  
+            ViewBag.Controller = "VnaTestRecord";
+        }
+
+        public void TestZip() 
+        {
+            var dt = DateTime.Now;
+
+            Response.Write(dt.ToString("yyyy/MM/dd HH:mm:ss"));
+            //using (var zip = new ZipFile(Encoding.Default))
+            //{
+            //    zip.AddDirectory("c:\\test");
+            //    zip.Save("c:\\zip\\archive.zip");
+            //}
         }
 
         public ActionResult UploadVnaRecord()
@@ -100,14 +112,12 @@ namespace CamelDotNet.Controllers
                 }
             }
 
+            ZipFile zip = ZipFile.Read(savePath, new ReadOptions { Encoding = Encoding.Default });
             try 
             {
                 //解压缩文件
-                using (ZipFile zip = ZipFile.Read(savePath, new ReadOptions { Encoding = Encoding.Default}))
-                {
-                    zip.AlternateEncoding = Encoding.Default;
-                    zip.ExtractAll(uploadPath, ExtractExistingFileAction.OverwriteSilently);
-                }
+                zip.AlternateEncoding = Encoding.Default;
+                zip.ExtractAll(uploadPath, ExtractExistingFileAction.OverwriteSilently);
             }
             catch(Exception)
             {
@@ -117,6 +127,7 @@ namespace CamelDotNet.Controllers
                     Data = result
                 }; 
             }
+            zip.Dispose();
 
             var serialNumber = fileNameWithoutEx.Substring(fileNameWithoutEx.IndexOf("_") + 1);
             var serialNumberRecord = db.SerialNumber.Where(a => a.Number == serialNumber).SingleOrDefault();
@@ -171,8 +182,9 @@ namespace CamelDotNet.Controllers
                         //测试时间
                         string testTimeStr = lineArr[0];
                         DateTime testTime;
-                        if (!DateTime.TryParseExact(testTimeStr, "yyyy/MM/dd hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out testTime)) 
+                        if (!DateTime.TryParseExact(testTimeStr, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out testTime)) 
                         {
+                            sr.Close();
                             result.Message = "测试时间转换失败";
                             return new XmlResult<SingleResultXml>()
                             {
@@ -189,6 +201,7 @@ namespace CamelDotNet.Controllers
                         }
                         else 
                         {
+                            sr.Close();
                             result.Message = "General.csv中测试站点不存在";
                             return new XmlResult<SingleResultXml>()
                             {
@@ -205,13 +218,14 @@ namespace CamelDotNet.Controllers
                         }
                         else 
                         {
+                            sr.Close();
                             result.Message = "General.csv中测试设备不存在";
                             return new XmlResult<SingleResultXml>()
                             {
                                 Data = result
                             };
                         }
-                        //测试员名称
+                        //测试员工号
                         string testerJobNum = lineArr[3];
                         string testerId;
                         var testerRecord = UW.CamelDotNetUserRepository.dbSet.Where(a => a.JobNumber == testerJobNum && a.IsDeleted == false).SingleOrDefault();
@@ -221,6 +235,7 @@ namespace CamelDotNet.Controllers
                         }
                         else 
                         {
+                            sr.Close();
                             result.Message = "General.csv中测试员不存在";
                             return new XmlResult<SingleResultXml>()
                             {
@@ -237,6 +252,7 @@ namespace CamelDotNet.Controllers
                         }
                         else 
                         {
+                            sr.Close();
                             result.Message = "General.csv中产品型号不存在";
                             return new XmlResult<SingleResultXml>()
                             {
@@ -256,7 +272,8 @@ namespace CamelDotNet.Controllers
                         decimal temperature;
                         if (!Decimal.TryParse(temperatureStr, out temperature))
                         {
-                            result.Message = "General.csv中日期转换失败";
+                            sr.Close();
+                            result.Message = "General.csv中温度转换失败";
                             return new XmlResult<SingleResultXml>()
                             {
                                 Data = result
@@ -271,6 +288,7 @@ namespace CamelDotNet.Controllers
                         decimal innerLength;
                         if (!Decimal.TryParse(innerLengthStr, out innerLength))
                         {
+                            sr.Close();
                             result.Message = "General.csv中内端计米转换失败";
                             return new XmlResult<SingleResultXml>()
                             {
@@ -282,6 +300,7 @@ namespace CamelDotNet.Controllers
                         decimal outerLength;
                         if (!Decimal.TryParse(outerLengthStr, out outerLength))
                         {
+                            sr.Close();
                             result.Message = "General.csv中外端计米转换失败";
                             return new XmlResult<SingleResultXml>()
                             {
@@ -301,6 +320,26 @@ namespace CamelDotNet.Controllers
                         }
                         //备注
                         string remark = lineArr[15];
+                        //客户
+                        string clientName = lineArr[16];
+                        int clientId;
+                        var clientRecord = UW.context.Client.Where(a => a.Name == clientName && a.IsDeleted == false).SingleOrDefault();
+                        if (clientRecord != null)
+                        {
+                            clientId = clientRecord.Id;
+                        }
+                        else
+                        {
+                            sr.Close();
+                            result.Message = "General.csv中客户不存在";
+                            return new XmlResult<SingleResultXml>()
+                            {
+                                Data = result
+                            };
+                        }
+                        //订单编号
+                        string orderNo = lineArr[17];
+                        //插入General.csv中数据
                         try 
                         {
                             VnaRecord vnaRecord = new VnaRecord() 
@@ -311,6 +350,7 @@ namespace CamelDotNet.Controllers
                                 TestEquipmentId = testEquipmentId,
                                 TestStationId = testStationId,
                                 OrderNumber = orderNumber,
+                                OrderNo = orderNo,
                                 DrillingCrew = drillingCrew,
                                 ReelNumber = reelNumber,
                                 WorkGroup = workGroup,
@@ -321,6 +361,7 @@ namespace CamelDotNet.Controllers
                                 OuterLength = outerLength,
                                 NoStatistics = noStatistics,
                                 Remark = remark,
+                                ClientId = clientId,
                             };
                             db.VnaRecord.Add(vnaRecord);
                             db.SaveChanges();
@@ -328,6 +369,7 @@ namespace CamelDotNet.Controllers
                         }
                         catch(Exception)
                         {
+                            sr.Close();
                             result.Message = "插入General.csv信息失败";
                             return new XmlResult<SingleResultXml>()
                             {
@@ -364,6 +406,7 @@ namespace CamelDotNet.Controllers
                                     }
                                     else
                                     {
+                                        nepSr.Close();
                                         result.Message = "nep.txt中测试项Id:" + item + "不存在";
                                         return new XmlResult<SingleResultXml>()
                                         {
@@ -373,6 +416,7 @@ namespace CamelDotNet.Controllers
                                 }
                                 catch(Exception)
                                 {
+                                    nepSr.Close();
                                     result.Message = "非电气性能不合格项Id:" + item + "插入失败";
                                     return new XmlResult<SingleResultXml>()
                                     {
@@ -449,11 +493,48 @@ namespace CamelDotNet.Controllers
                                         }
                                         perTestItemLineArr = perTestItemLine.Split(',');
                                         //XVlaue
-                                        var xValue = perTestItemLineArr[0];
+                                        string xValueStr = perTestItemLineArr[0];
+                                        decimal xValue = 0M;
+                                        if (xValueStr != null && xValueStr.Trim() != "")
+                                        {
+                                            if (!Decimal.TryParse(xValueStr, out xValue))
+                                            {
+                                                result.Message = "测试项:" + testItemName + "xValue转换失败";
+                                                return new XmlResult<SingleResultXml>()
+                                                {
+                                                    Data = result
+                                                };
+                                            }
+                                        }
                                         //YValue
-                                        var yValue = perTestItemLineArr[1];
+                                        string yValueStr = perTestItemLineArr[1];
+                                        decimal yValue = 0M;
+                                        var ss = yValueStr.Trim();
+                                        if (yValueStr != null && yValueStr.Trim() != "")
+                                        {
+                                            if (!Decimal.TryParse(yValueStr, out yValue))
+                                            {
+                                                result.Message = "测试项:" + testItemName + "yValue转换失败";
+                                                return new XmlResult<SingleResultXml>()
+                                                {
+                                                    Data = result
+                                                };
+                                            }
+                                        }
                                         //RValue
-                                        var rValue = perTestItemLineArr[2];
+                                        string rValueStr = perTestItemLineArr[2];
+                                        decimal rValue = 0M;
+                                        if (rValueStr != null && rValueStr.Trim() != "")
+                                        {
+                                            if (!Decimal.TryParse(rValueStr, out rValue))
+                                            {
+                                                result.Message = "测试项:" + testItemName + "rValue转换失败";
+                                                return new XmlResult<SingleResultXml>()
+                                                {
+                                                    Data = result
+                                                };
+                                            }
+                                        }
                                         //TestitemPerResult
                                         var testitemPerResultStr = perTestItemLineArr[3];
                                         bool testitemPerResult = false;

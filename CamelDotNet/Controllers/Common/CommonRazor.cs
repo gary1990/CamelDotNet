@@ -1,4 +1,5 @@
-﻿using CamelDotNet.Models.ViewModels;
+﻿using CamelDotNet.Models;
+using CamelDotNet.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -412,6 +413,120 @@ namespace System.Web.Mvc.Html
 
         private static readonly SelectListItem[] SingleEmptyItem = new[] { new SelectListItem { Text = "", Value = "" } };
         
+        //质量放行驻波或回波损耗显示
+        public static MvcHtmlString DisplayZbOrHbsh(this HtmlHelper htmlHelper, List<ICollection<VnaTestItemPerRecord>> list, int index)
+        {
+            if(list.Count() > 0)
+            {
+                if(list[0].Count() >= index)
+                {
+                    var perRecord = list[0].ElementAtOrDefault(index-1);
+                    if(perRecord.TestitemPerResult)
+                    {
+                        var tag = new TagBuilder("span");
+                        tag.SetInnerText(string.Format("{0:0.###############}", perRecord.XValue) + "/" + string.Format("{0:0.###############}", perRecord.YValue));
+                        return MvcHtmlString.Create(tag.ToString(TagRenderMode.Normal));
+                    }
+                    else
+                    {
+                        return MvcHtmlString.Empty;
+                    }
+                }
+                else
+                {
+                    return MvcHtmlString.Empty;
+                }
+            }
+            else
+            {
+                return MvcHtmlString.Empty;
+            } 
+        }
+        //质量放行时域阻抗或TDR电长度显示
+        public static MvcHtmlString DisplaySyzkOrTdr(this HtmlHelper htmlHelper, List<ICollection<VnaTestItemPerRecord>> list, int index)
+        {
+            if (list.Count() > 0)
+            {
+                if (list[0].Count() >= index)
+                {
+                    var perRecord = list[0].ElementAtOrDefault(index - 1);
+                    if (perRecord.TestitemPerResult)
+                    {
+                        var tag = new TagBuilder("span");
+                        tag.SetInnerText(string.Format("{0:0.###############}", perRecord.RValue));
+                        return MvcHtmlString.Create(tag.ToString(TagRenderMode.Normal));
+                    }
+                    else
+                    {
+                        return MvcHtmlString.Empty;
+                    }
+                }
+                else
+                {
+                    return MvcHtmlString.Empty;
+                }
+            }
+            else
+            {
+                return MvcHtmlString.Empty;
+            }
+        }
+        //质量放行衰减显示
+        public static HtmlString DisplaySj(this HtmlHelper htmlHelper, List<VnaTestItemRecord> list)
+        {
+            if (list.Count() > 0)
+            {
+                var record = list[0];
+                if (record.TestItemResult)
+                {
+                    var tag = new TagBuilder("span");
+                    tag.SetInnerText("不合格");
+                    return MvcHtmlString.Create(tag.ToString(TagRenderMode.Normal));
+                }
+                else
+                {
+                    return MvcHtmlString.Empty;
+                }
+            }
+            else
+            {
+                return MvcHtmlString.Empty;
+            }
+        }
+        //质量放行外观显示
+        public static HtmlString DisplayWg(this HtmlHelper htmlHelper, List<TestItem> list)
+        {
+            if (list.Count() > 0)
+            {
+                var tag = new TagBuilder("span");
+                string names = null;
+                foreach (var item in list)
+                {
+                    names += item.Name + " ";
+                }
+
+                tag.SetInnerText(names);
+                return MvcHtmlString.Create(tag.ToString(TagRenderMode.Normal));
+            }
+            else
+            {
+                return MvcHtmlString.Empty;
+            }
+        }
+        //vna测试非电器性能显示
+        public static HtmlString DisplayNotElec(this HtmlHelper htmlHelper, VnaRecord vnaRecord, string notElecName = null)
+        {
+            if (vnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == notElecName).Count() != 0)
+            {
+                var tag = new TagBuilder("span");
+                tag.SetInnerText("√");
+                return MvcHtmlString.Create(tag.ToString(TagRenderMode.Normal));
+            }
+            else
+            {
+                return MvcHtmlString.Empty;
+            }
+        }
     }
 
     public static class AuthorizeActionLinkExtention 

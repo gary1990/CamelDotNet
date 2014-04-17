@@ -14,13 +14,15 @@
     @Html.LabelFor(model => model.ControllerName)
 </div>
 <div class="editor-field">
-    @Html.EditorFor(model => model.ControllerName)
+    @Html.HiddenFor(model => model.ControllerName)
+    @Html.TextBoxFor(model => model.ControllerName, new { @ReadOnly = "ReadOnly" })
     @Html.ValidationMessageFor(model => model.ControllerName)
 </div>
 <div class="editor-label">
     @Html.LabelFor(model => model.ActionName)
 </div>
 <div class="editor-field">
-    @Html.EditorFor(model => model.ActionName)
+    @Html.HiddenFor(model => model.ActionName)
+    @Html.TextBoxFor(model => model.ActionName, new { @ReadOnly = "ReadOnly" })
     @Html.ValidationMessageFor(model => model.ActionName)
 </div>
