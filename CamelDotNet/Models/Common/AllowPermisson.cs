@@ -15,6 +15,7 @@ namespace CamelDotNet.Models.Common
                 "Api_TestStation",
                 "Api_TestBarCode",
                 "Api_BarCodeUsed",
+                "Api_Client",
                 "VnaTestRecord_UploadVnaRecord",
                 "QualityPassRecord_ExportToExcel",
                 "VnaTestRecord_TestZip",

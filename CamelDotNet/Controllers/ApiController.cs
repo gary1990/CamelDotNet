@@ -39,6 +39,27 @@ namespace CamelDotNet.Controllers
             };
         }
 
+        public ActionResult Client() 
+        {
+            List<Client> result = db.Client.Where(a => a.IsDeleted == false).ToList();
+            ClientListXml clientXmlList = new ClientListXml();
+            if (result.Count() != 0)
+            {
+                foreach (var client in result)
+                {
+                    ClientXml clientXml = new ClientXml();
+                    clientXml.Id = client.Id;
+                    clientXml.Name = client.Name;
+                    clientXmlList.ClientXmls.Add(clientXml);
+                }
+            }
+
+            return new XmlResult<ClientListXml>()
+            {
+                Data = clientXmlList
+            };
+        }
+
         public ActionResult BarCodeUsed(string serialNumber = null)
         {
             

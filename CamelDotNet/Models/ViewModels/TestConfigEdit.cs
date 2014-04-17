@@ -11,7 +11,7 @@ namespace CamelDotNet.Models.ViewModels
         public int Id { get; set; }
         [DisplayName("产品型号")]
         public int ProductTypeId { get; set; }
-        [DisplayName("测试方案")]
+        [DisplayName("客户")]
         public int ClientId { get; set; }
 
         public bool IsDeleted { get; set; }
