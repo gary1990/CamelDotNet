@@ -494,7 +494,7 @@ namespace System.Web.Mvc.Html
             }
         }
         //质量放行外观显示
-        public static HtmlString DisplayWg(this HtmlHelper htmlHelper, List<TestItem> list)
+        public static HtmlString DisplayWg(this HtmlHelper htmlHelper, List<TestItem> list, VnaRecord vnaRecord)
         {
             if (list.Count() > 0)
             {
@@ -502,7 +502,14 @@ namespace System.Web.Mvc.Html
                 string names = null;
                 foreach (var item in list)
                 {
-                    names += item.Name + " ";
+                    if (item.Name == "备注")
+                    {
+                        names += vnaRecord.Remark + " ";
+                    }
+                    else 
+                    {
+                        names += item.Name + " ";
+                    }
                 }
 
                 tag.SetInnerText(names);

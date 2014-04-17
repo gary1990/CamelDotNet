@@ -115,7 +115,7 @@
                     @Html.DisplaySyzkOrTdr(tdr, 1)
                 </td>
                 <td rowspan="2">
-                    @Html.DisplayWg(wg)
+                    @Html.DisplayWg(wg, item.VnaRecord)
                 </td>
                 <td rowspan="2">
                     @Html.DisplayFor(modelItem => item.VnaRecord.Client.Name)
