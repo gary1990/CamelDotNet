@@ -383,7 +383,7 @@ namespace CamelDotNet.Controllers
                             db.SaveChanges();
                             vnaRecordId = vnaRecord.Id;
                         }
-                        catch(Exception)
+                        catch(Exception e)
                         {
                             sr.Close();
                             result.Message = "插入General.csv信息失败";
@@ -458,7 +458,8 @@ namespace CamelDotNet.Controllers
                     {
                         if (!testItemFile.Contains("General"))
                         {
-                            var testItemFileArr = testItemFile.Split(new char[] {'-','.'});
+                            var subTestItemFile = testItemFile.Substring(testItemFile.LastIndexOf("\\")+1);
+                            var testItemFileArr = subTestItemFile.Split(new char[] { '-', '.' });
                             var testItemName = testItemFileArr[0].Substring(testItemFileArr[0].LastIndexOf('\\') + 1);
                             var testItemRecord = UW.context.TestItem.Where(a => a.Name == testItemName && a.IsDeleted == false).SingleOrDefault();
                             if (testItemRecord != null)
