@@ -614,6 +614,17 @@ namespace CamelDotNet.Controllers
             return PartialView(ViewPath1 + ViewPathBase + ViewPath2 + "AbstractEditCopyOrSave.cshtml", result);
         }
 
+        public JsonResult GetFilterComboxJason(string nameLike)
+        {
+            List<ProductType> result = new List<ProductType> { };
+            if (nameLike.Length > 3)
+            {
+                result = UW.context.ProductType.Where(a => a.Name.Contains(nameLike) || a.ModelName.Contains(nameLike))
+                                    .ToList();
+            }
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
         protected override void Dispose(bool disposing)
         {
             UW.Dispose();

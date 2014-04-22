@@ -16,6 +16,7 @@ namespace CamelDotNet.Models
             BarCodeUsed = false;
             NoStatistics = false;
             isGreenLight = false;
+            reTest = false;
         }
         public int Id { get; set; }
         [Required]
@@ -67,6 +68,8 @@ namespace CamelDotNet.Models
         public bool isGreenLight { get; set; }
         [DisplayName("不统计")]
         public bool NoStatistics { get; set; }
+        [DisplayName("重测")]
+        public bool reTest { get; set; }
         [DisplayName("备注")]
         public string Remark { get; set; }
         [DisplayName("条码使用与否")]

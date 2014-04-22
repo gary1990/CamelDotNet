@@ -534,6 +534,14 @@ namespace System.Web.Mvc.Html
                 return MvcHtmlString.Empty;
             }
         }
+        //筛选下拉列表
+        public static MvcHtmlString FilterCombox(this HtmlHelper htmlHelper, MvcHtmlString filterCondition)
+        {
+            string htmlString = "<div id='inputcombox'><div><input class='inputcombox-input'/>";
+            htmlString += filterCondition;
+            htmlString += "</div><div class='inputcombox-div' style='border: 1px solid #E2E2E2;'></div></div>";
+            return MvcHtmlString.Create(htmlString);
+        }
     }
 
     public static class AuthorizeActionLinkExtention 

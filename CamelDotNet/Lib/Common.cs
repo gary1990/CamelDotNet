@@ -467,6 +467,32 @@ namespace CamelDotNet.Lib
             return result;
         }
 
+        public static List<ProductType> GetProductByIdList(int productTypeId) 
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetProductByIdQury(db, productTypeId).ToList();
+            }
+        }
+        public static IQueryable<ProductType> GetProductByIdQury(UnitOfWork db, int productTypeId)
+        {
+            var result = db.context.ProductType.Where(a => a.Id == productTypeId);
+            return result;
+        }
+
+        public static List<ProductType> GetProductTypeInTestConfigList(string keyWord = null)
+        {
+            using (var db = new UnitOfWork())
+            {
+                return GetProductTypeInTestConfigQuery(db, keyWord, true).ToList();
+            }
+        }
+        public static IQueryable<ProductType> GetProductTypeInTestConfigQuery(UnitOfWork db, string keyWord = null, bool noTrack = false)
+        {
+            var result = db.context.TestConfig.Select(a => a.ProductType).Distinct();
+            return result;
+        }
+
         public static List<ProductType> GetProductTypeList(string keyWord = null)
         {
             using (var db = new UnitOfWork())

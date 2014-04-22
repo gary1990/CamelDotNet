@@ -1,0 +1,24 @@
+﻿    #inputcombox {
+        width:200px;
+    }
+    .inputcombox-input {
+        width: 120px;
+        float: left;
+        position: absolute;
+    }
+    .inputcombox-combox {
+        width: 140px;
+    }
+    .inputcombox-div {
+        width: 120px;
+        heigth: 100px;
+        border: 1px solid black;
+    }
+    .inputcombox-div-span {
+        display:inline-block;
+        width:120px;
+    }
+    .inputcombox-div-span:hover {
+        cursor: pointer;
+        background: blue;
+    }

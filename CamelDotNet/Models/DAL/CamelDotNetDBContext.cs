@@ -66,7 +66,8 @@ namespace CamelDotNet.Models.DAL
         public static void Create(CamelDotNetDBContext context) 
         {
             context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Name ON Department(Name)");
-            context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Name ON ProductType(Name)");
+            context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Name ON TestStation(Name)");
+            context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_KNumber ON ProductType(KNumber)");
             context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Serialnumber ON TestEquipment(Serialnumber)");
         }
     }
@@ -266,7 +267,7 @@ namespace CamelDotNet.Models.DAL
 
             var productTypes = new List<ProductType>()
             {
-                new ProductType{Name = "General"},
+                new ProductType{Name = "General", Knumber = "000000"},
                 //new ProductType{Name = "PT2"},
                 //new ProductType{Name = "PT3", IsDeleted = true},
                 //new ProductType{Name = "PT11"},
@@ -392,6 +393,8 @@ namespace CamelDotNet.Models.DAL
                 new TestItemConfig{ TestConfigId = 1, TestItemId = db.TestItem.Where(a => a.Name == "TDR故障点").SingleOrDefault().Id, VersionDate = DateTime.Now},
                 new TestItemConfig{ TestConfigId = 1, TestItemId = db.TestItem.Where(a => a.Name == "时域阻抗").SingleOrDefault().Id, VersionDate = DateTime.Now},
                 new TestItemConfig{ TestConfigId = 1, TestItemId = db.TestItem.Where(a => a.Name == "跳线测试").SingleOrDefault().Id, VersionDate = DateTime.Now},
+                new TestItemConfig{ TestConfigId = 1, TestItemId = db.TestItem.Where(a => a.Name == "阻抗落差1").SingleOrDefault().Id, VersionDate = DateTime.Now},
+                new TestItemConfig{ TestConfigId = 1, TestItemId = db.TestItem.Where(a => a.Name == "阻抗落差2").SingleOrDefault().Id, VersionDate = DateTime.Now},
             };
             testItemConfigs.ForEach(a => db.TestItemConfig.Add(a));
             db.SaveChanges();
@@ -399,17 +402,17 @@ namespace CamelDotNet.Models.DAL
             var perConfigs = new List<PerConfig>() 
             {
                 //驻波1
-                new PerConfig{ TestItemConfigId = 1, Channel = 1, Trace = 1,  StartF = 5M, StartUnitId = 1, StopF = 3000M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 1.2M},
-                new PerConfig{ TestItemConfigId = 1, Channel = 2, Trace = 1,  StartF = 800M, StartUnitId = 1, StopF = 1000M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 1.15M},
-                new PerConfig{ TestItemConfigId = 1, Channel = 3, Trace = 1,  StartF = 1700M, StartUnitId = 1, StopF = 2500M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 1.15M},
+                new PerConfig{ TestItemConfigId = 1, Channel = 1, Trace = 1,  StartF = 5M, StartUnitId = 1, StopF = 3000M, StopUnitId = 1,ScanPoint = 1600, ScanTime = 1M, LimitLine = 1.2M},
+                new PerConfig{ TestItemConfigId = 1, Channel = 2, Trace = 1,  StartF = 800M, StartUnitId = 1, StopF = 1000M, StopUnitId = 1,ScanPoint = 1600, ScanTime = 1M, LimitLine = 1.15M},
+                new PerConfig{ TestItemConfigId = 1, Channel = 3, Trace = 1,  StartF = 1700M, StartUnitId = 1, StopF = 2500M, StopUnitId = 1,ScanPoint = 1600, ScanTime = 1M, LimitLine = 1.15M},
                 //驻波2
-                new PerConfig{ TestItemConfigId = 2, Channel = 1, Trace = 1,  StartF = 5M, StartUnitId = 1, StopF = 3000M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 1.2M},
-                new PerConfig{ TestItemConfigId = 2, Channel = 2, Trace = 1,  StartF = 800M, StartUnitId = 1, StopF = 1000M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 1.15M},
-                new PerConfig{ TestItemConfigId = 2, Channel = 3, Trace = 1,  StartF = 1700M, StartUnitId = 1, StopF = 2500M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 1.15M},
+                new PerConfig{ TestItemConfigId = 2, Channel = 1, Trace = 1,  StartF = 5M, StartUnitId = 1, StopF = 3000M, StopUnitId = 1,ScanPoint = 1600, ScanTime = 1M, LimitLine = 1.2M},
+                new PerConfig{ TestItemConfigId = 2, Channel = 2, Trace = 1,  StartF = 800M, StartUnitId = 1, StopF = 1000M, StopUnitId = 1,ScanPoint = 1600, ScanTime = 1M, LimitLine = 1.15M},
+                new PerConfig{ TestItemConfigId = 2, Channel = 3, Trace = 1,  StartF = 1700M, StartUnitId = 1, StopF = 2500M, StopUnitId = 1,ScanPoint = 1600, ScanTime = 1M, LimitLine = 1.15M},
                 //回波损耗1
-                new PerConfig{ TestItemConfigId = 3, Channel = 1, Trace = 1,  StartF = 5M, StartUnitId = 1, StopF = 3000M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 24M},
-                new PerConfig{ TestItemConfigId = 3, Channel = 2, Trace = 1,  StartF = 800M, StartUnitId = 1, StopF = 1000M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 26M},
-                new PerConfig{ TestItemConfigId = 3, Channel = 3, Trace = 1,  StartF = 1700M, StartUnitId = 1, StopF = 2500M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 26M},
+                new PerConfig{ TestItemConfigId = 3, Channel = 1, Trace = 1,  StartF = 5M, StartUnitId = 1, StopF = 3000M, StopUnitId = 1,ScanPoint = 1600, ScanTime = 1M, LimitLine = 24M},
+                new PerConfig{ TestItemConfigId = 3, Channel = 2, Trace = 1,  StartF = 800M, StartUnitId = 1, StopF = 1000M, StopUnitId = 1,ScanPoint = 1600, ScanTime = 1M, LimitLine = 26M},
+                new PerConfig{ TestItemConfigId = 3, Channel = 3, Trace = 1,  StartF = 1700M, StartUnitId = 1, StopF = 2500M, StopUnitId = 1,ScanPoint = 1600, ScanTime = 1M, LimitLine = 26M},
                 //回波损耗2
                 new PerConfig{ TestItemConfigId = 4, Channel = 1, Trace = 1,  StartF = 5M, StartUnitId = 1, StopF = 3000M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 24M},
                 new PerConfig{ TestItemConfigId = 4, Channel = 2, Trace = 1,  StartF = 800M, StartUnitId = 1, StopF = 1000M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 26M},
@@ -431,15 +434,23 @@ namespace CamelDotNet.Models.DAL
                 new PerConfig{ TestItemConfigId = 5, Channel = 1, Trace = 2,  StartF = 5M, StartUnitId = 1, StopF = 3000M, StopUnitId = 1,ScanPoint = 1600, ScanTime = 1M, FreqPoint = 2500M, LimitLine = 34M},
                 new PerConfig{ TestItemConfigId = 5, Channel = 1, Trace = 2,  StartF = 5M, StartUnitId = 1, StopF = 3000M, StopUnitId = 1,ScanPoint = 1600, ScanTime = 1M, FreqPoint = 3000M, LimitLine = 38M},
                 //TDR电长度
-                new PerConfig{ TestItemConfigId = 6, Channel = 1, Trace = 1,  StartF = 0M, StartUnitId = 2, StopF = 9000M, StopUnitId = 2,ScanPoint = 400, ScanTime = 1M, LimitLine = 3M},
+                new PerConfig{ TestItemConfigId = 6, Channel = 1, Trace = 1,  StartF = 0M, StartUnitId = 2, StopF = 9000M, StopUnitId = 2,ScanPoint = 400, ScanTime = 1M, TransportSpeed = 0.44M, LimitLine = 3M},
                 //TDR故障电
-                new PerConfig{ TestItemConfigId = 7, Channel = 1, Trace = 1,  StartF = 0M, StartUnitId = 2, StopF = 9000M, StopUnitId = 2,ScanPoint = 400, ScanTime = 1M},
+                new PerConfig{ TestItemConfigId = 7, Channel = 1, Trace = 1,  StartF = 0M, StartUnitId = 2, StopF = 9000M, StopUnitId = 2,ScanPoint = 400, ScanTime = 1M, TransportSpeed = 0.5M},
                 //时域阻抗
                 new PerConfig{ TestItemConfigId = 8, Channel = 1, Trace = 1,  StartF = -1M, StartUnitId = 2, StopF = 100M, StopUnitId = 2,ScanPoint = 400, ScanTime = 1M, LimitLine = 1M},
                 //跳线测试
                 new PerConfig{ TestItemConfigId = 9, Channel = 1, Trace = 1,  StartF = 5M, StartUnitId = 1, StopF = 3000M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 1.2M},
-                new PerConfig{ TestItemConfigId = 9, Channel = 1, Trace = 1,  StartF = 5M, StartUnitId = 1, StopF = 3000M, StopUnitId = 1,ScanPoint = 400, ScanTime = 1M, LimitLine = 0.5M},
-                new PerConfig{ TestItemConfigId = 9, Channel = 1, Trace = 1,  StartF = -1M, StartUnitId = 2, StopF = 100M, StopUnitId = 2,ScanPoint = 100, ScanTime = 1M},
+                new PerConfig{ TestItemConfigId = 9, Channel = 1, Trace = 1,  StartF = -1M, StartUnitId = 2, StopF = 50M, StopUnitId = 2,ScanPoint = 400, ScanTime = 1M, LimitLine = 0.5M},
+                new PerConfig{ TestItemConfigId = 9, Channel = 1, Trace = 1,  StartF = -1M, StartUnitId = 2, StopF = 1400M, StopUnitId = 2,ScanPoint = 100, ScanTime = 1M, TransportSpeed = 0.44M, LimitLine = 6M},
+                //阻抗落差1
+                new PerConfig{ TestItemConfigId = 10, Channel = 1, Trace = 1, StartF = -1M, StartUnitId = 2, StopF = 200M, StopUnitId = 2, ScanPoint = 1600, ScanTime = 1M, TransportSpeed = 1.45M, LimitLine = 0.5M},
+                new PerConfig{ TestItemConfigId = 10, Channel = 1, Trace = 1, StartF = -1M, StartUnitId = 2, StopF = 50M, StopUnitId = 2, ScanPoint = 1600, ScanTime = 1M, TransportSpeed = 1.45M, LimitLine = 0.4M},
+                new PerConfig{ TestItemConfigId = 10, Channel = 1, Trace = 1, StartF = -1M, StartUnitId = 2, StopF = 50M, StopUnitId = 2, ScanPoint = 1600, ScanTime = 1M, TransportSpeed = 1.45M, LimitLine = 0.3M},
+                //阻抗落差2
+                new PerConfig{ TestItemConfigId = 11, Channel = 1, Trace = 1, StartF = -1M, StartUnitId = 2, StopF = 50M, StopUnitId = 2, ScanPoint = 1600, ScanTime = 1M, TransportSpeed = 1.45M, LimitLine = 0.3M},
+                new PerConfig{ TestItemConfigId = 11, Channel = 1, Trace = 1, StartF = -1M, StartUnitId = 2, StopF = 50M, StopUnitId = 2, ScanPoint = 1600, ScanTime = 1M, TransportSpeed = 1.45M, LimitLine = 0.4M},
+                new PerConfig{ TestItemConfigId = 11, Channel = 1, Trace = 1, StartF = -1M, StartUnitId = 2, StopF = 50M, StopUnitId = 2, ScanPoint = 1600, ScanTime = 1M, TransportSpeed = 1.45M, LimitLine = 0.5M},
             };
             perConfigs.ForEach(a => db.PerConfig.Add(a));
             db.SaveChanges();

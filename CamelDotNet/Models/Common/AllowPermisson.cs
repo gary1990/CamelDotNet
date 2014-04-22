@@ -12,6 +12,7 @@ namespace CamelDotNet.Models.Common
             this.Allowed = new List<string> 
             {
                 "TestConfig_GetTestConfig",
+                "TestConfig_GetFilterComboxJason",
                 "Api_TestStation",
                 "Api_TestBarCode",
                 "Api_BarCodeUsed",

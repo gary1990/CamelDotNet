@@ -121,6 +121,7 @@ namespace CamelDotNet.Controllers
             }
             catch(Exception)
             {
+                zip.Dispose();
                 result.Message = "解压缩文件失败";
                 return new XmlResult<SingleResultXml>()
                 {
@@ -137,11 +138,15 @@ namespace CamelDotNet.Controllers
                 //解析General.csv文件
                 try
                 {
+                    //是否重测
+                    bool isRetest = false;
                     //产品序列号
                     int serialNumberId;
                     int vnaRecordId = 0;
                     if (serialNumberRecord != null)
                     {
+                        //reTest
+                        isRetest = true;
                         serialNumberId = serialNumberRecord.Id;
                     }
                     else
@@ -184,13 +189,17 @@ namespace CamelDotNet.Controllers
                         DateTime testTime;
                         if (!DateTime.TryParseExact(testTimeStr, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out testTime)) 
                         {
-                            sr.Close();
-                            result.Message = "测试时间转换失败";
-                            return new XmlResult<SingleResultXml>()
+                            if (!DateTime.TryParseExact(testTimeStr, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out testTime))
                             {
-                                Data = result
-                            };
+                                sr.Close();
+                                result.Message = "测试时间转换失败";
+                                return new XmlResult<SingleResultXml>()
+                                {
+                                    Data = result
+                                };
+                            }  
                         }
+                        
                         //测试站点
                         string testStationName = lineArr[1];
                         int testStationId;
@@ -244,8 +253,14 @@ namespace CamelDotNet.Controllers
                         }
                         //产品型号
                         string productTypeName = lineArr[4];
+                        //物料名称
+                        string modelName = lineArr[18];
+                        if (modelName == "" || modelName == null)
+                        {
+                            modelName = null;
+                        }
                         int productTypeId;
-                        var productTypeRecord = UW.context.ProductType.Where(a => a.Name == productTypeName && a.IsDeleted == false).SingleOrDefault();
+                        var productTypeRecord = UW.context.ProductType.Where(a => a.Name == productTypeName && a.ModelName == modelName && a.IsDeleted == false).SingleOrDefault();
                         if (productTypeRecord != null)
                         {
                             productTypeId = productTypeRecord.Id;
@@ -342,7 +357,7 @@ namespace CamelDotNet.Controllers
                         //插入General.csv中数据
                         try 
                         {
-                            VnaRecord vnaRecord = new VnaRecord() 
+                            VnaRecord vnaRecord = new VnaRecord()
                             {
                                 SerialNumberId = serialNumberId,
                                 ProductTypeId = productTypeId,
@@ -359,6 +374,7 @@ namespace CamelDotNet.Controllers
                                 Temperature = temperature,
                                 InnerLength = innerLength,
                                 OuterLength = outerLength,
+                                reTest = isRetest,
                                 NoStatistics = noStatistics,
                                 Remark = remark,
                                 ClientId = clientId,

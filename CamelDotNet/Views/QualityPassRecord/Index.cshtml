@@ -35,7 +35,7 @@
                 @Html.TextBox("ReelNumber@%", null, new { @class = "filter", style = "width: 100px;" })
             </td>
             <td>
-                @Html.DropDownList("ProductTypeId@=", new SelectList(Common.GetProductTypeList(), "Id", "Name"), String.Empty, new { @class = "filter"})
+                @Html.DropDownList("ProductTypeId@=", new SelectList(Common.GetProductTypeInTestConfigList(), "Id", "FullName"), String.Empty, new { @class = "filter", style = "width: 100px;" })
             </td>
             <td>
                 @Html.TextBox("SerialNumber.Number@%", null, new { @class = "filter", style = "width: 100px;" })

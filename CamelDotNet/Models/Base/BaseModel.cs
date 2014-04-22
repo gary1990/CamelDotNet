@@ -17,7 +17,7 @@ namespace CamelDotNet.Models.Base
         public int Id { get; set; }
         [DisplayName("名称")]
         [Required]
-        [MaxLength(50)]
+        [MaxLength(255)]
         public virtual string Name { get; set; }
         [DisplayName("已删除")]
         public bool IsDeleted { get; set; }

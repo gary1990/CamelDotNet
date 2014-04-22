@@ -23,7 +23,9 @@
                 @Html.DropDownList("ClientId@=", new SelectList(Common.GetClientList(), "Id", "Name"), String.Empty, new { @class = "filter" })
             </td>
             <td>
-                @Html.DropDownList("ProductTypeId@=", new SelectList(Common.GetProductTypeList(), "Id", "Name"), String.Empty, new { @class = "filter" })
+                @Html.DropDownList("ProductTypeId@=", new SelectList(Common.GetProductTypeInTestConfigList(), "Id", "FullName"), String.Empty, new { @class = "filter", style = "width: 100px;" })
+                @*@Html.FilterCombox(Html.DropDownList("ProductTypeId@=", new SelectList(new List<ProductType>(), "Id", "FullName"), String.Empty, new { @class = "filter inputcombox-combox" }))*@
+                @*@Html.DropDownList("ProductTypeId@=", new SelectList(Common.GetProductTypeList(), "Id", "FullName"), String.Empty, new { @class = "filter" })*@
             </td>
             <td>
                 @Html.CheckBox("includeSoftDeleted", false)
@@ -37,12 +39,92 @@
 <div id="AjaxBody">
     @Html.Action((string)ViewBag.Action, (RouteValueDictionary)(ViewBag.RV))
 </div>
+
+@*<link href="~/Content/filterCombox.css" rel="stylesheet" />*@
+<style type="text/css">
+    #inputcombox {
+        width: 520px;
+    }
+
+    .inputcombox-input {
+        width: 484px;
+        float: left;
+        position: absolute;
+        margin:0;
+        border-right-color:white;
+    }
+
+    .inputcombox-combox {
+        width: 520px;
+        margin-bottom:0px;
+    }
+
+    .inputcombox-div {
+        border: 1px solid #E2E2E2;
+    }
+
+    .inputcombox-div-span {
+        display: inline-block;
+        width: 520px;
+        background-color: wihte;
+    }
+
+    .inputcombox-div-span:hover {
+        cursor: pointer;
+        background: blue;
+    }
+</style>
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/cw")
     <script>
         $(document).ready(function () {
             $("#searchForm").submit(function (e) { setFilter(); });
+            //filter Combox Related
+            $(".inputcombox-combox").change(function () {
+                var selectedValue = $(".inputcombox-combox").find("option:selected").text();
+                $(".inputcombox-input").val(selectedValue);
+                $(".inputcombox-input").attr("value", selectedValue);
+                $(".inputcombox-div").hidden();
+            });
+
+            $(".inputcombox-input").keyup(function () {
+                var name = $(this).val();
+                $(".inputcombox-combox option").remove();
+                $.ajax({
+                    url: '@(Url.Action("GetFilterComboxJason"))',
+                    type: 'POST',
+                    data: JSON.stringify({ nameLike: name }),
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        if (data != "" || data != null) {
+                            var divspan = "";
+                            var selectlistOption = "";
+                            for (var i = 0; i < data.length; i++) {
+                                if (data[i].Name != '') {
+                                    divspan += "<span class='inputcombox-div-span' style=' display:inline-block;height:20px;' onclick='divSpanClick(this)'>" + data[i].FullName + "</span>";
+                                    selectlistOption += "<option value='" + data[i].Id + "'>" + data[i].FullName + "</option>";
+                                }
+                            }
+                            $(".inputcombox-div").html(divspan);
+                            $(".inputcombox-combox").append(selectlistOption);
+                        }
+                        else {
+                            //temp do nothing
+                        }
+                    }
+                });
+            });
         });
+
+        function divSpanClick(e) {
+            $(".inputcombox-input").val($(e).html());
+            $(".inputcombox-input").attr("value", $(e).html());
+            $(".inputcombox-div").html("");
+            $(".inputcombox-combox option").filter(function () {
+                return $(this).text() == $(e).html();
+            }).attr('selected', true);
+        }
     </script>
 }

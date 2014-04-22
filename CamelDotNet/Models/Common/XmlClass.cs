@@ -10,6 +10,8 @@ namespace CamelDotNet.Models.Common
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string ModelName { get; set; }
+        public string KNumber { get; set; } 
     }
 
     public class ClientXml

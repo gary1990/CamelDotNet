@@ -256,6 +256,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\customCss\melon.css" />
     <Content Include="Content\customCss\peach.css" />
+    <Content Include="Content\filterCombox.css" />
     <Content Include="Content\Highcharts-3.0.10\examples\area-basic\index.htm" />
     <Content Include="Content\Highcharts-3.0.10\examples\area-inverted\index.htm" />
     <Content Include="Content\Highcharts-3.0.10\examples\area-missing\index.htm" />
@@ -737,8 +738,10 @@
     <Content Include="Content\Highcharts-3.0.10\examples\line-ajax\analytics.tsv" />
     <Content Include="Content\Highcharts-3.0.10\exporting-server\phantomjs\readme.md" />
     <Content Include="Content\Highcharts-3.0.10\exporting-server\php\php-batik\index.php" />
+    <None Include="Properties\PublishProfiles\192.168.0.100.pubxml" />
     <None Include="Properties\PublishProfiles\192.168.1.222.pubxml" />
     <None Include="Properties\PublishProfiles\192.168.1.231.pubxml" />
+    <None Include="Properties\PublishProfiles\192.168.1.36.pubxml" />
     <None Include="Properties\PublishProfiles\192.168.2.172.pubxml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
@@ -910,6 +913,7 @@
     <Content Include="Views\Shared\_LayoutHome.cshtml" />
     <Content Include="Views\QualityPassRecord\Export.cshtml" />
     <Content Include="Views\VnaRecord\Export.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\ProductType.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

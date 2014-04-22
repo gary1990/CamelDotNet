@@ -15,11 +15,23 @@ namespace CamelDotNet.Models
         {
             isLocal = true;
         }
+        [Required(ErrorMessage = "K3代码不能为空")]
+        [RegularExpression("[0-9\\.]+", ErrorMessage = "只能输入数字和点")]
+        [DisplayName("代码")]
+        [MaxLength(80)]
+        public virtual string Knumber { get; set; }
+        [DisplayName("物料名称")]
+        [MaxLength(255)]
+        public virtual string ModelName { get; set; }
+        [DisplayName("全称")]
+        public string FullName { get { return Name + "#" + ModelName; }}
         [DisplayName("本地")]
         public bool isLocal { get; set; }
         public void Edit(ProductType model)
         {
             this.Name = model.Name;
+            this.ModelName = model.ModelName;
+            this.Knumber = model.Knumber;
         }
     }
 }

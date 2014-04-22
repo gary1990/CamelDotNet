@@ -53,7 +53,7 @@
                 @Html.DropDownList("CamelDotNetUserId@=", new SelectList(Common.GetCamelDotNetUserList(), "Id", "UserName"), String.Empty, new { @class = "filter", style = "width: 100px;" })
             </td>
             <td>
-                @Html.DropDownList("ProductTypeId@=", new SelectList(Common.GetProductTypeList(), "Id", "Name"), String.Empty, new { @class = "filter", style = "width: 100px;" })
+                @Html.DropDownList("ProductTypeId@=", new SelectList(Common.GetProductTypeInTestConfigList(), "Id", "FullName"), String.Empty, new { @class = "filter", style = "width: 100px;" })
             </td>
             <td>
                 @Html.CheckBox("TestResult@=", false, new { @class = "filter"})

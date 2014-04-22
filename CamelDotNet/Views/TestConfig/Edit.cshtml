@@ -13,7 +13,6 @@
     @*@Html.HiddenFor(model => model.Id)*@
     @Html.Hidden("returnUrl", (string)ViewBag.ReturnUrl)
     @Html.Action("AbstractEdit", (string)ViewBag.Controller, new { id = Model.Id })
-    
     <div class="header" style="clear: both">
         <h2>@Html.DisplayNameFor(model => model.TestItemConfigEdits)</h2>
     </div>
@@ -56,7 +55,106 @@
     <a href="@Url.Content((string)ViewBag.ReturnUrl)">取消</a>
 </div>
 
+
+<style type="text/css">
+    #inputcombox {
+        width: 520px;
+    }
+
+    .inputcombox-input {
+        width: 484px;
+        float: left;
+        position: absolute;
+        margin: 0;
+        border-right-color: white;
+    }
+
+    .inputcombox-combox {
+        width: 520px;
+        margin-bottom: 0px;
+    }
+
+    .inputcombox-div {
+        border: 1px solid #E2E2E2;
+        overflow: hidden;
+        position: absolute;
+        width: 520px;
+        background-color: window;
+    }
+
+    .inputcombox-div-span {
+        display: inline-block;
+        width: 520px;
+        background-color: wihte;
+        margin-left: 0px;
+    }
+
+        .inputcombox-div-span:hover {
+            cursor: pointer;
+            background: blue;
+        }
+</style>
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script type="text/javascript" src="@Url.Content("~/Scripts/custom.js")"></script>
+    <script>
+        $(document).ready(function () {
+                $(".inputcombox-combox").css("width", "520px");
+                var selectedValue = $(".inputcombox-combox").find("option:selected").text();
+                $(".inputcombox-input").val(selectedValue);
+                $(".inputcombox-input").attr("value", selectedValue);
+                //filter Combox Related
+                $(".inputcombox-combox").change(function () {
+                    var selectedValue = $(".inputcombox-combox").find("option:selected").text();
+                    $(".inputcombox-input").val(selectedValue);
+                    $(".inputcombox-input").attr("value", selectedValue);
+                    $(".inputcombox-div").html("");
+                });
+                $(".inputcombox-combox").click(function () {
+                    var selectedValue = $(".inputcombox-combox").find("option:selected").text();
+                    $(".inputcombox-input").val(selectedValue);
+                    $(".inputcombox-input").attr("value", selectedValue);
+                    $(".inputcombox-div").html("");
+                });
+
+                $(".inputcombox-input").keyup(function () {
+                    var name = $(this).val();
+                    $(".inputcombox-combox option").remove();
+
+                    $.ajax({
+                        url: '@(Url.Action("GetFilterComboxJason"))',
+                        type: 'POST',
+                        data: JSON.stringify({ nameLike: name }),
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            if (data != "" || data != null) {
+                                var divspan = "";
+                                var selectlistOption = "";
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i].Name != '') {
+                                        divspan += "<span class='inputcombox-div-span' style=' display:inline-block;height:20px;' onclick='divSpanClick(this)'>" + data[i].FullName + "</span>";
+                                        selectlistOption += "<option value='" + data[i].Id + "'>" + data[i].FullName + "</option>";
+                                    }
+                                }
+                                $(".inputcombox-div").html(divspan);
+                                $(".inputcombox-combox").append(selectlistOption);
+                            }
+                            else {
+                                //temp do nothing
+                            }
+                        }
+                    });
+                });
+            });
+
+            function divSpanClick(e) {
+                $(".inputcombox-input").val($(e).html());
+                $(".inputcombox-input").attr("value", $(e).html());
+                $(".inputcombox-div").html("");
+                $(".inputcombox-combox option").filter(function () {
+                    return $(this).text() == $(e).html();
+                }).attr('selected', true);
+            }
+    </script>
 }

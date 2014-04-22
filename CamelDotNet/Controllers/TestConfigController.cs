@@ -209,10 +209,17 @@ namespace CamelDotNet.Controllers
             {
                 TestConfigXml testConfigXml = new TestConfigXml();
 
+                string modelName = testConfigItem.ProductType.ModelName;
+                if (modelName == null || modelName == "")
+                {
+                    modelName = "NULL";
+                }
                 ProductTypeXml productTypeXml = new ProductTypeXml 
                 {
                     Id = testConfigItem.ProductTypeId,
-                    Name = testConfigItem.ProductType.Name
+                    Name = testConfigItem.ProductType.Name,
+                    ModelName = modelName,
+                    KNumber = testConfigItem.ProductType.Knumber
                 };
                 testConfigXml.ProductTypeXml = productTypeXml;
                 ClientXml clientXml = new ClientXml 
@@ -245,7 +252,7 @@ namespace CamelDotNet.Controllers
                             perConfig.FreqPoint = perConfig.FreqPoint * 1000000;
                         }
                         PerConfigXml perConfigXml = new PerConfigXml() 
-                        { 
+                        {
                             Channel = perConfig.Channel,
                             Trace = perConfig.Trace,
                             StartF = perConfig.StartF,

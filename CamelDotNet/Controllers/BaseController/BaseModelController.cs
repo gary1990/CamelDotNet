@@ -101,6 +101,7 @@ namespace CamelDotNet.Controllers
                     ModelState.AddModelError(string.Empty, "新建记录失败!" + e.ToString());
                 }
             }
+            
             ViewBag.ReturnUrl = returnUrl;
             return View(ViewPath1 + ViewPath + ViewPath2 + "Create.cshtml", model);
         }

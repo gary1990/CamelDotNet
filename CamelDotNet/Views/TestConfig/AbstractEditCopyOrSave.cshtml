@@ -13,7 +13,8 @@
             @Html.LabelFor(model => model.ProductTypeId)
         </div>
         <div class="editor-field">
-            @Html.DropDownListFor(model => model.ProductTypeId, new SelectList(Common.GetProductTypeList(), "Id", "Name"), String.Empty)
+            @Html.FilterCombox(Html.DropDownListFor(model => model.ProductTypeId, new SelectList(Common.GetProductByIdList(Model.ProductTypeId), "Id", "FullName"), String.Empty, new { @class = "filter inputcombox-combox" }))
+            @*@Html.DropDownListFor(model => model.ProductTypeId, new SelectList(Common.GetProductTypeList(), "Id", "FullName"), String.Empty)*@
             @Html.ValidationMessageFor(model => model.ProductTypeId)
         </div>
         @Html.HiddenFor(model => model.IsDeleted)
