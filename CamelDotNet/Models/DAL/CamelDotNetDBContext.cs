@@ -72,7 +72,7 @@ namespace CamelDotNet.Models.DAL
         }
     }
 
-    public class CamelDotNetInitializer : DropCreateDatabaseIfModelChanges<CamelDotNetDBContext>
+    public class CamelDotNetInitializer : CreateDatabaseIfNotExists<CamelDotNetDBContext>
     {
         protected override void Seed(CamelDotNetDBContext db)
         {
