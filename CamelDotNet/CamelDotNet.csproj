@@ -45,12 +45,11 @@
     <Reference Include="AutoMapper.Net4">
       <HintPath>..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.Net4.dll</HintPath>
     </Reference>
-    <Reference Include="DotNet.Highcharts, Version=2.0.0.0, Culture=neutral, PublicKeyToken=88854f873df851bf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Desktop\DotNet.Highcharts.dll</HintPath>
+    <Reference Include="DotNet.Highcharts">
+      <HintPath>..\..\..\..\KinSoft\camel\camelrelated\DotNet.Highcharts.dll</HintPath>
     </Reference>
     <Reference Include="Ionic.Zip">
-      <HintPath>..\..\..\..\..\Desktop\Ionic.Zip.dll</HintPath>
+      <HintPath>..\..\..\..\KinSoft\camel\camelrelated\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
