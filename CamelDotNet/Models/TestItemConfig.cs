@@ -18,6 +18,8 @@ namespace CamelDotNet.Models
         public int TestConfigId { get; set; }
         [Required]
         public int TestItemId { get; set; }
+        [MaxLength(100)]
+        public string StateFileName { get; set; }
         public DateTime VersionDate { get; set; }
         public virtual TestConfig TestConfig { get; set; }
         public virtual TestItem TestItem { get; set; }

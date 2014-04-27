@@ -23,6 +23,15 @@
             @Html.ValidationMessageFor(model => model.TestItemId)
         </div>
     </div>
+    <div class="multiAddItem">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.StateFileName)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.StateFileName)
+            @Html.ValidationMessageFor(model => model.StateFileName)
+        </div>
+    </div>
     <div class="multiAddItem" style="display:none">
         <div class="editor-label">
             @Html.LabelFor(model => model.VersionDate)

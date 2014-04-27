@@ -113,6 +113,15 @@
         </div>
     </div>
     <div class="multiAddItem">
+        <div class="editor-label">
+            @Html.PPLabelFor(model => model.LimitLineMax)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.LimitLineMax, null, tick + "LimitLineMax")
+            @Html.ValidationMessageFor(model => model.LimitLineMax)
+        </div>
+    </div>
+    <div class="multiAddItem">
         @Html.LinkToRemoveNestedForm("移除指标", "div.PerConfigEdit", "input.mark-for-delete")
     </div>
 </div>

@@ -97,6 +97,7 @@ namespace CamelDotNet.Models.Common
         }
         [XmlElement("TestItem")]
         public TestItemXml TestItemXml { get; set; }
+        public string StateFileName { get; set; }
         public string VersionDate { get; set; }
         [XmlElement("PerConfig")]
         public List<PerConfigXml> PerConfigXmls { get; set; }
@@ -113,6 +114,7 @@ namespace CamelDotNet.Models.Common
         public decimal? TransportSpeed { get; set; }
         public decimal? FreqPoint { get; set; }
         public decimal? LimitLine { get; set; }
+        public decimal? LimitLineMax { get; set; }
     }
 
     [XmlRoot("Result")]

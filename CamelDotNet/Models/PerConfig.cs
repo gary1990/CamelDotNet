@@ -31,8 +31,10 @@ namespace CamelDotNet.Models
         public decimal? TransportSpeed { get; set; }
         [DisplayName("频点")]
         public decimal? FreqPoint { get; set; }
-        [DisplayName("极限值")]
+        [DisplayName("最小值")]
         public decimal? LimitLine { get; set; }
+        [DisplayName("最大值")]
+        public decimal? LimitLineMax { get; set; }
         public virtual TestItemConfig TestItemConfig { get; set; }
         public virtual Unit StartUnit { get; set; }
         public virtual Unit StopUnit { get; set; }

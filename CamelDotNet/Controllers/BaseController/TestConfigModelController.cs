@@ -133,6 +133,7 @@ namespace CamelDotNet.Controllers
                                     {
                                         TestConfigId = model.Id,
                                         TestItemId = testItemConfigEdit.TestItemId,
+                                        StateFileName = testItemConfigEdit.StateFileName,
                                         VersionDate = DateTime.Now
                                     };
                                     UW.context.TestItemConfig.Add(testItemConfigAdd);
@@ -155,6 +156,7 @@ namespace CamelDotNet.Controllers
                                                 TransportSpeed = perconfigAdd.TransportSpeed,
                                                 FreqPoint = perconfigAdd.FreqPoint,
                                                 LimitLine = perconfigAdd.LimitLine,
+                                                LimitLineMax = perconfigAdd.LimitLineMax,
                                                 TestItemConfigId = testItemConfigAdd.Id
                                             };
 
@@ -250,6 +252,7 @@ namespace CamelDotNet.Controllers
                 TestItemConfig testItemConfigNew = new TestItemConfig();
                 testItemConfigNew.TestConfigId = 0;
                 testItemConfigNew.TestItemId = testItemConfigSelected.TestItemId;
+                testItemConfigNew.StateFileName = testItemConfigSelected.StateFileName;
                 testItemConfigNew.VersionDate = DateTime.Now;
                 newTestConfig.TestItemConfigs.Add(testItemConfigNew);
                 foreach (var perConfigSeleted in testItemConfigSelected.PerConfigs)
@@ -347,9 +350,10 @@ namespace CamelDotNet.Controllers
                                             if (editTestItemConfig != null)
                                             {
                                                 var modifyTime = DateTime.Now;
-                                                if (editTestItemConfig.TestItemId != testItemConfigEdit.TestItemId)
+                                                if (editTestItemConfig.TestItemId != testItemConfigEdit.TestItemId || editTestItemConfig.StateFileName != testItemConfigEdit.StateFileName)
                                                 {
                                                     editTestItemConfig.TestItemId = testItemConfigEdit.TestItemId;
+                                                    editTestItemConfig.StateFileName = testItemConfigEdit.StateFileName;
                                                     editTestItemConfig.VersionDate = modifyTime;
                                                 }
                                                 foreach (var perConfigEdit in testItemConfigEdit.PerConfigEdits)
@@ -387,7 +391,8 @@ namespace CamelDotNet.Controllers
                                                                    perConfig.ScanTime != perConfigEdit.ScanTime ||
                                                                    perConfig.TransportSpeed != perConfigEdit.TransportSpeed ||
                                                                    perConfig.FreqPoint != perConfigEdit.FreqPoint ||
-                                                                   perConfig.LimitLine != perConfigEdit.LimitLine)
+                                                                   perConfig.LimitLine != perConfigEdit.LimitLine ||
+                                                                   perConfig.LimitLineMax != perConfigEdit.LimitLineMax)
                                                                 {
                                                                     perConfig.Channel = perConfigEdit.Channel;
                                                                     perConfig.Trace = perConfigEdit.Trace;
@@ -400,6 +405,7 @@ namespace CamelDotNet.Controllers
                                                                     perConfig.TransportSpeed = perConfigEdit.TransportSpeed;
                                                                     perConfig.FreqPoint = perConfigEdit.FreqPoint;
                                                                     perConfig.LimitLine = perConfigEdit.LimitLine;
+                                                                    perConfig.LimitLineMax = perConfigEdit.LimitLineMax;
                                                                     editTestItemConfig.VersionDate = modifyTime;
                                                                 }
                                                             }
@@ -424,6 +430,7 @@ namespace CamelDotNet.Controllers
                                                                 TransportSpeed = perConfigEdit.TransportSpeed,
                                                                 FreqPoint = perConfigEdit.FreqPoint,
                                                                 LimitLine = perConfigEdit.LimitLine,
+                                                                LimitLineMax = perConfigEdit.LimitLineMax,
                                                                 TestItemConfigId = testItemConfigEdit.Id
                                                             };
                                                             UW.context.PerConfig.Add(perConfigAdd);
@@ -444,6 +451,7 @@ namespace CamelDotNet.Controllers
                                             {
                                                 TestConfigId = testConfigEdit.Id,
                                                 TestItemId = testItemConfigEdit.TestItemId,
+                                                StateFileName = testItemConfigEdit.StateFileName,
                                                 VersionDate = DateTime.Now
                                             };
                                             UW.context.TestItemConfig.Add(testItemConfigAdd);
@@ -466,6 +474,7 @@ namespace CamelDotNet.Controllers
                                                         TransportSpeed = perconfigAdd.TransportSpeed,
                                                         FreqPoint = perconfigAdd.FreqPoint,
                                                         LimitLine = perconfigAdd.LimitLine,
+                                                        LimitLineMax = perconfigAdd.LimitLineMax,
                                                         TestItemConfigId = testItemConfigAdd.Id
                                                     };
                                                     

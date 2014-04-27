@@ -70,9 +70,9 @@ namespace CamelDotNet.Controllers
                         ModelState.AddModelError("", "登录失败,请检查工号密码");
                     }
                 }
-                catch(Exception)
+                catch(Exception e)
                 {
-                    ModelState.AddModelError("", "登录失败,请检查工号密码");
+                    ModelState.AddModelError("", "登录失败,请检查工号密码"+e.Message);
                 }
             }
 

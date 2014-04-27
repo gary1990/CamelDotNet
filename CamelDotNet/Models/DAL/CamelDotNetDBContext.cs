@@ -55,6 +55,7 @@ namespace CamelDotNet.Models.DAL
             modelBuilder.Entity<PerConfig>().Property(a => a.TransportSpeed).HasPrecision(11, 5);
             modelBuilder.Entity<PerConfig>().Property(a => a.FreqPoint).HasPrecision(11, 5);
             modelBuilder.Entity<PerConfig>().Property(a => a.LimitLine).HasPrecision(11, 5);
+            modelBuilder.Entity<PerConfig>().Property(a => a.LimitLineMax).HasPrecision(11, 5);
             modelBuilder.Entity<VnaTestItemPerRecord>().Property(a => a.XValue).HasPrecision(30, 15);
             modelBuilder.Entity<VnaTestItemPerRecord>().Property(a => a.YValue).HasPrecision(30, 15);
             modelBuilder.Entity<VnaTestItemPerRecord>().Property(a => a.RValue).HasPrecision(30, 15);

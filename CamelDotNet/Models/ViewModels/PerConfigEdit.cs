@@ -49,9 +49,12 @@ namespace CamelDotNet.Models.ViewModels
         [RegularExpression("(?=.*[1-9])\\d+(\\.\\d+)?", ErrorMessage = "请输入正数")]
         [DisplayFormat(DataFormatString = "{0:0.#####}", ApplyFormatInEditMode = true)]
         public decimal? FreqPoint { get; set; }
-        [DisplayName("极限值")]
+        [DisplayName("最小值")]
         [DisplayFormat(DataFormatString = "{0:0.#####}", ApplyFormatInEditMode = true)]
         public decimal? LimitLine { get; set; }
+        [DisplayName("最大值")]
+        [DisplayFormat(DataFormatString = "{0:0.#####}", ApplyFormatInEditMode = true)]
+        public decimal? LimitLineMax { get; set; }
         public bool Delete { get; set; }
     }
 }

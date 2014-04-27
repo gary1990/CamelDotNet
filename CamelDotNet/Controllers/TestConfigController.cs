@@ -212,7 +212,7 @@ namespace CamelDotNet.Controllers
                 string modelName = testConfigItem.ProductType.ModelName;
                 if (modelName == null || modelName == "")
                 {
-                    modelName = "NULL";
+                    modelName = "";
                 }
                 ProductTypeXml productTypeXml = new ProductTypeXml 
                 {
@@ -231,6 +231,11 @@ namespace CamelDotNet.Controllers
 
                 foreach(var testItemConfig in testConfigItem.TestItemConfigs)
                 {
+                    string stateFileName = testItemConfig.StateFileName;
+                    if (stateFileName == null || stateFileName == "")
+                    {
+                        stateFileName = "";
+                    }
                     TestItemConfigXml testItemConfigXml = new TestItemConfigXml
                     {
                         TestItemXml = new TestItemXml
@@ -240,6 +245,7 @@ namespace CamelDotNet.Controllers
                             Category = testItemConfig.TestItem.TestItemCategory.Name
                         },
                         VersionDate = testItemConfig.VersionDate.ToString("yyyyMMddHHmmss"),
+                        StateFileName = stateFileName,
                         PerConfigXmls = new List<PerConfigXml> { }
                     };
 
@@ -261,7 +267,8 @@ namespace CamelDotNet.Controllers
                             ScanTime = perConfig.ScanTime,
                             TransportSpeed = perConfig.TransportSpeed,
                             FreqPoint = perConfig.FreqPoint,
-                            LimitLine = perConfig.LimitLine
+                            LimitLine = perConfig.LimitLine,
+                            LimitLineMax = perConfig.LimitLineMax
                         };
 
                         testItemConfigXml.PerConfigXmls.Add(perConfigXml);

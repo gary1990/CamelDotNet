@@ -19,6 +19,10 @@ namespace CamelDotNet.Models.ViewModels
         [Required]
         [DisplayName("测试项")]
         public int TestItemId { get; set; }
+        [DisplayName("状态文件名")]
+        [MaxLength(100)]
+        [RegularExpression("^[a-zA-Z0-9]+$", ErrorMessage = "请输入英文或数字")]
+        public string StateFileName { get; set; }
         [DisplayName("修改日期")]
         public DateTime VersionDate { get; set; }
         public virtual ICollection<PerConfig> PerConfigs { get; set; }

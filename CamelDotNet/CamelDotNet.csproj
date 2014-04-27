@@ -207,6 +207,14 @@
     <Compile Include="Migrations\201404200759099_InitialCreate.Designer.cs">
       <DependentUpon>201404200759099_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201404270417096_addStateFileNameLimitLineMax.cs" />
+    <Compile Include="Migrations\201404270417096_addStateFileNameLimitLineMax.Designer.cs">
+      <DependentUpon>201404270417096_addStateFileNameLimitLineMax.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201404270429564_addStateFileNameLimitLineMax1.cs" />
+    <Compile Include="Migrations\201404270429564_addStateFileNameLimitLineMax1.Designer.cs">
+      <DependentUpon>201404270429564_addStateFileNameLimitLineMax1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Base\BaseModel.cs" />
@@ -938,6 +946,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201404200759099_InitialCreate.resx">
       <DependentUpon>201404200759099_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404270417096_addStateFileNameLimitLineMax.resx">
+      <DependentUpon>201404270417096_addStateFileNameLimitLineMax.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404270429564_addStateFileNameLimitLineMax1.resx">
+      <DependentUpon>201404270429564_addStateFileNameLimitLineMax1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
