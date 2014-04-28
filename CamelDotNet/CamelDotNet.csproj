@@ -797,6 +797,7 @@
     <None Include="Properties\PublishProfiles\192.168.1.231.pubxml" />
     <None Include="Properties\PublishProfiles\192.168.1.36.pubxml" />
     <None Include="Properties\PublishProfiles\192.168.2.172.pubxml" />
+    <None Include="Properties\PublishProfiles\Cloud114.215.196.3.pubxml" />
     <None Include="Properties\PublishProfiles\ManualPublish.pubxml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
