@@ -447,39 +447,48 @@ namespace CamelDotNet.Controllers
                                         }
                                         else //add TestItemConfig And PerConfig
                                         {
-                                            TestItemConfig testItemConfigAdd = new TestItemConfig
+                                            TestItemConfig eixstTestItemConfig = result.TestItemConfigs.Where(a => a.TestConfigId == testConfigEdit.Id && a.TestItemId == testItemConfigEdit.TestItemId).SingleOrDefault();
+                                            if (eixstTestItemConfig == null)
                                             {
-                                                TestConfigId = testConfigEdit.Id,
-                                                TestItemId = testItemConfigEdit.TestItemId,
-                                                StateFileName = testItemConfigEdit.StateFileName,
-                                                VersionDate = DateTime.Now
-                                            };
-                                            UW.context.TestItemConfig.Add(testItemConfigAdd);
-                                            UW.CamelSave();
-                                            
-                                            foreach (var perconfigAdd in testItemConfigEdit.PerConfigEdits)
-                                            {
-                                                if (perconfigAdd.Delete != true)
+                                                TestItemConfig testItemConfigAdd = new TestItemConfig
                                                 {
-                                                    PerConfig perConfigAdd = new PerConfig
+                                                    TestConfigId = testConfigEdit.Id,
+                                                    TestItemId = testItemConfigEdit.TestItemId,
+                                                    StateFileName = testItemConfigEdit.StateFileName,
+                                                    VersionDate = DateTime.Now
+                                                };
+                                                UW.context.TestItemConfig.Add(testItemConfigAdd);
+                                                UW.CamelSave();
+
+                                                foreach (var perconfigAdd in testItemConfigEdit.PerConfigEdits)
+                                                {
+                                                    if (perconfigAdd.Delete != true)
                                                     {
-                                                        Channel = perconfigAdd.Channel,
-                                                        Trace = perconfigAdd.Trace,
-                                                        StartF = perconfigAdd.StartF,
-                                                        StartUnitId = perconfigAdd.StartUnitId,
-                                                        StopF = perconfigAdd.StopF,
-                                                        StopUnitId = perconfigAdd.StopUnitId,
-                                                        ScanPoint = perconfigAdd.ScanPoint,
-                                                        ScanTime = perconfigAdd.ScanTime,
-                                                        TransportSpeed = perconfigAdd.TransportSpeed,
-                                                        FreqPoint = perconfigAdd.FreqPoint,
-                                                        LimitLine = perconfigAdd.LimitLine,
-                                                        LimitLineMax = perconfigAdd.LimitLineMax,
-                                                        TestItemConfigId = testItemConfigAdd.Id
-                                                    };
-                                                    
-                                                    UW.context.PerConfig.Add(perConfigAdd);
+                                                        PerConfig perConfigAdd = new PerConfig
+                                                        {
+                                                            Channel = perconfigAdd.Channel,
+                                                            Trace = perconfigAdd.Trace,
+                                                            StartF = perconfigAdd.StartF,
+                                                            StartUnitId = perconfigAdd.StartUnitId,
+                                                            StopF = perconfigAdd.StopF,
+                                                            StopUnitId = perconfigAdd.StopUnitId,
+                                                            ScanPoint = perconfigAdd.ScanPoint,
+                                                            ScanTime = perconfigAdd.ScanTime,
+                                                            TransportSpeed = perconfigAdd.TransportSpeed,
+                                                            FreqPoint = perconfigAdd.FreqPoint,
+                                                            LimitLine = perconfigAdd.LimitLine,
+                                                            LimitLineMax = perconfigAdd.LimitLineMax,
+                                                            TestItemConfigId = testItemConfigAdd.Id
+                                                        };
+
+                                                        UW.context.PerConfig.Add(perConfigAdd);
+                                                    }
                                                 }
+                                            }
+                                            else 
+                                            {
+                                                ModelState.AddModelError(string.Empty, "测试项:" + eixstTestItemConfig.TestItem.Name + " 不能重复添加");
+                                                return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", testConfigEdit);
                                             }
                                         }
                                     }
