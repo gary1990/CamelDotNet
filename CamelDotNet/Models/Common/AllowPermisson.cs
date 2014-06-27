@@ -20,6 +20,7 @@ namespace CamelDotNet.Models.Common
                 "VnaTestRecord_UploadVnaRecord",
                 "QualityPassRecord_ExportToExcel",
                 "VnaTestRecord_TestZip",
+                "Common_GetProcessListAjax"
             };
         }
         public List<string> Allowed { get; set; }

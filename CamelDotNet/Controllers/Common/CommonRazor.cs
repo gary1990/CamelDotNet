@@ -228,6 +228,15 @@ namespace System.Web.Mvc.Html
 
         }
 
+        public static IHtmlString ReplaceNoParentPartial(this HtmlHelper htmlHelper, MvcHtmlString partial, string containerElement, int thisOrder)
+        {
+            var content = partial.ToHtmlString();
+            content = content.Replace("name=\"", "name=\"" + containerElement + "[" + thisOrder + "].");
+            content = content.Replace("data-valmsg-for=\"", "data-valmsg-for=\"" + containerElement + "[" + thisOrder + "].");
+            content = content.Replace(containerElement + "[" + thisOrder + "].*", "");
+            return MvcHtmlString.Create(content);
+        }
+
         public static IHtmlString ReplaceTestItemConfigEditPartial(this HtmlHelper htmlHelper, MvcHtmlString partial, string containerElement, int thisOrder) 
         {
             var content = partial.ToHtmlString();

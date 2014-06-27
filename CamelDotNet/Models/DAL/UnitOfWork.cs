@@ -30,6 +30,8 @@ namespace CamelDotNet.Models.DAL
         private GenericRepository<Unit> unitRepository;
         private GenericRepository<Department> departmentRepository;
         private GenericRepository<QualityPassRecord> qualityPassRecordRepository;
+        private GenericRepository<QualityLoss> qualityLossRepository;
+        private GenericRepository<QualityLossPercent> qualityLossPercentRepository;
         public GenericRepository<TestItem> TestItemRepository 
         {
             get 
@@ -267,6 +269,30 @@ namespace CamelDotNet.Models.DAL
             }
         }
 
+        public GenericRepository<QualityLoss> QualityLossRepository
+        {
+            get
+            {
+                if (this.qualityLossRepository == null)
+                {
+                    this.qualityLossRepository = new GenericRepository<QualityLoss>(context);
+                }
+                return qualityLossRepository;
+            }
+        }
+
+        public GenericRepository<QualityLossPercent> QualityLossPercentRepository
+        {
+            get
+            {
+                if (this.qualityLossPercentRepository == null)
+                {
+                    this.qualityLossPercentRepository = new GenericRepository<QualityLossPercent>(context);
+                }
+                return qualityLossPercentRepository;
+            }
+        }
+
         public void CamelSave() 
         {
             foreach(var deletedEntity in context.ChangeTracker.Entries<BaseModel>())
@@ -303,6 +329,11 @@ namespace CamelDotNet.Models.DAL
                     deletedEntity.Entity.IsDeleted = true;
                 }
             }
+            context.SaveChanges();
+        }
+
+        public void DbSave() 
+        {
             context.SaveChanges();
         }
 

@@ -28,5 +28,25 @@ namespace CamelDotNet.Controllers
                 return new SelectList(cd,"Key","Value");
             }
         }
+
+        public ActionResult GetProcessListAjax(int? TesItemId = 0)
+        {
+            var processes = _GetProcessList(TesItemId);
+            return PartialView(processes);
+        }
+
+        private static List<Process> _GetProcessList(int? TestItemId)
+        {
+            CamelDotNetDBContext db = new CamelDotNetDBContext();
+            {
+                var testItem = db.TestItem.Where(a => a.Id == TestItemId).SingleOrDefault();
+                var processes = new List<Process>(){};
+                if (testItem != null && testItem.TestItemCategory.Name.Contains("非"))
+                {
+                    processes = db.Process.ToList();
+                }
+                return processes;
+            }
+        }
 	}
 }

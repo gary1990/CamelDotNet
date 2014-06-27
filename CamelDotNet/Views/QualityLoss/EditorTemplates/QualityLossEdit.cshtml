@@ -1,0 +1,20 @@
+﻿@model QualityLossEdit
+@Html.HiddenFor(model => model.Id)
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.TestItemId)
+</div>
+<div class="editor-field">
+    @Html.DropDownListFor(model => model.TestItemId, new SelectList(Common.GetTestItemList(), "Id", "Name"), String.Empty)
+    @Html.ValidationMessageFor(model => model.TestItemId)
+</div>
+<div class="editor-label">
+    @Html.LabelFor(model => model.ProcessId)
+</div>
+<div class="editor-field">
+    @Html.DropDownListFor(model => model.ProcessId, new SelectList(Common.GetProcessList(), "Id", "Name"), String.Empty)
+    @Html.ValidationMessageFor(model => model.ProcessId)
+</div>
+<div class="header" style="clear: both">
+    <h2>@Html.DisplayNameFor(model => model.QualityLossPercentEdits)</h2>
+</div>

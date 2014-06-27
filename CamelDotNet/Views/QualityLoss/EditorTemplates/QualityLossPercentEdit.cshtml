@@ -1,0 +1,46 @@
+﻿@model QualityLossPercentEdit
+
+@{
+    string tmp = "";
+    if (Model.Delete == true)
+    {
+        tmp = "display:none";
+    }
+
+    var parentCount = ViewBag.ParentOrder;
+}
+<div class="QualityLossPercentEdit" style="width:100%; float:left;@tmp">
+    @Html.HiddenFor(model => model.Delete, new { @class = "mark-for-delete" })
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.QualityLossId)
+    <div class="multiAddItem">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.QualityLossFreq)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.QualityLossFreq)
+            @Html.ValidationMessageFor(model => model.QualityLossFreq)
+        </div>
+    </div>
+    <div class="multiAddItem">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.QualityLossRef)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.QualityLossRef)
+            @Html.ValidationMessageFor(model => model.QualityLossRef)
+        </div>
+    </div>
+    <div class="multiAddItem">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.LossValue)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.LossValue)
+            @Html.ValidationMessageFor(model => model.LossValue)
+        </div>
+    </div>
+    <div class="multiAddItem">
+        @Html.LinkToRemoveNestedForm("移除质量损失比", "div.QualityLossPercentEdit", "input.mark-for-delete")
+    </div>
+</div>

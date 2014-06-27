@@ -1,0 +1,22 @@
+﻿@model Permission
+<div class="editor-label">
+    @Html.LabelFor(model => model.Name)
+</div>
+<div class="editor-field">
+    @Html.EditorFor(model => model.Name)
+    @Html.ValidationMessageFor(model => model.Name)
+</div>
+<div class="editor-label">
+    @Html.LabelFor(model => model.ControllerName)
+</div>
+<div class="editor-field">
+    @Html.EditorFor(model => model.ControllerName)
+    @Html.ValidationMessageFor(model => model.ControllerName)
+</div>
+<div class="editor-label">
+    @Html.LabelFor(model => model.ActionName)
+</div>
+<div class="editor-field">
+    @Html.EditorFor(model => model.ActionName)
+    @Html.ValidationMessageFor(model => model.ActionName)
+</div>

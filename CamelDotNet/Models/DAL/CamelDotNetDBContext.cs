@@ -39,6 +39,8 @@ namespace CamelDotNet.Models.DAL
         public DbSet<Unit> Unit { get; set; }
         public DbSet<Department> Department { get; set; }
         public DbSet<QualityPassRecord> QualityPassRecord { get; set; }
+        public DbSet<QualityLoss> QualityLoss { get; set; }
+        public DbSet<QualityLossPercent> QualityLossPercent { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -59,6 +61,8 @@ namespace CamelDotNet.Models.DAL
             modelBuilder.Entity<VnaTestItemPerRecord>().Property(a => a.XValue).HasPrecision(30, 15);
             modelBuilder.Entity<VnaTestItemPerRecord>().Property(a => a.YValue).HasPrecision(30, 15);
             modelBuilder.Entity<VnaTestItemPerRecord>().Property(a => a.RValue).HasPrecision(30, 15);
+
+            modelBuilder.Entity<QualityLossPercent>().Property(a => a.LossValue).HasPrecision(6,2);
         }
     }
 
@@ -70,6 +74,10 @@ namespace CamelDotNet.Models.DAL
             context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Name ON TestStation(Name)");
             context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_KNumber ON ProductType(KNumber)");
             context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_Serialnumber ON TestEquipment(Serialnumber)");
+            //unique index add in 1.2.0.0
+            context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_LossValue ON QualityLossPercent(LossValue)");
+            context.Database.ExecuteSqlCommand("Create UNIQUE INDEX index_TestItemProcess ON QualityLoss(TestItemId, ProcessId)");
+            //end here
         }
     }
 

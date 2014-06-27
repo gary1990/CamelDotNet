@@ -2,7 +2,7 @@
 @{
     string returnUrl = Url.Action((((RouteValueDictionary)(ViewBag.RV))["returnRoot"]).ToString(), (RouteValueDictionary)(ViewBag.RV));
 }
-@*<p>
+<p>
     @using (Html.BeginForm("Create", (string)ViewBag.Controller))
     {
         @Html.AntiForgeryToken()
@@ -10,7 +10,7 @@
         @Html.Hidden("returnUrl", returnUrl)
         <input type="submit" value="新建" />
     }
-</p>*@
+</p>
 
 @Html.Partial("PageLink")
 

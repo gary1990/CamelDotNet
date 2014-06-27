@@ -80,6 +80,7 @@
                     <li class="current">@Html.AuthorizeActionLink("报表管理", "Index", "ReportHome")
                         <ul class="sideMenu">
                             <li class="@(sideMenuPath == "质量放行" ? "current" : "")">@Html.AuthorizeActionLink("质量放行", "Index", "QualityPassRecord")</li>
+                            <li class="@(sideMenuPath == "质量损失比" ? "current" : "")">@Html.AuthorizeActionLink("质量损失比", "Index", "QualityLoss")</li>
                         </ul>
                     </li>
                 }

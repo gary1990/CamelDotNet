@@ -1,0 +1,52 @@
+﻿@model QualityLossEdit
+
+@{
+    ViewBag.Title = "新建";
+}
+
+<h2>@ViewBag.Name:@ViewBag.Title</h2>
+
+@using (Html.BeginForm("CreateSave", (string)ViewBag.Controller))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        @Html.Hidden("returnUrl", (string)ViewBag.ReturnUrl)
+        @Html.EditorForModel()
+        
+        <div id="QualityLossPercentEdits" class="infoAddition" style="clear: both; width: 90%">
+            @Html.ValidationMessageFor(model => model.QualityLossPercentEdits)
+            @if (Model != null && Model.QualityLossPercentEdits != null)
+            {
+                int order = 0;
+                foreach (var item in Model.QualityLossPercentEdits)
+                {
+                    MvcHtmlString qualityLossPercentPartial = Html.Action("GetQualityLossPercentEdit", "QualityLoss", new { item });
+                    @Html.ReplaceTestItemConfigEditPartial(qualityLossPercentPartial, "QualityLossPercentEdits", order)
+                    order++;
+                }
+            }
+        </div>
+        <div style="clear: both">
+            @Html.LinkToAddNestedForm("添加质量损失比", "#QualityLossPercentEdits", ".QualityLossPercentEdit", "QualityLossPercentEdits", typeof(QualityLossPercentEdit))
+        </div>
+        <p>
+            <input type="submit" value="保存" />
+        </p>
+</fieldset>
+}
+
+<div>
+    <a href="@Url.Content((string)ViewBag.ReturnUrl)">取消</a>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/custom.js")"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            
+        });
+    </script>
+}

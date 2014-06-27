@@ -1,0 +1,77 @@
+﻿@model IEnumerable<QualityLoss>
+@{
+    string returnUrl = Url.Action((((RouteValueDictionary)(ViewBag.RV))["returnRoot"]).ToString(), (RouteValueDictionary)(ViewBag.RV));
+}
+<p>
+    @using (Html.BeginForm("Create", (string)ViewBag.Controller))
+    {
+        @Html.AntiForgeryToken()
+        
+        @Html.Hidden("returnUrl", returnUrl)
+        <input type="submit" value="新建" />
+    }
+</p>
+
+@Html.Partial("PageLink")
+
+<table>
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TestItemId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProcessId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QualityLossPercents)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TestItem.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Process.Name)
+                </td>
+                <td>
+                    @{
+                        var qualityLossPercents = item.QualityLossPercents.ToList();
+                        string qualityLossStr = "";
+                        foreach (var qualityLossPercent in qualityLossPercents)
+                        {
+                            qualityLossStr += "[频点:" + qualityLossPercent.QualityLossFreq + ",值:" + qualityLossPercent.QualityLossRef + ", 质量损失比:" + qualityLossPercent.LossValue + "]<br/>";
+                        }
+                    }
+                    @Html.Raw(qualityLossStr)
+                </td>
+                <td>
+                    <div class="groupOperation">   
+                        @using (Html.BeginForm("Edit", (string)ViewBag.Controller))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            @Html.Hidden("id", item.Id)
+                            @Html.Hidden("returnUrl", returnUrl)
+                            <input type="submit" value="编辑" />
+                        }
+                        @using (Html.BeginForm("Delete", (string)ViewBag.Controller))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            @Html.Hidden("id", item.Id)
+                            @Html.Hidden("returnUrl", returnUrl)
+                            <input type="submit" value="删除" />
+                        }    
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

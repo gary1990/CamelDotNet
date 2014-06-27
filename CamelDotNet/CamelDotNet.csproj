@@ -215,6 +215,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ApiController.cs" />
+    <Compile Include="Controllers\BaseController\QualityLossModelController.cs" />
     <Compile Include="Controllers\BaseController\QualityPassRecordModelController.cs" />
     <Compile Include="Controllers\BaseController\VnaTestRecordModelController.cs" />
     <Compile Include="Controllers\BaseController\TestConfigModelController.cs" />
@@ -226,6 +227,7 @@
     <Compile Include="Controllers\DepartmentController.cs" />
     <Compile Include="Controllers\PermissionController.cs" />
     <Compile Include="Controllers\ProductTypeController.cs" />
+    <Compile Include="Controllers\QualityLossController.cs" />
     <Compile Include="Controllers\QualityPassRecordController.cs" />
     <Compile Include="Controllers\QualityTracingHomeController.cs" />
     <Compile Include="Controllers\ReportHomeController.cs" />
@@ -257,6 +259,10 @@
     <Compile Include="Migrations\201404270429564_addStateFileNameLimitLineMax1.Designer.cs">
       <DependentUpon>201404270429564_addStateFileNameLimitLineMax1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406250546142_201406251345_add_QualityLoss_QualityLossPercent.cs" />
+    <Compile Include="Migrations\201406250546142_201406251345_add_QualityLoss_QualityLossPercent.Designer.cs">
+      <DependentUpon>201406250546142_201406251345_add_QualityLoss_QualityLossPercent.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Base\BaseModel.cs" />
@@ -274,6 +280,8 @@
     <Compile Include="Models\PerConfig.cs" />
     <Compile Include="Models\Process.cs" />
     <Compile Include="Models\ProductType.cs" />
+    <Compile Include="Models\QualityLoss.cs" />
+    <Compile Include="Models\QualityLossPercent.cs" />
     <Compile Include="Models\QualityPassRecord.cs" />
     <Compile Include="Models\SerialNumber.cs" />
     <Compile Include="Models\TestConfig.cs" />
@@ -287,6 +295,8 @@
     <Compile Include="Models\TestStation.cs" />
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Models\ViewModels\PerConfigEdit.cs" />
+    <Compile Include="Models\ViewModels\QualityLossEdit.cs" />
+    <Compile Include="Models\ViewModels\QualityLossPercentEdit.cs" />
     <Compile Include="Models\ViewModels\TestConfigEdit.cs" />
     <Compile Include="Models\ViewModels\Msg.cs" />
     <Compile Include="Models\ViewModels\TestItemConfigEdit.cs" />
@@ -963,6 +973,19 @@
     <Content Include="Views\QualityPassRecord\Export.cshtml" />
     <Content Include="Views\VnaRecord\Export.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\ProductType.cshtml" />
+    <Content Include="Views\Permission\Create.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Permission.cshtml" />
+    <Content Include="Views\QualityLoss\Abstract.cshtml" />
+    <Content Include="Views\QualityLoss\Create.cshtml" />
+    <Content Include="Views\QualityLoss\Delete.cshtml" />
+    <Content Include="Views\QualityLoss\Details.cshtml" />
+    <Content Include="Views\QualityLoss\Edit.cshtml" />
+    <Content Include="Views\QualityLoss\Get.cshtml" />
+    <Content Include="Views\QualityLoss\Index.cshtml" />
+    <Content Include="Views\QualityLoss\Restore.cshtml" />
+    <Content Include="Views\QualityLoss\EditorTemplates\QualityLossEdit.cshtml" />
+    <Content Include="Views\Common\GetProcessListAjax.cshtml" />
+    <Content Include="Views\QualityLoss\EditorTemplates\QualityLossPercentEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -970,7 +993,6 @@
     <Folder Include="Content\UploadedFolder\Template\" />
     <Folder Include="Views\Api\" />
     <Folder Include="Views\Client\" />
-    <Folder Include="Views\Common\" />
     <Folder Include="Views\Department\" />
   </ItemGroup>
   <ItemGroup>
@@ -989,6 +1011,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201404270429564_addStateFileNameLimitLineMax1.resx">
       <DependentUpon>201404270429564_addStateFileNameLimitLineMax1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406250546142_201406251345_add_QualityLoss_QualityLossPercent.resx">
+      <DependentUpon>201406250546142_201406251345_add_QualityLoss_QualityLossPercent.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

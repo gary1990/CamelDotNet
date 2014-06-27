@@ -14,6 +14,7 @@ using CamelDotNet.Models.ViewModels;
 using CamelDotNet.Models;
 using System.Globalization;
 using System.Data.Entity;
+using System.ComponentModel;
 
 namespace CamelDotNet.Lib
 {
@@ -91,7 +92,9 @@ namespace CamelDotNet.Lib
                 foreach (var prop in propertyNames)
                 {
                     left = Expression.PropertyOrField(left, prop);
+                    
                     var type = left.Type.Name;
+                    var typeFullName = left.Type.FullName;
 
                     if (type == "Int32")
                     {
@@ -111,6 +114,10 @@ namespace CamelDotNet.Lib
                         Boolean targetBoolean = Convert.ToBoolean(target);
                         right = Expression.Constant(targetBoolean);
                     }
+                    else if (type == "Nullable`1" && typeFullName.Contains("System.Int32"))
+                    {
+                        right = Expression.Constant(Int32.Parse(target));
+                    }
                     else
                     {
                         right = Expression.Constant(target);
@@ -120,7 +127,7 @@ namespace CamelDotNet.Lib
                 BinaryExpression call = null;
                 if (tmp[1] == "=")
                 {
-                    call = Expression.Equal(left, right);
+                    call = MyEqual(left, right);
                 }
                 else if (tmp[1] == ">")
                 {
@@ -143,6 +150,19 @@ namespace CamelDotNet.Lib
                 return query.Where(lambda);
             }
 
+        }
+
+        static BinaryExpression MyEqual(Expression e1, Expression e2)
+        {
+            if (IsNullableType(e1.Type) && !IsNullableType(e2.Type))
+                e2 = Expression.Convert(e2, e1.Type);
+            else if (!IsNullableType(e1.Type) && IsNullableType(e2.Type))
+                e1 = Expression.Convert(e1, e2.Type);
+            return Expression.Equal(e1, e2);
+        }
+        static bool IsNullableType(Type t)
+        {
+            return t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
         public static IQueryable<Model> Page(Controller c, RouteValueDictionary rv, IQueryable<Model> q, int size = 20)
@@ -259,6 +279,45 @@ namespace CamelDotNet.Lib
             result = result.Where(a => a.CamelDotNetUser.IsDeleted == false && a.ProductType.IsDeleted == false && a.TestEquipment.IsDeleted == false && 
                 a.TestStation.IsDeleted == false);
             
+            //filter
+            if (filter != null)
+            {
+                Dictionary<string, string> filterDic = new Dictionary<string, string>();
+                if (!string.IsNullOrWhiteSpace(filter))
+                {
+                    var conditions = filter.Substring(0, filter.Length - 1).Split(';');
+                    foreach (var item in conditions)
+                    {
+                        var tmp = item.Split(':');
+                        if (!string.IsNullOrWhiteSpace(tmp[1]))
+                        {
+                            filterDic.Add(tmp[0], tmp[1]);
+                        }
+                    }
+                }
+
+                foreach (var item in filterDic)
+                {
+                    result = Common<Model>.DynamicFilter(result, item.Key, item.Value);
+                }
+            }
+            //end filter
+            return result;
+        }
+    }
+
+    public class QualityLossCommon<Model> where Model : QualityLoss
+    {
+        public static IQueryable<Model> GetQuery(UnitOfWork db, string filter = null, bool noTrack = false)
+        {
+            IQueryable<Model> result;
+
+            var rep = (GenericRepository<Model>)(typeof(UnitOfWork).GetProperty(typeof(Model).Name + "Repository").GetValue(db));
+
+            result = rep.Get(noTrack);
+
+            result = result.Include(a => a.QualityLossPercents);
+
             //filter
             if (filter != null)
             {

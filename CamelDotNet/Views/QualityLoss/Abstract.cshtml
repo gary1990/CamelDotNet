@@ -1,0 +1,28 @@
+﻿@model QualityLoss
+<div class="editor-label">
+    @Html.LabelFor(model => model.TestItemId)
+</div>
+<div class="editor-field">
+    @Html.DisplayFor(model => model.TestItem.Name)
+</div>
+<div class="editor-label">
+    @Html.LabelFor(model => model.ProcessId)
+</div>
+<div class="editor-field">
+    @Html.DisplayFor(model => model.Process.Name)
+</div>
+<table>
+    <tr>
+        <th>频点范围</th>
+        <th>值范围</th>
+        <th>质量损失比</th>
+    </tr>
+    @foreach(var qualityLossPercent in Model.QualityLossPercents)
+    {
+        <tr>
+            <td>@Html.DisplayFor(model => qualityLossPercent.QualityLossFreq)</td>
+            <td>@Html.DisplayFor(model => qualityLossPercent.QualityLossRef)</td>
+            <td>@Html.DisplayFor(model => qualityLossPercent.LossValue)</td>
+        </tr>
+    }
+</table>
