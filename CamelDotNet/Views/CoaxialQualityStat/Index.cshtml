@@ -1,0 +1,78 @@
+﻿<h2>@ViewBag.Name</h2>
+@using (Ajax.BeginForm(null, null, new AjaxOptions { Url="/CoaxialQualityStat/StatByProductType", UpdateTargetId = "AjaxBody" }, new { id = "searchForm" }))
+{
+    <table>
+        <tr>
+            <td>
+                <span class="searchLabel">起始时间</span>
+            </td>
+            <td>
+                <span class="searchLabel">截止时间</span>
+            </td>
+            <td>
+                <span class="searchLabel">机台</span>
+            </td>
+            <td>
+                <span class="searchLabel">班组</span>
+            </td>
+            <td>
+                <span class="searchLabel">产品型号</span>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                @Html.TextBox("TestTimeStartDay", null, new { @class = "Wdate", style = "width: 100px;", onclick = "WdatePicker({lang:'zh-cn'})" })
+                @Html.DropDownList("TestTimeStartHour", new SelectList(ViewBag.Hours, "Value", "Text"), String.Empty, new { style = "width: 50px;" })
+            </td>
+            <td>
+                @Html.TextBox("TestTimeStopDay", null, new { @class = "Wdate", style = "width: 100px;", onclick = "WdatePicker({lang:'zh-cn'})" })
+                @Html.DropDownList("TestTimeStopHour", new SelectList(ViewBag.Hours, "Value", "Text"), String.Empty, new { style = "width: 50px;" })
+            </td>
+            <td>
+                @Html.TextBox("DrillingCrew", null, new {style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.TextBox("WorkGroup", null, new {style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.DropDownList("ProductTypeId", new SelectList(Common.GetProductTypeInTestConfigList(), "Id", "FullName"), String.Empty, new {style = "width: 100px;" })
+            </td>
+            <td>
+                <button id="btSearch" type="submit">查询</button>
+                <button id="btExport" type="submit">导出</button>
+            </td>
+        </tr>
+    </table>
+}
+<div>
+    <div id="/CoaxialQualityStat/StatByFailItem" class="float-left select-kind">不合格项</div>
+    <div id="/CoaxialQualityStat/StatByProductType" class="float-left select-kind">物料名称</div>
+    <div id="/CoaxialQualityStat/StatByDrillingCrew" class="float-left select-kind">机台</div>
+    <div id="/CoaxialQualityStat/StatByWorkGroup" class="select-kind">班组</div>
+</div>
+<div id="AjaxBody">
+    
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/cw")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")"></script>
+    <script src="@Url.Content("~/Content/Highcharts-3.0.10/js/highcharts.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Content/Highcharts-3.0.10/js/modules/exporting.js")" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function () {
+            $(".select-kind").click(function () {
+                $(".select-kind").removeClass("selected-kind");
+                $(this).addClass("selected-kind");
+                var kindUrl = $(this).attr("Id");
+                $("#searchForm").attr("action", kindUrl);
+                $("#searchForm").attr("data-ajax-url", kindUrl);
+                $("#searchForm").submit();
+            });
+            
+        });
+    </script>
+}
+

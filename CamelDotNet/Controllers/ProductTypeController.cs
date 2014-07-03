@@ -63,7 +63,8 @@ namespace CamelDotNet.Controllers
                                     Name = name,
                                     ModelName = modelName,
                                     isLocal = false,
-                                    IsDeleted = isDeleted
+                                    IsDeleted = isDeleted,
+                                    Price = 0
                                 };
                                 db.ProductType.Add(pt);
                             }

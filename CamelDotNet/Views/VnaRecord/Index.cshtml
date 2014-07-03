@@ -38,6 +38,8 @@
             @Html.Hidden("actionAjax", (string)ViewBag.Action)
             @Html.Hidden("filter")
             @Html.Hidden("export", false)
+            @Html.Hidden("testitems")
+            @Html.Hidden("exportReport", false)
             <td>
                 @Html.TextBox("TestTime@>=", null, new { @class = "filter", style = "width: 100px;" })
                 至
@@ -70,6 +72,8 @@
             <td>
                 <button id="btSearch" type="submit">查询</button>
                 <button id="btExport" type="submit">导出</button>
+                <br/>
+                <button id="btExportReport" type="submit">导出报告</button>
             </td>
         </tr>
     </table>
@@ -77,7 +81,21 @@
 <div id="AjaxBody">
     @Html.Action((string)ViewBag.Action, (RouteValueDictionary)(ViewBag.RV))
 </div>
+<!-- testitems dialog -->
+<div id="dialog" title="选择测试项">
+    @foreach (var item in Common.GetTestItemElecList())
+    {
+        <input type="checkbox" class="testitem" value="@item.Id">@item.Name<br />
+    }
+</div>
+
+<!-- jquery ui css-->
+@section Styles {
+    @Styles.Render("~/Content/themes/base/css")
+}
+
 @section Scripts {
+    @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/cw")
     <script>
@@ -85,15 +103,59 @@
             $("#searchForm").submit(function (e) { setFilter(); });
 
             $("#btSearch").click(function () {
+                //set export False
                 $("#export").val("False");
+                //set export report False
+                $("#exportReport").val("False");
                 $("#searchForm").attr("data-ajax", "true")
                 $("#searchForm").attr("data-ajax-url", "/VnaTestRecord/Get");
             });
 
             $("#btExport").click(function () {
+                //set export True
                 $("#export").val("True");
+                //set export report False
+                $("#exportReport").val("False");
                 $("#searchForm").attr("data-ajax", "false")
                 $("#searchForm").attr("action", "/VnaTestRecord/Get");
+            });
+
+            $("#btExportReport").click(function (event) {
+                $("#dialog").dialog("open");
+                event.preventDefault();
+            });
+
+            //testitem dialog
+            $("#dialog").dialog({
+                autoOpen: false,
+                width: 400,
+                buttons: [
+                    {
+                        text: "确定",
+                        click: function () {
+                            $(this).dialog("close");
+                            //set export report true
+                            $("#exportReport").val("True");
+                            $("#testitems").attr("value","");
+                            $("input:checkbox.testitem").each(function () {
+                                var checkedValue = (this.checked ? $(this).val() : "");
+                                if (checkedValue != "")
+                                {
+                                    $("#testitems").attr("value", $("#testitems").val() + checkedValue + ",");
+                                }
+                            });
+                            $("#searchForm").attr("data-ajax", "false")
+                            $("#searchForm").attr("action", "/VnaTestRecord/Get");
+                            $("#searchForm").submit();
+                        }
+                    },
+                    {
+                        text: "取消",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
             });
         });
     </script>

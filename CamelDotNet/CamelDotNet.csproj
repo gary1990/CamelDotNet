@@ -51,6 +51,12 @@
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\..\..\KinSoft\camel\camelrelated\Ionic.Zip.dll</HintPath>
     </Reference>
+    <Reference Include="itextsharp">
+      <HintPath>..\packages\iTextSharp.5.5.1\lib\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp.xtra">
+      <HintPath>..\packages\itextsharp.xtra.5.5.1\lib\itextsharp.xtra.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp">
       <Private>True</Private>
     </Reference>
@@ -222,9 +228,13 @@
     <Compile Include="Controllers\BaseController\UserModelController.cs" />
     <Compile Include="Controllers\BaseController\BaseModelController.cs" />
     <Compile Include="Controllers\ClientController.cs" />
+    <Compile Include="Controllers\CoaxialQualityDamageController.cs" />
+    <Compile Include="Controllers\CoaxialQualityStatController.cs" />
     <Compile Include="Controllers\Common\CommonController.cs" />
     <Compile Include="Controllers\Common\CommonRazor.cs" />
     <Compile Include="Controllers\DepartmentController.cs" />
+    <Compile Include="Controllers\Lib\PdfResult.cs" />
+    <Compile Include="Controllers\Lib\ZipResult.cs" />
     <Compile Include="Controllers\PermissionController.cs" />
     <Compile Include="Controllers\ProductTypeController.cs" />
     <Compile Include="Controllers\QualityLossController.cs" />
@@ -262,6 +272,10 @@
     <Compile Include="Migrations\201406250546142_201406251345_add_QualityLoss_QualityLossPercent.cs" />
     <Compile Include="Migrations\201406250546142_201406251345_add_QualityLoss_QualityLossPercent.Designer.cs">
       <DependentUpon>201406250546142_201406251345_add_QualityLoss_QualityLossPercent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406300853117_201406301652_add_ProductType_Price.cs" />
+    <Compile Include="Migrations\201406300853117_201406301652_add_ProductType_Price.Designer.cs">
+      <DependentUpon>201406300853117_201406301652_add_ProductType_Price.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -427,8 +441,10 @@
     <Content Include="Content\img\bg-active.png" />
     <Content Include="Content\img\bg-blue.png" />
     <Content Include="Content\img\bg-header.png" />
+    <Content Include="Content\img\bg-hover-click-pic.PNG" />
     <Content Include="Content\img\bg-hover.png" />
     <Content Include="Content\img\bg-normal.png" />
+    <Content Include="Content\img\bg-pic.PNG" />
     <Content Include="Content\img\bg-red.png" />
     <Content Include="Content\img\bg-stats.png" />
     <Content Include="Content\img\bg.png" />
@@ -454,6 +470,18 @@
     <Content Include="Content\melon\images\pagging.gif" />
     <Content Include="Content\melon\images\tab.gif" />
     <Content Include="Content\melon\images\th.gif" />
+    <Content Include="Scripts\My97DatePicker\calendar.js" />
+    <Content Include="Scripts\My97DatePicker\lang\en.js" />
+    <Content Include="Scripts\My97DatePicker\lang\zh-cn.js" />
+    <Content Include="Scripts\My97DatePicker\lang\zh-tw.js" />
+    <Content Include="Scripts\My97DatePicker\skin\datePicker.gif" />
+    <Content Include="Scripts\My97DatePicker\skin\default\datepicker.css" />
+    <Content Include="Scripts\My97DatePicker\skin\default\img.gif" />
+    <Content Include="Scripts\My97DatePicker\skin\WdatePicker.css" />
+    <Content Include="Scripts\My97DatePicker\skin\whyGreen\bg.jpg" />
+    <Content Include="Scripts\My97DatePicker\skin\whyGreen\datepicker.css" />
+    <Content Include="Scripts\My97DatePicker\skin\whyGreen\img.gif" />
+    <Content Include="Scripts\My97DatePicker\WdatePicker.js" />
     <Content Include="Content\PagedList.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -986,6 +1014,14 @@
     <Content Include="Views\QualityLoss\EditorTemplates\QualityLossEdit.cshtml" />
     <Content Include="Views\Common\GetProcessListAjax.cshtml" />
     <Content Include="Views\QualityLoss\EditorTemplates\QualityLossPercentEdit.cshtml" />
+    <Content Include="Views\CoaxialQualityStat\Index.cshtml" />
+    <Content Include="Views\CoaxialQualityStat\StatByProductType.cshtml" />
+    <Content Include="Views\CoaxialQualityStat\StatByDrillingCrew.cshtml" />
+    <Content Include="Views\CoaxialQualityStat\StatByWorkGroup.cshtml" />
+    <Content Include="Views\CoaxialQualityDamage\Index.cshtml" />
+    <Content Include="Views\CoaxialQualityDamage\StatByDrillingCrew.cshtml" />
+    <Content Include="Views\CoaxialQualityDamage\StatByWorkGroup.cshtml" />
+    <Content Include="Views\CoaxialQualityStat\StatByFailItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1014,6 +1050,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406250546142_201406251345_add_QualityLoss_QualityLossPercent.resx">
       <DependentUpon>201406250546142_201406251345_add_QualityLoss_QualityLossPercent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406300853117_201406301652_add_ProductType_Price.resx">
+      <DependentUpon>201406300853117_201406301652_add_ProductType_Price.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

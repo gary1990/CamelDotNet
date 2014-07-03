@@ -25,13 +25,17 @@ namespace CamelDotNet.Models
         public virtual string ModelName { get; set; }
         [DisplayName("全称")]
         public string FullName { get { return Name + "#" + ModelName; }}
-        [DisplayName("本地")]
+        [DisplayName("本地")]//false is in K3,true is Local
         public bool isLocal { get; set; }
+        [Required(ErrorMessage = "价格不能为空")]
+        [DisplayName("价格（元/km）")]
+        public decimal Price { get; set; }
         public void Edit(ProductType model)
         {
             this.Name = model.Name;
             this.ModelName = model.ModelName;
             this.Knumber = model.Knumber;
+            this.Price = model.Price;
         }
     }
 }

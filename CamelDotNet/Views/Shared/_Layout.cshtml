@@ -81,6 +81,8 @@
                         <ul class="sideMenu">
                             <li class="@(sideMenuPath == "质量放行" ? "current" : "")">@Html.AuthorizeActionLink("质量放行", "Index", "QualityPassRecord")</li>
                             <li class="@(sideMenuPath == "质量损失比" ? "current" : "")">@Html.AuthorizeActionLink("质量损失比", "Index", "QualityLoss")</li>
+                            <li class="@(sideMenuPath == "同轴质量统计" ? "current" : "")">@Html.AuthorizeActionLink("同轴质量统计", "Index", "CoaxialQualityStat")</li>
+                            <li class="@(sideMenuPath == "同轴质量损失" ? "current" : "")">@Html.AuthorizeActionLink("同轴质量损失", "Index", "CoaxialQualityDamage")</li>
                         </ul>
                     </li>
                 }

@@ -875,3 +875,23 @@ th span.block7 {
     display:inline-block; 
     width:95px;
 }
+
+.select-kind {
+    background: url("img/bg-pic.png") no-repeat scroll 0 0 transparent;
+    color: #4a4a4a;
+    display: table-cell;
+    font-size: 13px;
+    height: 28px;
+    line-height: 26px;
+    text-align: center;
+    text-shadow: 0 1px 0 white;
+    vertical-align: bottom;
+    width: 101px;
+    cursor:pointer;
+}
+
+.selected-kind {
+    background: url("img/bg-hover-click-pic.png") no-repeat scroll 0 0 transparent;
+    color: white;
+    cursor:pointer;
+}

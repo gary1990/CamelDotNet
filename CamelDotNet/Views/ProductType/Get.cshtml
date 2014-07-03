@@ -24,6 +24,9 @@
                 @Html.DisplayNameFor(model => model.ModelName)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.IsDeleted)
             </th>
             <th></th>
@@ -39,6 +42,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ModelName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.IsDeleted)
@@ -88,8 +94,30 @@
                         }
                         else 
                         {
-                            //can not do any thing because from K3 System
-                        }   
+                            //can only edit price because from K3 System
+                            if (item.IsDeleted)
+                            {
+                                using (Html.BeginForm("Restore", (string)ViewBag.Controller))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    @Html.Hidden("id", item.Id)
+                                    @Html.Hidden("returnUrl", returnUrl)
+                                    <input type="submit" value="恢复" />
+                                }
+                            }
+                            else
+                            {
+                                using (Html.BeginForm("Edit", (string)ViewBag.Controller))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    @Html.Hidden("id", item.Id)
+                                    @Html.Hidden("returnUrl", returnUrl)
+                                    <input type="submit" value="编辑" />
+                                }
+                            }
+                        }
                     </div>
                 </td>
             </tr>

@@ -7,20 +7,51 @@
     @Html.LabelFor(model => model.Name)
 </div>
 <div class="editor-field">
-    @Html.EditorFor(model => model.Name)
+    @if(Model.isLocal)
+    {
+        @Html.EditorFor(model => model.Name)
+    }
+    else 
+    {
+        @Html.HiddenFor(model => model.Name)
+        @Html.TextBoxFor(model => model.Name, new { @ReadOnly = "ReadOnly" })
+    }
     @Html.ValidationMessageFor(model => model.Name)
 </div>
 <div class="editor-label">
     @Html.LabelFor(model => model.ModelName)
 </div>
 <div class="editor-field">
-    @Html.EditorFor(model => model.ModelName)
+    @if (Model.isLocal)
+    {
+        @Html.EditorFor(model => model.ModelName)
+    }
+    else
+    {
+        @Html.HiddenFor(model => model.ModelName)
+        @Html.TextBoxFor(model => model.ModelName, new { @ReadOnly = "ReadOnly" })
+    }
     @Html.ValidationMessageFor(model => model.ModelName)
 </div>
 <div class="editor-label">
     @Html.LabelFor(model => model.Knumber)
 </div>
 <div class="editor-field">
-    @Html.EditorFor(model => model.Knumber)
+    @if (Model.isLocal)
+    {
+        @Html.EditorFor(model => model.Knumber)
+    }
+    else
+    {
+        @Html.HiddenFor(model => model.Knumber)
+        @Html.TextBoxFor(model => model.Knumber, new { @ReadOnly = "ReadOnly" })
+    }
     @Html.ValidationMessageFor(model => model.Knumber)
+</div>
+<div class="editor-label">
+    @Html.LabelFor(model => model.Price)
+</div>
+<div class="editor-field">
+    @Html.EditorFor(model => model.Price)
+    @Html.ValidationMessageFor(model => model.Price)
 </div>

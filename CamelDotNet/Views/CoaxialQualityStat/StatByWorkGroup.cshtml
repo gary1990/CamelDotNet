@@ -1,0 +1,33 @@
+﻿@model List<DotNet.Highcharts.Highcharts>
+
+@{
+    decimal totalLength = Convert.ToDecimal(ViewBag.TotalLength);
+    decimal totalFailLength = Convert.ToDecimal(ViewBag.TotalFailLength);
+}
+
+<div>
+    @foreach (var chart in Model)
+    {
+        @chart
+    }
+</div>
+
+<div>
+    <span><b>总产量：</b>@string.Format("{0:0.#####}", totalLength)km</span>
+    <span><b>总不合格量：</b>@string.Format("{0:0.#####}", totalFailLength)km</span>
+    <span>
+        <b>合格率：</b>
+        @if (totalLength == 0)
+        {
+            <span>0%</span>
+        }
+        else
+        {
+            <span>
+                @string.Format("{0:0.#####}", (totalLength - totalFailLength) / totalLength * 100)%
+            </span>
+        }
+
+    </span>
+</div>
+

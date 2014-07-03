@@ -31,7 +31,7 @@ namespace CamelDotNet.Models
         public string HmSuggestion { get; set; }
         [DisplayName("需要总工审核")]
         public bool NeedHmApprove { get; set; }
-        [DisplayName("放行")]
+        [DisplayName("放行")]//false is do no change to PASS, true is change to PASS
         public bool ChangePass { get; set; }
         public virtual VnaRecord VnaRecord { get; set; }
         public virtual CamelDotNetUser Qe { get; set;}
