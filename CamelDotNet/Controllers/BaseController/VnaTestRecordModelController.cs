@@ -83,8 +83,8 @@ namespace CamelDotNet.Controllers
                 }
                 else 
                 {
-                    string filePath = GenrateReprotPdf(results, testitems);
-                    return new PdfResult(filePath);
+                    string[] filesPath = GenrateReprotPdf(results, testitems);
+                    return new ZipResult(filesPath) { FileName = DateTime.Now.ToString("yyyyMMddHHmmss")+".zip"};
                 } 
             }
         }
@@ -120,8 +120,10 @@ namespace CamelDotNet.Controllers
             return File(temp, "application/vnd.ms-excel");
         }
 
-        private string GenrateReprotPdf(IQueryable<Model> results, string testitems)
+        private string[] GenrateReprotPdf(IQueryable<Model> results, string testitems)
         {
+            //filenames of each vna record pdf
+            List<string> filenamesStrList = new List<string> { };
             //split testitems string to string array
             string[] stringSeparators = new string[] { "," };
             string[] testitemIds = testitems.Split(stringSeparators, StringSplitOptions.None);
@@ -173,43 +175,22 @@ namespace CamelDotNet.Controllers
             Font link = FontFactory.GetFont("Arial", 10, Font.NORMAL, new BaseColor(0, 0, 255));
             //create newline Phrase
             Phrase newLinePhrase = new Phrase(Environment.NewLine);
-
-            string filename = folderPath + "/" + currentTime + ".pdf";
-            Document doc = new Document();
-            PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None));
-            doc.Open();
-            System.Drawing.Image LogoImage = System.Drawing.Image.FromFile(producterInfoPath + "/" + "producter.png");
-            iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(LogoImage, System.Drawing.Imaging.ImageFormat.Png);
-            logo.ScalePercent(24f);
-            logo.Alignment = Element.ALIGN_RIGHT;
-            doc.Add(logo);
-            doc.Add(newLinePhrase);
-            PdfPTable toatlTable = new PdfPTable(4);
-            toatlTable.AddCell(new Phrase("产品型号", font));
-            toatlTable.AddCell(new Phrase("序列号", font));
-            toatlTable.AddCell(new Phrase("盘号", font));
-            toatlTable.AddCell(new Phrase("制造长度", font));
+            //per vna record
             foreach (var perResult in results)
             {
-                //add sn index click to detail
-                Anchor click = new Anchor(perResult.SerialNumber.Number, link);
-                click.Reference = "#" + perResult.Id;
-                Paragraph p1 = new Paragraph();
-                p1.Add(click);
-                toatlTable.AddCell(new Phrase(perResult.ProductType.Name, font));
-                toatlTable.AddCell(p1);
-                toatlTable.AddCell(new Phrase(perResult.ReelNumber, font));
-                toatlTable.AddCell((Math.Abs(perResult.InnerLength - perResult.OuterLength)).ToString());
-            }
-            doc.Add(toatlTable);
-            foreach (var perResult in results)
-            {
+                string filename = folderPath + "/" + perResult.ReelNumber + "_" + perResult.TestTime.ToString("yyyyMMddHHmmss") + "_" + perResult.Id + ".pdf";
+                Document doc = new Document();
+                PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None));
+                doc.Open();
+                System.Drawing.Image LogoImage = System.Drawing.Image.FromFile(producterInfoPath + "/" + "producter.png");
+                iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(LogoImage, System.Drawing.Imaging.ImageFormat.Png);
+                logo.ScalePercent(24f);
+                logo.Alignment = Element.ALIGN_RIGHT;
+                doc.Add(logo);
+                doc.Add(newLinePhrase);
                 //add detail match index click
-                Anchor target = new Anchor("VNA测试：详情", font12);
-                target.Name = perResult.Id.ToString();
-                Phrase p3 = new Phrase();
-                p3.Add(target);
-                doc.Add(p3);
+                Phrase title = new Phrase("VNA测试：详情", font12);
+                doc.Add(title);
                 //create perrecord table
                 PdfPTable perRecordTable = new PdfPTable(4);
                 perRecordTable.AddCell(new Phrase("产品型号", font));
@@ -223,29 +204,31 @@ namespace CamelDotNet.Controllers
                 doc.Add(perRecordTable);
                 foreach (var testitem in perResult.VnaTestItemRecords)
                 {
+                    PdfPTable perRecordTestItemTable = new PdfPTable(1);
+                    perRecordTestItemTable.DefaultCell.Border = Rectangle.NO_BORDER;
                     //if testedrecord in selected testitem
-                    foreach (var selectedItem in testitemIds)
+                    bool isSelected = testitemIds.Contains(testitem.TestItemId.ToString());
+                    if (isSelected)
                     {
-                        if (selectedItem == testitem.TestItemId.ToString())
+                        perRecordTestItemTable.AddCell(new Phrase("测试项：" + testitem.TestItem.Name, font));
+                        doc.Add(newLinePhrase);
+                        //uploadFolder image path
+                        FileInfo itemTestImagePath = new FileInfo(uploadFolderPath + "/" + testitem.ImagePath);
+                        if (itemTestImagePath.Exists)
                         {
-                            doc.Add(new Phrase("测试项：" + testitem.TestItem.Name, font));
-                            doc.Add(newLinePhrase);
-                            //uploadFolder image path
-                            FileInfo itemTestImagePath = new FileInfo(uploadFolderPath + "/" + testitem.ImagePath);
-                            if (itemTestImagePath.Exists)
-                            {
-                                System.Drawing.Image testitemImage = System.Drawing.Image.FromFile(uploadFolderPath + "/" + testitem.ImagePath);
-                                iTextSharp.text.Image testitemImagePng = iTextSharp.text.Image.GetInstance(testitemImage, System.Drawing.Imaging.ImageFormat.Png);
-                                testitemImagePng.ScalePercent(50f);
-                                doc.Add(testitemImagePng);
-                            }
+                            System.Drawing.Image testitemImage = System.Drawing.Image.FromFile(uploadFolderPath + "/" + testitem.ImagePath);
+                            iTextSharp.text.Image testitemImagePng = iTextSharp.text.Image.GetInstance(testitemImage, System.Drawing.Imaging.ImageFormat.Png);
+                            testitemImagePng.ScalePercent(25f);
+                            perRecordTestItemTable.AddCell(testitemImagePng);
                         }
                     }
+                    doc.Add(perRecordTestItemTable);
                 }
+                doc.Close();
+                filenamesStrList.Add(filename);
             }
 
-            doc.Close();
-            return filename;
+            return filenamesStrList.ToArray();
         }
 
         private string GenerateReport(IQueryable<Model> results, string testitems) 
