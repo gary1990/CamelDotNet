@@ -830,6 +830,7 @@
     <Content Include="Content\Highcharts-3.0.10\examples\line-ajax\analytics.tsv" />
     <Content Include="Content\Highcharts-3.0.10\exporting-server\phantomjs\readme.md" />
     <Content Include="Content\Highcharts-3.0.10\exporting-server\php\php-batik\index.php" />
+    <None Include="Properties\PublishProfiles\10.10.1.240.pubxml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
