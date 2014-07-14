@@ -20,6 +20,9 @@
                 <span class="searchLabel">产品型号</span>
             </td>
             <td>
+                <span class="searchLabel">客户</span>
+            </td>
+            <td>
                 <span class="searchLabel">不合格</span>
             </td>
             <td>
@@ -42,7 +45,9 @@
             @Html.Hidden("exportReport", false)
             <td>
                 @Html.TextBox("TestTime@>=", null, new { @class = "filter", style = "width: 100px;" })
+                <br/>
                 至
+                <br/>
                 @Html.TextBox("TestTime@<=", null, new { @class = "filter", style = "width: 100px;" })
             </td>
             <td>
@@ -56,6 +61,9 @@
             </td>
             <td>
                 @Html.DropDownList("ProductTypeId@=", new SelectList(Common.GetProductTypeInTestConfigList(), "Id", "FullName"), String.Empty, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.DropDownList("ClientId@=", new SelectList(Common.GetClientList(), "Id", "Name"), String.Empty, new { @class = "filter", style = "width: 100px;" })
             </td>
             <td>
                 @Html.CheckBox("TestResult@=", false, new { @class = "filter"})
