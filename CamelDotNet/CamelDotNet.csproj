@@ -308,6 +308,7 @@
     <Compile Include="Models\TestItemConfig.cs" />
     <Compile Include="Models\TestStation.cs" />
     <Compile Include="Models\Unit.cs" />
+    <Compile Include="Models\ViewModels\CopyBat.cs" />
     <Compile Include="Models\ViewModels\PerConfigEdit.cs" />
     <Compile Include="Models\ViewModels\QualityLossEdit.cs" />
     <Compile Include="Models\ViewModels\QualityLossPercentEdit.cs" />
@@ -470,6 +471,7 @@
     <Content Include="Content\melon\images\pagging.gif" />
     <Content Include="Content\melon\images\tab.gif" />
     <Content Include="Content\melon\images\th.gif" />
+    <Content Include="Content\versionlog.txt" />
     <Content Include="Scripts\My97DatePicker\calendar.js" />
     <Content Include="Scripts\My97DatePicker\lang\en.js" />
     <Content Include="Scripts\My97DatePicker\lang\zh-cn.js" />
@@ -1022,6 +1024,7 @@
     <Content Include="Views\CoaxialQualityDamage\StatByDrillingCrew.cshtml" />
     <Content Include="Views\CoaxialQualityDamage\StatByWorkGroup.cshtml" />
     <Content Include="Views\CoaxialQualityStat\StatByFailItem.cshtml" />
+    <Content Include="Views\TestConfig\CopyBat.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,0 +1,18 @@
+﻿=====
+2.2.3.0
+change:
+	testconfig bat copy
+notice:
+	permission add:
+		Controller:TestConfig Action:CopyBat 
+			insert into Permission
+			([ControllerName],[ActionName],[Name],[IsDeleted])
+			values
+			('TestConfig','CopyBat','测试方案-批量复制',0),
+			('TestConfig','CopyBatSave','测试方案-批量复制-保存',0)
+		Admin Role add permission:
+			Insert into CamelRolePermission
+			([CamelDotNetRoleId],[PermissionId])
+			values
+			(1,145),
+			(1,146)

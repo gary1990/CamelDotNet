@@ -1,0 +1,55 @@
+﻿@model CopyBat
+
+<h2>@ViewBag.Name:@ViewBag.Title</h2>
+<div>客户：@ViewBag.ClientName</div>
+<div>产品型号：@ViewBag.ProductTypeName</div>
+<hr/>
+@using (Html.BeginForm("CopyBatSave", (string)ViewBag.Controller))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    @Html.Hidden("returnUrl", (string)ViewBag.ReturnUrl)
+    @Html.Hidden("TestConfigId", Model.TestConfigId)
+    @Html.Hidden("batApprove");
+    foreach (var product in Model.ProductTypes)
+    {
+        <div style="float:left;width:30%;">
+            @Html.CheckBox("productTypeCheckBox", false, new { data_id = product.Id, @class = "producttypeId" })
+            <span>@product.FullName</span>
+        </div>
+    }
+    <div style="clear: both">
+        <input id="batApproveSubmit" type="submit" value="保存" />
+    </div>
+}
+@section Styles {
+}
+<a href="@Url.Content((string)ViewBag.ReturnUrl)">取消</a>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/custom.js")"></script>
+    <script>
+        $(document).ready(function () {
+            $(".producttypeId").css("margin", "5px 0 6px");
+
+            $(".producttypeId").change(function () {
+                if ($(this).attr("checked") == "checked") {
+                    var str = $("#batApprove").val();
+                    $("#batApprove").val(str + "[" + $(this).attr("data-id") + "]");
+                }
+                else {
+                    $(".batApproveTotal").prop("checked", false);
+                    var str = $("#batApprove").val();
+                    $("#batApprove").val(str.replace("[" + $(this).attr("data-id") + "]", ""));
+                }
+            });
+
+            $("#batApproveSubmit").click(function (e) {
+                if ($("#batApprove").val() == "") {
+                    e.preventDefault();
+                    alert("请选择要复制的产品型号!");
+                }
+            });
+        });
+    </script>
+}

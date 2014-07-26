@@ -93,6 +93,86 @@ namespace CamelDotNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public virtual ActionResult CopyBat(int id, string returnUrl = "Index")
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            ViewBag.Title = "批量复制";
+
+            var result = UW.context.TestConfig.Where(a => a.Id == id).Include(a => a.TestItemConfigs.Select(b => b.PerConfigs)).SingleOrDefault();
+            if (result == null)
+            {
+                Common.RMError(this);
+                return Redirect(Url.Content(returnUrl));
+            }
+            try
+            {
+                ViewBag.ClientName = result.Client.Name;
+                ViewBag.ProductTypeName = result.ProductType.FullName;
+                CopyBat copyBat = new CopyBat(result.ClientId);
+                copyBat.TestConfigId = result.Id;
+                return View(ViewPath1 + ViewPath + ViewPath2 + "CopyBat.cshtml", copyBat);
+            }
+            catch (Exception e)
+            {
+                Common.RMError(this, "复制失败!" + e.ToString());
+            }
+
+            return Redirect(Url.Content(returnUrl));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual ActionResult CopyBatSave(int TestConfigId, string batApprove, string returnUrl = "Index")
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            ViewBag.Title = "批量复制";
+
+            var result = UW.context.TestConfig.Where(a => a.Id == TestConfigId).Include(a => a.TestItemConfigs.Select(b => b.PerConfigs)).SingleOrDefault();
+            if (result == null)
+            {
+                Common.RMError(this);
+                return Redirect(Url.Content(returnUrl));
+            }
+            try
+            {
+                string str = batApprove.Replace("][", ",");
+                str = str.Replace("]", "");
+                str = str.Replace("[", "");
+                var strInt = str.Split(',');
+                using (var scope = new TransactionScope())
+                {
+                    try 
+                    { 
+                        foreach(var itemProductTypeId in strInt)
+                        {
+                            TestConfig model = new TestConfig()
+                            {
+                                ClientId = result.ClientId,
+                                ProductTypeId = Int32.Parse(itemProductTypeId),
+                            };
+                            model = CreateNewTestConfig(model, result);
+                            UW.context.TestConfig.Add(model);
+                        }
+                        UW.CamelSave();
+                    }
+                    catch(Exception)
+                    {
+                        ModelState.AddModelError(string.Empty, "批量复制失败");
+                        return Redirect(Url.Content(returnUrl));
+                    }
+                    scope.Complete();
+                }
+            }
+            catch (Exception e)
+            {
+                Common.RMError(this, "复制失败!" + e.ToString());
+            }
+
+            return Redirect(Url.Content(returnUrl));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public virtual ActionResult CreateOrCopySave(TestConfigEdit testConfigEidt, string returnUrl = "Index", string title = "编辑")
         {
             ViewBag.ReturnUrl = returnUrl;

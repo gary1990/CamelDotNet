@@ -58,6 +58,15 @@
                         }
                         else
                         {
+                            using (Html.BeginForm("CopyBat", (string)ViewBag.Controller))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                @Html.Hidden("id", item.Id)
+                                @Html.Hidden("returnUrl", returnUrl)
+                                <input type="submit" value="批量复制" />
+                            }
+                            
                             using (Html.BeginForm("Copy", (string)ViewBag.Controller))
                             {
                                 @Html.AntiForgeryToken()
