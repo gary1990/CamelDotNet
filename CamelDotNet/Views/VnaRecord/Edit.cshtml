@@ -1,0 +1,25 @@
+﻿@model CamelDotNet.Models.VnaRecord
+
+@{
+    ViewBag.Title = "编辑盘号";
+}
+
+<h2>@ViewBag.Name:@ViewBag.Title</h2>
+
+@using (Html.BeginForm("EditSave", (string)ViewBag.Controller))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    
+    <fieldset>
+        @Html.Hidden("returnUrl", (string)ViewBag.ReturnUrl)
+        @Html.EditorForModel("EditVnaRecord")
+        <p>
+            <input type="submit" value="保存" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    <a href="@Url.Content((string)ViewBag.ReturnUrl)">返回</a>
+</div>

@@ -45,6 +45,24 @@ namespace CamelDotNet.Controllers
 
         public virtual ActionResult Index(int page = 1, bool includeSoftDeleted = false, string filter = null)
         {
+            List<SelectListItem> items = new List<SelectListItem>();
+
+            items.Add(new SelectListItem { Text = "00", Value = "00" });
+            items.Add(new SelectListItem { Text = "01", Value = "01" });
+            items.Add(new SelectListItem { Text = "02", Value = "02" });
+            items.Add(new SelectListItem { Text = "03", Value = "03" });
+            items.Add(new SelectListItem { Text = "04", Value = "04" });
+            items.Add(new SelectListItem { Text = "05", Value = "05" });
+            items.Add(new SelectListItem { Text = "06", Value = "06" });
+            items.Add(new SelectListItem { Text = "07", Value = "07" });
+            items.Add(new SelectListItem { Text = "08", Value = "08" });
+            items.Add(new SelectListItem { Text = "09", Value = "09" });
+            for (int i = 10; i <= 23; i++)
+            {
+                items.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+            }
+            ViewBag.Hours = items;
+
             ViewBag.RV = new RouteValueDictionary { { "tickTime", DateTime.Now.ToLongTimeString() }, { "returnRoot", "Index" }, { "actionAjax", "Get" }, { "page", page }, { "includeSoftDeleted", includeSoftDeleted }, { "filter", filter } };
             return View(ViewPath1 + ViewPath + ViewPath2 + "Index.cshtml");
         }
@@ -88,7 +106,52 @@ namespace CamelDotNet.Controllers
                 } 
             }
         }
-
+        public ActionResult Edit(int? id, string returnUrl = "Index") 
+        {
+            if (id == null)
+            {
+                Common.RMError(this);
+                return Redirect(Url.Content(returnUrl));
+            }
+            var result = VnaRecordCommon<Model>.GetQuery(UW)
+                .Where(a => a.Id == id).SingleOrDefault();
+            if(result == null)
+            {
+                Common.RMError(this);
+                return Redirect(Url.Content(returnUrl));
+            }
+            ViewBag.ReturnUrl = returnUrl;
+            return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", result);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual ActionResult EditSave(Model model, string returnUrl = "Index") 
+        {
+            //检查记录在权限范围内
+            var result = VnaRecordCommon<Model>.GetQuery(UW).Where(a => a.Id == model.Id).SingleOrDefault();
+            if (result == null)
+            {
+                Common.RMError(this);
+                return Redirect(Url.Content(returnUrl));
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    result.Edit(model);
+                    UW.CamelSave();
+                    Common.RMOk(this, "记录:" + result + "保存成功!");
+                    return Redirect(Url.Content(returnUrl));
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError(string.Empty, "编辑记录失败!" + e.ToString());
+                }
+            }
+            //end 检查记录在权限范围内
+            ViewBag.ReturnUrl = returnUrl;
+            return View(ViewPath1 + ViewPath + ViewPath2 + "Edit.cshtml", model);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public virtual ActionResult Details(int id = 0, string returnUrl = "Index")
@@ -111,6 +174,7 @@ namespace CamelDotNet.Controllers
 
             return View(ViewPath1 + ViewPath + ViewPath2 + "Details.cshtml", result);
         }
+
         public ActionResult ExportToExcel()
         {
             StringBuilder str = new StringBuilder();

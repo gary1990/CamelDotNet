@@ -22,19 +22,6 @@
             <td>
                 <span class="searchLabel">客户</span>
             </td>
-            <td>
-                <span class="searchLabel">不合格</span>
-            </td>
-            <td>
-                <span class="searchLabel">盘号</span>
-            </td>
-            <td>
-                <span class="searchLabel">工单号</span>
-            </td>
-            <td>
-                <span class="searchLabel">序列号</span>
-            </td>
-            <td></td>
         </tr>
         <tr>
             @Html.Hidden("returnRoot", (string)ViewBag.ReturnRoot)
@@ -44,11 +31,11 @@
             @Html.Hidden("testitems")
             @Html.Hidden("exportReport", false)
             <td>
-                @Html.TextBox("TestTime@>=", null, new { @class = "filter", style = "width: 100px;" })
-                <br/>
+                @Html.TextBox("TestTime@>=", null, new { @class = "filter Wdate", style = "width: 100px;", onFocus = "WdatePicker(({lang:'zh-cn'}))" })
+                @Html.DropDownList("TestTimeStartHour@>=", new SelectList(ViewBag.Hours, "Value", "Text"), String.Empty, new { @class = "filter", style = "width: 50px;" })
                 至
-                <br/>
-                @Html.TextBox("TestTime@<=", null, new { @class = "filter", style = "width: 100px;" })
+                @Html.TextBox("TestTime@<=", null, new { @class = "filter Wdate", style = "width: 100px;", onFocus = "WdatePicker(({lang:'zh-cn'}))" })
+                @Html.DropDownList("TestTimeStopHour@<=", new SelectList(ViewBag.Hours, "Value", "Text"), String.Empty, new { @class = "filter", style = "width: 50px;" })
             </td>
             <td>
                 @Html.DropDownList("TestStationId@=", new SelectList(Common.GetTestStationList(), "Id", "Name"), String.Empty, new { @class = "filter", style = "width: 100px;" })
@@ -65,22 +52,44 @@
             <td>
                 @Html.DropDownList("ClientId@=", new SelectList(Common.GetClientList(), "Id", "Name"), String.Empty, new { @class = "filter", style = "width: 100px;" })
             </td>
+        </tr>
+        <tr>
             <td>
-                @Html.CheckBox("TestResult@=", false, new { @class = "filter"})
+                <span class="searchLabel">序列号</span>
+            </td>
+            <td>
+                <span class="searchLabel">盘号</span>
+            </td>
+            <td>
+                <span class="searchLabel">班组</span>
+            </td>
+            <td>
+                <span class="searchLabel">工单号</span>
+            </td>
+            <td>
+                <span class="searchLabel">不合格</span>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                @Html.TextBox("SerialNumber.Number@%", null, new { @class = "filter"})
             </td>
             <td>
                 @Html.TextBox("ReelNumber@%", null, new { @class = "filter", style = "width: 100px;" })
             </td>
             <td>
+                @Html.TextBox("WorkGroup@%", null, new { @class = "filter", style = "width: 100px;" })
+            </td>
+            <td>
                 @Html.TextBox("OrderNumber@%", null, new { @class = "filter", style = "width: 100px;" })
             </td>
             <td>
-                @Html.TextBox("SerialNumber.Number@%", null, new { @class = "filter", style = "width: 100px;" })
+                @Html.CheckBox("TestResult@=", false, new { @class = "filter" })
             </td>
             <td>
                 <button id="btSearch" type="submit">查询</button>
                 <button id="btExport" type="submit">导出</button>
-                <br/>
                 <button id="btExportReport" type="submit">导出报告</button>
             </td>
         </tr>
@@ -100,12 +109,14 @@
 <!-- jquery ui css-->
 @section Styles {
     @Styles.Render("~/Content/themes/base/css")
+    <link href="@Url.Content("~/Scripts/My97DatePicker/skin/WdatePicker.css")" rel="stylesheet" type="text/css" />
 }
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/cw")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")"></script>
     <script>
         $(document).ready(function () {
             $("#searchForm").submit(function (e) { setFilter(); });

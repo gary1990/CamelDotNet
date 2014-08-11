@@ -15,6 +15,7 @@ using CamelDotNet.Models;
 using System.Globalization;
 using System.Data.Entity;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 
 namespace CamelDotNet.Lib
 {
@@ -285,6 +286,9 @@ namespace CamelDotNet.Lib
                 Dictionary<string, string> filterDic = new Dictionary<string, string>();
                 if (!string.IsNullOrWhiteSpace(filter))
                 {
+                    //reFormart filter if contains Time filter
+                    filter = TimeFormat.TimeFilterConvert("TestTime", "TestTimeStartHour",">=",filter);
+                    filter = TimeFormat.TimeFilterConvert("TestTime", "TestTimeStopHour", "<=", filter);
                     var conditions = filter.Substring(0, filter.Length - 1).Split(';');
                     foreach (var item in conditions)
                     {
@@ -305,7 +309,69 @@ namespace CamelDotNet.Lib
             return result;
         }
     }
-
+    public class TimeFormat 
+    {
+        public static string TimeFilterConvert(string timeDateMark,string timeHourMark, string equalMark, string filterStr) 
+        {
+            //Target Time String yyyyMMdd HHmmss formarted
+            var timeTarget = "";
+            //Matched Time Date String
+            var regDateStr = "";
+            //Matched Time Hour String
+            var regHourStr = "";
+            //match Time Date
+            Regex regDate = new Regex(@"(" + timeDateMark + @"\@" + equalMark + @"\:)([-\d]+)(;)");
+            //match Time Hour
+            Regex regHour = new Regex(@"(" + timeHourMark + @"\@" + equalMark + @"\:)([\d]+)(;)");
+            //Time Date Match result
+            bool regDateStartMatch = regDate.IsMatch(filterStr);
+            //Time Hour Match result
+            bool regHourStartMatch = regHour.IsMatch(filterStr);
+            if (regDateStartMatch)
+            {
+                regDateStr = regDate.Match(filterStr).Value;
+                //replace matched Time Date with space
+                filterStr = regDate.Replace(filterStr, "");
+                if (regHourStartMatch)
+                {
+                    regHourStr = regHour.Match(filterStr).Value;
+                    //replace matched Time Hour with space
+                    filterStr = regHour.Replace(filterStr, "");
+                    //colon position in regHourStr
+                    int colonPostion = regHourStr.IndexOf(':');
+                    //generate Target Time String yyyyMMdd HHmmss formarted
+                    timeTarget = regDateStr.Substring(0, regDateStr.Length - 1).Replace("-", "") + " " + regHourStr.Substring(colonPostion + 1, regHourStr.Length - colonPostion - 2) + "0000" + ";";
+                }
+                else
+                {
+                    //generate Target Time String yyyyMMdd HHmmss formarted
+                    timeTarget = regDateStr.Substring(0, regDateStr.Length - 1).Replace("-", "") + " " + "000000" + ";";
+                }
+            }
+            else
+            {
+                if (regHourStartMatch)
+                {
+                    regHourStr = regHour.Match(filterStr).Value;
+                    //replace matched Time Hour with space
+                    filterStr = regHour.Replace(filterStr, "");
+                    //get current date String yyyyMMdd formated
+                    string currentDateStr = DateTime.Now.ToString("yyyyMMdd");
+                    //colon position in regHourStartStr
+                    int colonPostion = regHourStr.IndexOf(':');
+                    //generate Target Time String yyyyMMdd HHmmss formarted
+                    timeTarget = @"TestTime@>=:" + currentDateStr + " " + regHourStr.Substring(colonPostion + 1, regHourStr.Length - colonPostion - 2) + "0000" + ";";
+                }
+                else
+                {
+                    //do noting
+                }
+            }
+            //add Target Time String to filter String
+            filterStr += timeTarget;
+            return filterStr;
+        }
+    }
     public class QualityLossCommon<Model> where Model : QualityLoss
     {
         public static IQueryable<Model> GetQuery(UnitOfWork db, string filter = null, bool noTrack = false)

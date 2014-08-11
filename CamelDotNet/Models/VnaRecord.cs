@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CamelDotNet.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ using System.Web;
 
 namespace CamelDotNet.Models
 {
-    public class VnaRecord
+    public class VnaRecord : IEditable<VnaRecord>
     {
         public VnaRecord() 
         {
@@ -83,5 +84,10 @@ namespace CamelDotNet.Models
         public virtual TestStation TestStation { get; set; }
         public virtual TestEquipment TestEquipment { get; set; }
         public virtual Client Client { get; set; }
+
+        public void Edit(VnaRecord model)
+        {
+            this.ReelNumber = model.ReelNumber;
+        }
     }
 }

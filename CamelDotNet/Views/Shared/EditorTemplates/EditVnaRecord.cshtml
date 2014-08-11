@@ -1,0 +1,191 @@
+﻿@model VnaRecord
+
+@Html.HiddenFor(model => model.Id)
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.ReelNumber)
+</div>
+<div class="editor-field">
+    @Html.EditorFor(model => model.ReelNumber)
+    @Html.ValidationMessageFor(model => model.ReelNumber)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.SerialNumberId)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.SerialNumberId)
+    @Html.DisplayFor(model => model.SerialNumber.Number)
+    @Html.ValidationMessageFor(model => model.SerialNumberId)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.ProductTypeId)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.ProductTypeId)
+    @Html.DisplayFor(model => model.ProductType.FullName)
+    @Html.ValidationMessageFor(model => model.ProductTypeId)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.CamelDotNetUserId)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.CamelDotNetUserId)
+    @Html.DisplayFor(model => model.CamelDotNetUser.JobNumber)
+    @Html.ValidationMessageFor(model => model.CamelDotNetUserId)
+</div>
+    
+<div class="editor-label">
+    @Html.LabelFor(model => model.TestEquipmentId)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.TestEquipmentId)
+    @Html.DisplayFor(model => model.TestEquipment.Name)
+    @Html.ValidationMessageFor(model => model.TestEquipmentId)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.TestStationId)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.TestStationId)
+    @Html.DisplayFor(model => model.TestStation.Name)
+    @Html.ValidationMessageFor(model => model.TestStationId)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.OrderNumber)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.OrderNumber)
+    @Html.DisplayFor(model => model.OrderNumber)
+    @Html.ValidationMessageFor(model => model.OrderNumber)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.OrderNo)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.OrderNo)
+    @Html.DisplayFor(model => model.OrderNo)
+    @Html.ValidationMessageFor(model => model.OrderNo)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.DrillingCrew)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.DrillingCrew)
+    @Html.DisplayFor(model => model.DrillingCrew)
+    @Html.ValidationMessageFor(model => model.DrillingCrew)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.WorkGroup)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.WorkGroup)
+    @Html.DisplayFor(model => model.WorkGroup)
+    @Html.ValidationMessageFor(model => model.WorkGroup)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.TestTime)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.TestTime)
+    @Html.DisplayFor(model => model.TestTime)
+    @Html.ValidationMessageFor(model => model.TestTime)
+</div>
+
+<div class="editor-label">
+    @*@Html.LabelFor(model => model.TestResult)*@
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.TestResult)
+    @*@Html.TextBoxFor(model => model.TestResult, new { @ReadOnly = "ReadOnly" })
+    @Html.ValidationMessageFor(model => model.TestResult)*@
+</div>
+
+<div class="editor-label">
+    @*@Html.LabelFor(model => model.Temperature)*@
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.Temperature)
+    @*@Html.DisplayFor(model => model.Temperature)*@
+    @Html.ValidationMessageFor(model => model.Temperature)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.InnerLength)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.InnerLength)
+    @Html.DisplayFor(model => model.InnerLength)
+    @Html.ValidationMessageFor(model => model.InnerLength)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.OuterLength)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.OuterLength)
+    @Html.DisplayFor(model => model.OuterLength)
+    @Html.ValidationMessageFor(model => model.OuterLength)
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.ClientId)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.ClientId)
+    @Html.DisplayFor(model => model.Client.Name)
+    @Html.ValidationMessageFor(model => model.ClientId)
+</div>
+
+<div class="editor-label">
+    @*@Html.LabelFor(model => model.isGreenLight)*@
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.isGreenLight)
+    @*@Html.TextBoxFor(model => model.isGreenLight, new { @ReadOnly = "ReadOnly" })
+    @Html.ValidationMessageFor(model => model.isGreenLight)*@
+</div>
+    
+<div class="editor-label">
+    @*@Html.LabelFor(model => model.NoStatistics)*@
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.NoStatistics)
+    @*@Html.TextBoxFor(model => model.NoStatistics, new { @ReadOnly = "ReadOnly" })
+    @Html.ValidationMessageFor(model => model.NoStatistics)*@
+</div>
+
+<div class="editor-label">
+    @*@Html.LabelFor(model => model.reTest)*@
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.reTest)
+    @*@Html.TextBoxFor(model => model.reTest, new { @ReadOnly = "ReadOnly" })
+    @Html.ValidationMessageFor(model => model.reTest)*@
+</div>
+
+<div class="editor-label">
+    @Html.LabelFor(model => model.Remark)
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.Remark)
+    @Html.DisplayFor(model => model.Remark)
+    @Html.ValidationMessageFor(model => model.Remark)
+</div>
+
+<div class="editor-label">
+    @*@Html.LabelFor(model => model.BarCodeUsed)*@
+</div>
+<div class="editor-field">
+    @Html.HiddenFor(model => model.BarCodeUsed)
+    @*@Html.TextBoxFor(model => model.BarCodeUsed, new { @ReadOnly = "ReadOnly" })
+    @Html.ValidationMessageFor(model => model.BarCodeUsed)*@
+</div>

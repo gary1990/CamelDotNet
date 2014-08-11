@@ -16,3 +16,39 @@ notice:
 			values
 			(1,145),
 			(1,146)
+=====
+2.2.4.0
+change:
+	1.add testitem:
+		INSERT INTO [CamelDotNet].[dbo].[TestItem]
+		([TestItemCategoryId],[Formular],[Name],[IsDeleted])
+		VALUES
+		(2,NULL,'缺编',0),
+		(2,NULL,'小节距',0),
+		(2,NULL,'铝带打折',0),
+		(2,NULL,'翻带',0),
+		(2,NULL,'节距错',0),
+		(2,NULL,'外径问题',0),
+		(2,NULL,'毛刺未修',0),
+		(2,NULL,'排线压线',0),
+		(2,NULL,'电缆压扁',0),
+		(2,NULL,'针孔',0),
+		(2,NULL,'浸锡不完整',0),
+		(2,NULL,'表面不平整',0),
+		(2,NULL,'表面氧化有斑',0),
+		(2,NULL,'表面脏污',0);
+notice:
+	1.add testitem:change 1
+	2.add VnaTestRecord Edit Permmision
+		Controller:VnaTestRecord Action:Edit 
+			insert into Permission
+			([ControllerName],[ActionName],[Name],[IsDeleted])
+			values
+			('VnaTestRecord','Edit','Vna测试-编辑盘号',0),
+			('VnaTestRecord','EditSave','Vna测试-编辑盘号-保存',0)
+		Admin Role add permission:
+			Insert into CamelRolePermission
+			([CamelDotNetRoleId],[PermissionId])
+			values
+			(1,147),
+			(1,148)

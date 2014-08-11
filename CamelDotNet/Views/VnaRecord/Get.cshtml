@@ -103,7 +103,7 @@
                     @Html.DisplayFor(modelItem => item.DrillingCrew)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ReelNumber)
+                    @Html.ActionLink(item.ReelNumber, "Edit", new { id = item.Id, returnUrl = returnUrl }, new { style = "color:blue" })
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.WorkGroup)

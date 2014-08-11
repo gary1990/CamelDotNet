@@ -1025,6 +1025,8 @@
     <Content Include="Views\CoaxialQualityDamage\StatByWorkGroup.cshtml" />
     <Content Include="Views\CoaxialQualityStat\StatByFailItem.cshtml" />
     <Content Include="Views\TestConfig\CopyBat.cshtml" />
+    <Content Include="Views\VnaRecord\Edit.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\EditVnaRecord.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
