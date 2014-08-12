@@ -35,6 +35,24 @@ namespace CamelDotNet.Controllers.BaseController
 
         public virtual ActionResult Index(int page = 1, bool includeSoftDeleted = false, string filter = null)
         {
+            List<SelectListItem> items = new List<SelectListItem>();
+
+            items.Add(new SelectListItem { Text = "00", Value = "00" });
+            items.Add(new SelectListItem { Text = "01", Value = "01" });
+            items.Add(new SelectListItem { Text = "02", Value = "02" });
+            items.Add(new SelectListItem { Text = "03", Value = "03" });
+            items.Add(new SelectListItem { Text = "04", Value = "04" });
+            items.Add(new SelectListItem { Text = "05", Value = "05" });
+            items.Add(new SelectListItem { Text = "06", Value = "06" });
+            items.Add(new SelectListItem { Text = "07", Value = "07" });
+            items.Add(new SelectListItem { Text = "08", Value = "08" });
+            items.Add(new SelectListItem { Text = "09", Value = "09" });
+            for (int i = 10; i <= 23; i++)
+            {
+                items.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+            }
+            ViewBag.Hours = items;
+
             ViewBag.RV = new RouteValueDictionary { { "tickTime", DateTime.Now.ToLongTimeString() }, { "returnRoot", "Index" }, { "actionAjax", "Get" }, { "page", page }, { "includeSoftDeleted", includeSoftDeleted }, { "filter", filter } };
             return View(ViewPath1 + ViewPath + ViewPath2 + "Index.cshtml");
         }

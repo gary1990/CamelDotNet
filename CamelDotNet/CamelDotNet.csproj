@@ -861,6 +861,11 @@
     <Content Include="Scripts\someac.js" />
     <Content Include="Scripts\someacmelon.js" />
     <None Include="Scripts\_references.js" />
+    <Content Include="Scripts\superTables\superTables.js" />
+    <Content Include="Scripts\superTables\superTables_Dark.css" />
+    <Content Include="Scripts\superTables\superTables_Default.css" />
+    <Content Include="Scripts\superTables\superTables_Orange.css" />
+    <Content Include="Scripts\superTables\superTables_Sky.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

@@ -27,9 +27,11 @@
             @Html.Hidden("filter")
             @Html.Hidden("export",false)
             <td>
-                @Html.TextBox("TestTime@>=", null, new { @class = "filter", style = "width: 100px;" })
+                @Html.TextBox("TestTime@>=", null, new { @class = "filter Wdate", style = "width: 100px;", onFocus = "WdatePicker(({lang:'zh-cn'}))" })
+                @Html.DropDownList("TestTimeStartHour@>=", new SelectList(ViewBag.Hours, "Value", "Text"), String.Empty, new { @class = "filter", style = "width: 50px;" })
                 至
-                @Html.TextBox("TestTime@<=", null, new { @class = "filter", style = "width: 100px;" })
+                @Html.TextBox("TestTime@<=", null, new { @class = "filter Wdate", style = "width: 100px;", onFocus = "WdatePicker(({lang:'zh-cn'}))" })
+                @Html.DropDownList("TestTimeStopHour@<=", new SelectList(ViewBag.Hours, "Value", "Text"), String.Empty, new { @class = "filter", style = "width: 50px;" })
             </td>
             <td>
                 @Html.TextBox("ReelNumber@%", null, new { @class = "filter", style = "width: 100px;" })
@@ -53,9 +55,16 @@
 <div id="AjaxBody">
     @Html.Action((string)ViewBag.Action, (RouteValueDictionary)(ViewBag.RV))
 </div>
+
+@section Styles {
+    @Styles.Render("~/Content/themes/base/css")
+    <link href="@Url.Content("~/Scripts/My97DatePicker/skin/WdatePicker.css")" rel="stylesheet" type="text/css" />
+}
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/cw")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")"></script>
     <script>
         $(document).ready(function () {
             $("#searchForm").submit(function (e) { setFilter(); });

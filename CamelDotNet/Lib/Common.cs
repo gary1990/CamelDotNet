@@ -360,7 +360,7 @@ namespace CamelDotNet.Lib
                     //colon position in regHourStartStr
                     int colonPostion = regHourStr.IndexOf(':');
                     //generate Target Time String yyyyMMdd HHmmss formarted
-                    timeTarget = @"TestTime@>=:" + currentDateStr + " " + regHourStr.Substring(colonPostion + 1, regHourStr.Length - colonPostion - 2) + "0000" + ";";
+                    timeTarget = timeDateMark + @"@" + equalMark + ":" + currentDateStr + " " + regHourStr.Substring(colonPostion + 1, regHourStr.Length - colonPostion - 2) + "0000" + ";";
                 }
                 else
                 {

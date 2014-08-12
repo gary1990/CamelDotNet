@@ -1,0 +1,183 @@
+/*
+///////////////////////////////////////////////////////////////////////////////////////// 
+// SUPER TABLES - VERSION 0.25 - MIT Style License
+// Copyright (c) 2008 MATT MURPHY --- visit www.matts411.com
+///////////////////////////////////////////////////////////////////////////////////////// 
+// DARK SKIN
+/////////////////////////////////////////////////////////////////////////////////////////  
+*/
+
+.sBase_Dark {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    color: #ffffff;
+    background-color: transparent;
+}
+
+.sHeader_Dark {
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+}
+.sHeader_Dark table {
+	margin: 0px;
+	padding: 0px;
+	border: none;
+	border-spacing: 0px 0px;
+	border-collapse: collapse;
+	width: 1px;
+	table-layout: fixed;
+	background-color: #000000;
+}
+.sHeader_Dark table tr {
+	background-color: #000000;
+}
+.sHeader_Dark table td {
+	margin: 0px;
+	padding: 2px 4px 2px 4px;
+	border-width: 0px 1px 1px 0px;
+	border-style: solid;
+	border-color: #555555;
+    color: #ffffff; /* Here b/c of IE5.5 */
+}
+.sHeader_Dark table td div {
+	white-space: nowrap;
+    font-size: 0.80em;
+    font-family: Tahoma, Arial, sans serif;
+	font-weight: bold;
+	overflow: hidden;
+}
+.sData_Dark {
+	width: 100%;
+	overflow: auto;
+}
+.sData_Dark table {
+	margin: 0px;
+	padding: 0px;
+	border: none;
+	border-spacing: 0px 0px;
+	border-collapse: collapse;
+	width: 1px;
+	table-layout: fixed;
+	background-color: #333333;
+}
+.sData_Dark table tr.alt {
+	background-color: #333333;
+}
+.sData_Dark table td {
+	margin: 0px;
+    padding: 2px 4px 2px 4px;
+    border-width: 0px 1px 1px 0px;
+	border-style: solid;
+	border-color: #555555;
+    color: #ffffff; /* Here b/c of IE5.5 */
+}
+.sData_Dark table td div {
+	white-space: nowrap;
+    font-size: 0.80em;
+    font-family: Tahoma, Arial, sans serif;
+	overflow: hidden;
+}
+
+.sFHeader_Dark {
+	position: absolute;
+	z-index: 3;
+    top: 0px;
+    left: 0px;
+}
+.sFHeader_Dark table {
+	margin: 0px;
+	padding: 0px;
+	border: none;
+	border-spacing: 0px 0px;
+	border-collapse: collapse;
+	width: 1px;
+	table-layout: fixed;
+	background-color: #000000;
+}
+.sFHeader_Dark table tr {
+	background-color: #000000;
+}
+.sFHeader_Dark table td {
+	margin: 0px;
+    padding: 2px 4px 2px 4px;
+    border-width: 0px 1px 1px 0px;
+	border-style: solid;
+	border-color: #555555;
+    color: #ffffff; /* Here b/c of IE5.5 */
+}
+.sFHeader_Dark table td div {
+	white-space: nowrap;
+    font-size: 0.80em;
+    font-family: Tahoma, Arial, sans serif;
+	font-weight: bold;
+	overflow: hidden;
+}
+.sFData_Dark {
+	position: absolute;
+	z-index: 2;
+    left: 0px;
+}
+.sFData_Dark table {
+	margin: 0px;
+	padding: 0px;
+	border: none;
+	border-spacing: 0px 0px;
+	border-collapse: collapse;
+	width: 1px;
+	table-layout: fixed;
+	background-color: #222222;
+}
+.sFData_Dark table tr.alt {
+	background-color: #222222;
+}
+.sFData_Dark table td {
+	margin: 0px;
+    padding: 2px 4px 2px 4px;
+    border-width: 0px 1px 1px 0px;
+	border-style: solid;
+	border-color: #555555;
+    color: #ffffff; /* Here b/c of IE5.5 */
+}
+.sFData_Dark table td div {
+	white-space: nowrap;
+    font-size: 0.80em;
+    font-family: Tahoma, Arial, sans serif;
+	overflow: hidden;
+}
+
+.sBase_Dark .sHorOverflow {
+	position: absolute;
+	z-index: 5;
+	left: 0px;
+    bottom: -3px;
+	height: 18px;
+	border-color: #555555;
+    border-width: 1px 0px 0px 0px;
+	border-style: solid;
+	background-color: #000000;
+}
+.sBase_Dark .sVertOverflow {
+	position: absolute;
+	z-index: 5;
+	top: 0px;
+    right: 0px;
+	width: 15px;
+	border-color: #555555;
+    border-width: 0px 0px 0px 1px;
+	border-style: solid;
+	background-color: #000000;
+}
+
+.sTempTable {
+    font-size: 0.80em;
+    font-family: Tahoma, Arial, sans serif;
+}
+.sTempTable td, .sTempTable th {
+    padding-right: 10px;
+	font-weight: bold;
+    white-space: nowrap;
+}
+

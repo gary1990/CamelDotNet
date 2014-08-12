@@ -37,6 +37,8 @@ change:
 		(2,NULL,'表面不平整',0),
 		(2,NULL,'表面氧化有斑',0),
 		(2,NULL,'表面脏污',0);
+	2.Time filter use Canlender
+	3.QualityPassRecord get view add freezonTable use superTables plugin
 notice:
 	1.add testitem:change 1
 	2.add VnaTestRecord Edit Permmision

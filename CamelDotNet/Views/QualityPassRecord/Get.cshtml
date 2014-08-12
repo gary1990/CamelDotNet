@@ -5,190 +5,210 @@
 }
 
 @Html.Partial("PageLink")
-
-<table>
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.VnaRecord.DrillingCrew)
-            </th>
-            <th>
-                <span class="block4">@Html.DisplayNameFor(model => model.VnaRecord.ProductTypeId)</span>
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VnaRecord.ReelNumber)
-            </th>
-            <th>
-                长度（Km）
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VnaRecord.SerialNumberId)
-            </th>
-            <th>
-                内外端
-            </th>
-            <th colspan="4">
-                <span class="block7">驻波/回波损耗</span>
-            </th>
-            <th>
-                时域阻抗
-            </th>
-            <th>
-                衰减
-            </th>
-            <th>
-                <span class="block5">TDR电长度</span>
-            </th>
-            <th>
-                外观
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VnaRecord.ClientId)
-            </th>
-            <th>
-                <span class="block7">@Html.DisplayNameFor(model => model.QualityPassRecord.QeSuggestion)</span>
-            </th>
-            <th>
-                <span class="block4">@Html.DisplayNameFor(model => model.QualityPassRecord.DepartmentId)</span>
-            </th>
-            <th>
-                <span class="block5">@Html.DisplayNameFor(model => model.QualityPassRecord.TechnologistSuggestion)</span>
-            </th>
-            <th>
-                <span class="block6">@Html.DisplayNameFor(model => model.QualityPassRecord.QmSuggestion)</span>
-            </th>
-            <th>
-                <span class="block4">@Html.DisplayNameFor(model => model.QualityPassRecord.HmSuggestion)</span>
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            var zb1 = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "驻波1").Select(a => a.VnaTestItemPerRecords).ToList();
-            var zb2 = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "驻波2").Select(a => a.VnaTestItemPerRecords).ToList();
-            var hbsh1 = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "回波损耗1").Select(a => a.VnaTestItemPerRecords).ToList();
-            var hbsh2 = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "回波损耗2").Select(a => a.VnaTestItemPerRecords).ToList();
-            var sj = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "衰减").ToList();
-            var syzk = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "时域阻抗").Select(a => a.VnaTestItemPerRecords).ToList();
-            var tdr = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name.ToUpper().Contains("TDR")).Select(a => a.VnaTestItemPerRecords).ToList();
-            var wg = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.TestItemCategory.Name.ToString().Contains("非电")).Select(a => a.TestItem).ToList();
+<div class="fakeContainer">
+    <table id="freezonTable">
+        <thead>
             <tr>
-                <td rowspan="2">
-                    @Html.DisplayFor(modelItem => item.VnaRecord.DrillingCrew)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplayFor(modelItem => item.VnaRecord.ProductType.Name)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplayFor(modelItem => item.VnaRecord.ReelNumber)
-                </td>
-                <td rowspan="2">
-                    @Math.Abs((item.VnaRecord.InnerLength - item.VnaRecord.OuterLength) / 1000)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplayFor(modelItem => item.VnaRecord.SerialNumber.Number)
-                </td>
-                <td>
-                    内端
-                </td>
-                <td>
-                    @Html.DisplayZbOrHbsh(zb1, 1)
-                    @Html.DisplayZbOrHbsh(hbsh1, 1)
-                </td>
-                <td>
-                    @Html.DisplayZbOrHbsh(zb1, 2)
-                    @Html.DisplayZbOrHbsh(hbsh1, 2)
-                </td>
-                <td>
-                    @Html.DisplayZbOrHbsh(zb1, 3)
-                    @Html.DisplayZbOrHbsh(hbsh1, 3)
-                </td>
-                <td>
-                    @Html.DisplayZbOrHbsh(zb1, 4)
-                    @Html.DisplayZbOrHbsh(hbsh1, 4)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplaySyzkOrTdr(syzk, 1)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplaySj(sj)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplaySyzkOrTdr(tdr, 1)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplayWg(wg, item.VnaRecord)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplayFor(modelItem => item.VnaRecord.Client.Name)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplayFor(modelItem => item.QualityPassRecord.QeSuggestion)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplayFor(modelItem => item.QualityPassRecord.Department.Name)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplayFor(modelItem => item.QualityPassRecord.TechnologistSuggestion)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplayFor(modelItem => item.QualityPassRecord.QmSuggestion)
-                </td>
-                <td rowspan="2">
-                    @Html.DisplayFor(modelItem => item.QualityPassRecord.HmSuggestion)
-                </td>
-                <td rowspan="2">
-                    <div class="groupOperation">
-                        @if (curUserRole == "总工")
-                        {
-                            if(item.QualityPassRecord != null)
+                <th>
+                    @Html.DisplayNameFor(model => model.VnaRecord.DrillingCrew)
+                </th>
+                <th>
+                    <span class="block4">@Html.DisplayNameFor(model => model.VnaRecord.ProductTypeId)</span>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VnaRecord.ReelNumber)
+                </th>
+                <th>
+                    长度（Km）
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VnaRecord.SerialNumberId)
+                </th>
+                <th>
+                    内外端
+                </th>
+                <th colspan="4">
+                    <span class="block7">驻波/回波损耗</span>
+                </th>
+                <th>
+                    时域阻抗
+                </th>
+                <th>
+                    衰减
+                </th>
+                <th>
+                    <span class="block5">TDR电长度</span>
+                </th>
+                <th>
+                    外观
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VnaRecord.ClientId)
+                </th>
+                <th>
+                    <span class="block7">@Html.DisplayNameFor(model => model.QualityPassRecord.QeSuggestion)</span>
+                </th>
+                <th>
+                    <span class="block4">@Html.DisplayNameFor(model => model.QualityPassRecord.DepartmentId)</span>
+                </th>
+                <th>
+                    <span class="block5">@Html.DisplayNameFor(model => model.QualityPassRecord.TechnologistSuggestion)</span>
+                </th>
+                <th>
+                    <span class="block6">@Html.DisplayNameFor(model => model.QualityPassRecord.QmSuggestion)</span>
+                </th>
+                <th>
+                    <span class="block4">@Html.DisplayNameFor(model => model.QualityPassRecord.HmSuggestion)</span>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var zb1 = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "驻波1").Select(a => a.VnaTestItemPerRecords).ToList();
+                var zb2 = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "驻波2").Select(a => a.VnaTestItemPerRecords).ToList();
+                var hbsh1 = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "回波损耗1").Select(a => a.VnaTestItemPerRecords).ToList();
+                var hbsh2 = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "回波损耗2").Select(a => a.VnaTestItemPerRecords).ToList();
+                var sj = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "衰减").ToList();
+                var syzk = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "时域阻抗").Select(a => a.VnaTestItemPerRecords).ToList();
+                var tdr = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name.ToUpper().Contains("TDR")).Select(a => a.VnaTestItemPerRecords).ToList();
+                var wg = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.TestItemCategory.Name.ToString().Contains("非电")).Select(a => a.TestItem).ToList();
+                <tr>
+                    <td rowspan="2">
+                        @Html.DisplayFor(modelItem => item.VnaRecord.DrillingCrew)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplayFor(modelItem => item.VnaRecord.ProductType.Name)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplayFor(modelItem => item.VnaRecord.ReelNumber)
+                    </td>
+                    <td rowspan="2">
+                        @Math.Abs((item.VnaRecord.InnerLength - item.VnaRecord.OuterLength) / 1000)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplayFor(modelItem => item.VnaRecord.SerialNumber.Number)
+                    </td>
+                    <td>
+                        内端
+                    </td>
+                    <td>
+                        @Html.DisplayZbOrHbsh(zb1, 1)
+                        @Html.DisplayZbOrHbsh(hbsh1, 1)
+                    </td>
+                    <td>
+                        @Html.DisplayZbOrHbsh(zb1, 2)
+                        @Html.DisplayZbOrHbsh(hbsh1, 2)
+                    </td>
+                    <td>
+                        @Html.DisplayZbOrHbsh(zb1, 3)
+                        @Html.DisplayZbOrHbsh(hbsh1, 3)
+                    </td>
+                    <td>
+                        @Html.DisplayZbOrHbsh(zb1, 4)
+                        @Html.DisplayZbOrHbsh(hbsh1, 4)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplaySyzkOrTdr(syzk, 1)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplaySj(sj)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplaySyzkOrTdr(tdr, 1)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplayWg(wg, item.VnaRecord)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplayFor(modelItem => item.VnaRecord.Client.Name)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplayFor(modelItem => item.QualityPassRecord.QeSuggestion)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplayFor(modelItem => item.QualityPassRecord.Department.Name)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplayFor(modelItem => item.QualityPassRecord.TechnologistSuggestion)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplayFor(modelItem => item.QualityPassRecord.QmSuggestion)
+                    </td>
+                    <td rowspan="2">
+                        @Html.DisplayFor(modelItem => item.QualityPassRecord.HmSuggestion)
+                    </td>
+                    <td rowspan="2">
+                        <div class="groupOperation">
+                            @if (curUserRole == "总工")
                             {
-                                if (item.QualityPassRecord.NeedHmApprove)
+                                if (item.QualityPassRecord != null)
                                 {
-                                    using (Html.BeginForm("Create", (string)ViewBag.Controller))
+                                    if (item.QualityPassRecord.NeedHmApprove)
                                     {
-                                        @Html.AntiForgeryToken()
-                                        @Html.Hidden("vnaRecordId", item.VnaRecord.Id)
-                                        @Html.Hidden("returnUrl", returnUrl)
-                                        <input type="submit" value="放行" />
+                                        using (Html.BeginForm("Create", (string)ViewBag.Controller))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            @Html.Hidden("vnaRecordId", item.VnaRecord.Id)
+                                            @Html.Hidden("returnUrl", returnUrl)
+                                            <input type="submit" value="放行" />
+                                        }
                                     }
                                 }
                             }
-                        }
-                        else 
-                        {
-                            using (Html.BeginForm("Create", (string)ViewBag.Controller))
+                            else
                             {
-                                @Html.AntiForgeryToken()
-                                @Html.Hidden("vnaRecordId", item.VnaRecord.Id)
-                                @Html.Hidden("returnUrl", returnUrl)
-                                <input type="submit" value="放行" />
+                                using (Html.BeginForm("Create", (string)ViewBag.Controller))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("vnaRecordId", item.VnaRecord.Id)
+                                    @Html.Hidden("returnUrl", returnUrl)
+                                    <input type="submit" value="放行" />
+                                }
                             }
-                        } 
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td style="border-left: 1px dotted #BEBEBE;">外端</td>
-                <td>
-                    @Html.DisplayZbOrHbsh(zb2, 1)
-                    @Html.DisplayZbOrHbsh(hbsh2, 1)
-                </td>
-                <td>
-                    @Html.DisplayZbOrHbsh(zb2, 2)
-                    @Html.DisplayZbOrHbsh(hbsh2, 2)
-                </td>
-                <td>
-                    @Html.DisplayZbOrHbsh(zb2, 3)
-                    @Html.DisplayZbOrHbsh(hbsh2, 3)
-                </td>
-                <td>
-                    @Html.DisplayZbOrHbsh(zb2, 4)
-                    @Html.DisplayZbOrHbsh(hbsh2, 4)
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border-left: 1px dotted #BEBEBE;">外端</td>
+                    <td>
+                        @Html.DisplayZbOrHbsh(zb2, 1)
+                        @Html.DisplayZbOrHbsh(hbsh2, 1)
+                    </td>
+                    <td>
+                        @Html.DisplayZbOrHbsh(zb2, 2)
+                        @Html.DisplayZbOrHbsh(hbsh2, 2)
+                    </td>
+                    <td>
+                        @Html.DisplayZbOrHbsh(zb2, 3)
+                        @Html.DisplayZbOrHbsh(hbsh2, 3)
+                    </td>
+                    <td>
+                        @Html.DisplayZbOrHbsh(zb2, 4)
+                        @Html.DisplayZbOrHbsh(hbsh2, 4)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<link href="@Url.Content("~/Scripts/superTables/superTables.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/superTables/superTables.js")"></script>
+<style>
+    .fakeContainer {
+        padding: 0px;
+        border: none;
+        width: 100%;
+        height: 300px;
+        overflow: hidden;
+    }
+</style>
+<script type="text/javascript">
+    (function () {
+        new superTable("freezonTable", {
+            cssSkin: "sDefault", //颜色方案
+            fixedCols: 5 //固定几列
+        });
+    })();
+</script>
