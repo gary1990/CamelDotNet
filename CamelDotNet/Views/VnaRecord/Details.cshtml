@@ -98,10 +98,21 @@
                 <tbody>
                     @foreach(var perItem in item.VnaTestItemPerRecords)
                     {
-                        <tr>
-                            <td>@string.Format("{0:0.###############}", perItem.XValue)</td>
-                            <td>@string.Format("{0:0.###############}", perItem.YValue)</td>
-                            <td>@string.Format("{0:0.###############}", perItem.RValue)</td>
+                        <tr>                        
+                            @{
+                                decimal xValueAbs = (decimal)perItem.XValue;
+                                //秒 转换成 纳秒
+                                if (Math.Abs(xValueAbs) < 0.001m)
+                                {
+                                    <td>@string.Format("{0:0.##}", perItem.XValue * 1000000000)</td>
+                                }
+                                else//赫兹转换成兆赫兹
+                                {
+                                    <td>@string.Format("{0:0.##}", perItem.XValue/1000000)</td>
+                                }
+                            }                           
+                            <td>@string.Format("{0:0.##}", perItem.YValue)</td>
+                            <td>@string.Format("{0:0.##}", perItem.RValue)</td>
                             <td>
                                 @if (perItem.TestitemPerResult)
                                 {

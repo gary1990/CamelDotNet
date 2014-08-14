@@ -433,7 +433,7 @@ namespace System.Web.Mvc.Html
                     if(perRecord.TestitemPerResult)
                     {
                         var tag = new TagBuilder("span");
-                        tag.SetInnerText(string.Format("{0:0.###############}", perRecord.XValue) + "/" + string.Format("{0:0.###############}", perRecord.YValue));
+                        tag.SetInnerText(string.Format("{0:0.##}", perRecord.XValue/1000000) + "/" + string.Format("{0:0.##}", perRecord.YValue));
                         return MvcHtmlString.Create(tag.ToString(TagRenderMode.Normal));
                     }
                     else
@@ -462,7 +462,7 @@ namespace System.Web.Mvc.Html
                     if (perRecord.TestitemPerResult)
                     {
                         var tag = new TagBuilder("span");
-                        tag.SetInnerText(string.Format("{0:0.###############}", perRecord.RValue));
+                        tag.SetInnerText(string.Format("{0:0.##}", perRecord.RValue));
                         return MvcHtmlString.Create(tag.ToString(TagRenderMode.Normal));
                     }
                     else

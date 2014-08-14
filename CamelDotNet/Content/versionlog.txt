@@ -54,3 +54,23 @@ notice:
 			values
 			(1,147),
 			(1,148)
+	3.update old record in db.VnaTestItemPerRecord XValue belongs to "阻抗落差1""阻抗落差2"
+		select a.XValue 
+		from VnaTestItemPerRecord a
+		join VnaTestItemRecord b
+		on a.VnaTestItemRecordId = b.Id
+		join TestItem c
+		on b.TestItemId = c.Id
+		and c.Name in ('阻抗落差1','阻抗落差2')
+
+		update VnaTestItemPerRecord
+		set XValue = XValue/1000000000
+		where
+		Id in
+		(select a.Id 
+		from VnaTestItemPerRecord a
+		join VnaTestItemRecord b
+		on a.VnaTestItemRecordId = b.Id
+		join TestItem c
+		on b.TestItemId = c.Id
+		and c.Name in ('阻抗落差1','阻抗落差2'))
