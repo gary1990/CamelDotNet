@@ -861,6 +861,7 @@
     <Content Include="Scripts\someac.js" />
     <Content Include="Scripts\someacmelon.js" />
     <None Include="Scripts\_references.js" />
+    <Content Include="Scripts\superTables\superTables.css" />
     <Content Include="Scripts\superTables\superTables.js" />
     <Content Include="Scripts\superTables\superTables_Dark.css" />
     <Content Include="Scripts\superTables\superTables_Default.css" />
