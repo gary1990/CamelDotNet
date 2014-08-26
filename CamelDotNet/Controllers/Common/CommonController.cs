@@ -2,6 +2,9 @@
 using CamelDotNet.Models.DAL;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -46,6 +49,24 @@ namespace CamelDotNet.Controllers
                     processes = db.Process.ToList();
                 }
                 return processes;
+            }
+        }
+
+        public static DataTable GetDateTable(string sql, SqlParameter[] param) 
+        {
+            using (SqlConnection MyConn = new SqlConnection(ConfigurationManager.ConnectionStrings["CamelDotNet"].ConnectionString))
+            {
+                MyConn.Open();
+                using(SqlCommand cmd = new SqlCommand(sql, MyConn))
+                {
+                    cmd.Parameters.AddRange(param);
+                    using(SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        return dt;
+                    }
+                }
             }
         }
 	}

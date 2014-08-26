@@ -1,5 +1,7 @@
 ﻿@model QualityLossEdit
-@Html.HiddenFor(model => model.Id)
+@if(Model != null){
+    @Html.HiddenFor(model => model.Id)
+}
 
 <div class="editor-label">
     @Html.LabelFor(model => model.TestItemId)

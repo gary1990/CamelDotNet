@@ -1,10 +1,13 @@
 ﻿using CamelDotNet.Models.DAL;
+using CamelDotNet.Models.ViewModels;
 using DotNet.Highcharts;
 using DotNet.Highcharts.Enums;
 using DotNet.Highcharts.Helpers;
 using DotNet.Highcharts.Options;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -50,87 +53,150 @@ namespace CamelDotNet.Controllers
 
             return View();
         }
-
+        
         public ActionResult StatByFailItem(string TestTimeStartDay = null, string TestTimeStartHour = null, string TestTimeStopDay = null, string TestTimeStopHour = null, string DrillingCrew = null, string WorkGroup = null, int ProductTypeId = 0)
         {
-            Highcharts chart = new Highcharts("chart")
-                 .SetTitle(new Title { Text = "Chart inside JavaScript function" })
-                 .SetXAxis(new XAxis { Categories = new[] { "Apples", "Oranges", "Pears", "Bananas", "Plums" } })
-                 .SetLabels(new Labels
-                 {
-                     Items = new[]
-                                       {
-                                           new LabelsItems
-                                           {
-                                               Html = "Total fruit consumption",
-                                               Style = "left: '40px', top: '8px', color: 'black'"
-                                           }
-                                       }
-                 })
-                 .SetPlotOptions(new PlotOptions
-                 {
-                     Pie = new PlotOptionsPie
-                     {
-                         Center = new[] { new PercentageOrPixel(100), new PercentageOrPixel(80) },
-                         Size = new PercentageOrPixel(100),
-                         ShowInLegend = false,
-                         DataLabels = new PlotOptionsPieDataLabels { Enabled = false }
-                     }
-                 })
-                 .SetSeries(new[]
-                           {
-                               new Series
-                               {
-                                   Type = ChartTypes.Column,
-                                   Name = "Jane",
-                                   Data = new Data(new object[] { 3, 2, 1, 3, 4 })
-                               },
-                               new Series
-                               {
-                                   Type = ChartTypes.Column,
-                                   Name = "John",
-                                   Data = new Data(new object[] { 2, 3, 5, 7, 6 })
-                               },
-                               new Series
-                               {
-                                   Type = ChartTypes.Column,
-                                   Name = "Joe",
-                                   Data = new Data(new object[] { 4, 3, 3, 9, 0 })
-                               },
-                               new Series
-                               {
-                                   Type = ChartTypes.Spline,
-                                   Name = "Average",
-                                   Data = new Data(new object[] { 3, 2.67, 3, 6.33, 3.33 })
-                               },
-                               new Series
-                               {
-                                   Type = ChartTypes.Pie,
-                                   Name = "Total consumption",
-                                   Data = new Data(new[]
-                                                   {
-                                                       new DotNet.Highcharts.Options.Point
-                                                       {
-                                                           Name = "Jane",
-                                                           Y = 13,
-                                                           Color = Color.FromName("red")
-                                                       },
-                                                       new DotNet.Highcharts.Options.Point
-                                                       {
-                                                           Name = "John",
-                                                           Y = 23,
-                                                           Color = Color.FromName("blue")
-                                                       },
-                                                       new DotNet.Highcharts.Options.Point
-                                                       {
-                                                           Name = "Joe",
-                                                           Y = 19,
-                                                           Color = Color.FromName("red")
-                                                       }
-                                                   }
-                                       )
-                               }
-                           });
+            ViewBag.path = path;
+            string errorMsg = null;
+            DateTime testTimeStart = DateTime.Now.Date;
+            DateTime testTimeStop = DateTime.Now;
+            string testTimeStarStr;
+            string testTimeStopStr;
+            if (TestTimeStartHour == "")
+            {
+                TestTimeStartHour = "00";
+            }
+            if (TestTimeStopHour == "")
+            {
+                TestTimeStopHour = "23";
+            }
+            if (TestTimeStartDay != "")
+            {
+                testTimeStarStr = TestTimeStartDay + " " + TestTimeStartHour;
+                if (!DateTime.TryParseExact(testTimeStarStr, "yyyy-MM-dd HH", CultureInfo.InvariantCulture, DateTimeStyles.None, out testTimeStart))
+                {
+                }
+            }
+            if (TestTimeStopDay != "")
+            {
+                testTimeStopStr = TestTimeStopDay + " " + TestTimeStopHour;
+                if (!DateTime.TryParseExact(testTimeStopStr, "yyyy-MM-dd HH", CultureInfo.InvariantCulture, DateTimeStyles.None, out testTimeStop))
+                {
+                }
+            }
+            string sql = "exec p_coaxialqualitystatTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup";
+            SqlParameter[] param = new SqlParameter[4];
+            param[0] = new SqlParameter("@testtimestart", SqlDbType.DateTime2);
+            param[0].Value = testTimeStart;
+            param[1] = new SqlParameter("@testtimestop", SqlDbType.DateTime2);
+            param[1].Value = testTimeStop;
+            param[2] = new SqlParameter("@drillingcrew", SqlDbType.NVarChar);
+            param[2].Value = DrillingCrew;
+            param[3] = new SqlParameter("@workgroup", SqlDbType.NVarChar);
+            param[3].Value = WorkGroup;
+
+            DataTable dt = CommonController.GetDateTable(sql, param);
+            //vna total result list
+            List<VnaTotalResult> vnaTotalResultList = new List<VnaTotalResult>();
+            //vna total result length
+            decimal totalLength = 0;
+            //vna fail result length
+            decimal failLength = 0;
+            //initial chart
+            DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart");
+            if(dt.Rows.Count > 0)
+            {
+                //auto map dt to VnaTotalResult
+                DataTableReader dr = dt.CreateDataReader();
+                vnaTotalResultList = AutoMapper.Mapper.DynamicMap<IDataReader, List<VnaTotalResult>>(dr);
+                //fail list
+                List<VnaTotalResult> vnaFailResultList = vnaTotalResultList.Where(a => a.TestResult == 1).ToList();
+                // no defined qulity loss
+                var noDefQualityLossList = vnaFailResultList
+                    .Where(a => a.LossPercent_Result == null)
+                    .GroupBy(p => new { p.TestItemName_Fail, p.ProcessName_Fail })
+                    .Select(y => y.First()).ToList();
+                if (noDefQualityLossList.Count > 0)
+                {
+                    errorMsg += "<b style='color:red;'>未定义质量损失比</b>：<br/>";
+                    foreach (var noDefQulityLoss in noDefQualityLossList)
+                    {
+                        errorMsg += "测试项：" + noDefQulityLoss.TestItemName_Fail + ", 工序：" + noDefQulityLoss.ProcessName_Fail + "<br/>";
+                    }
+                    ViewBag.ErrorMsg = errorMsg;
+                }
+                else 
+                {
+                    //get total length, unit m to km
+                    totalLength = vnaTotalResultList.Sum(a => a.Lengths) / 1000;
+                    //get total length, unit m to km
+                    failLength = vnaFailResultList.Sum(a => a.Lengths) / 1000;
+                    ViewBag.TotalLength = totalLength;
+                    ViewBag.FailLength = failLength;
+                    //get fail group list
+                    var vnaFailGroupList = vnaFailResultList
+                        .GroupBy(a => new
+                        {
+                            a.ProcessName_Fail,
+                            a.TestItemName_Fail,
+                            a.FreqFormularR,
+                            a.ValueFormularR
+                        })
+                        .Select(ac => new
+                        {
+                            ProcessName = ac.Key.ProcessName_Fail,
+                            TestItemName = ac.Key.TestItemName_Fail,
+                            FreqFormularR = ac.Key.FreqFormularR,
+                            ValueFormularR = ac.Key.ValueFormularR,
+                            Length = ac.Sum(acs => acs.Lengths)
+                        }).ToList();
+                    vnaFailGroupList = vnaFailGroupList.OrderBy(a => a.ProcessName).ThenBy(a => a.TestItemName).ThenBy(a => a.FreqFormularR).ThenBy(a => a.ValueFormularR).ToList();
+                    //totalXObj for X(X list), totalYObj for Y(Y is fail lenght list)
+                    var totalXObj = new string[vnaFailGroupList.Count()];
+                    var totalYObj = new object[vnaFailGroupList.Count()];
+                    for (int i = 0; i < vnaFailGroupList.Count(); i++)
+                    {
+                        var vnaFailGroup = vnaFailGroupList[i];
+                        //formart FreqFormularR/ValueFormularR, (-∞, +∞) to null
+                        var freqFormularR = vnaFailGroup.FreqFormularR;
+                        var valueFormularR = vnaFailGroup.ValueFormularR;
+                        if (freqFormularR.Contains("+"))
+                        {
+                            freqFormularR = null;
+                        }
+                        if (valueFormularR.Contains("+"))
+                        {
+                            valueFormularR = null;
+                        }
+                        totalXObj[i] = valueFormularR + "<br/>" + freqFormularR + "<br/>" + vnaFailGroup.TestItemName + "<br/>" + vnaFailGroup.ProcessName + "<br/>　　　<br/>";
+                        //vnaFailGroup length, unit m to km
+                        totalYObj[i] = Convert.ToDecimal(vnaFailGroup.Length / 1000);
+                    }
+                    chart
+                    .SetTitle(new Title { Text = "不合格项不合格量统计" })
+                    .SetXAxis(new XAxis
+                    {
+                        Categories = totalXObj
+                    })
+                    .SetYAxis(new YAxis
+                    {
+                        Title = new YAxisTitle { Text = "不合格量(km)" }
+                    })
+                    .SetSeries(new Series
+                    {
+                        Name = "工序-测试项-点-值",
+                        Type = ChartTypes.Column,
+                        Data = new Data(totalYObj)
+                    })
+                    .SetTooltip(new Tooltip
+                    {
+                        Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + failLength + ")*100) + '%'}"
+                    });
+                    var s = JsonSerializer.Serialize<object>(totalXObj);
+                    
+                }
+            }
+            
             List<Highcharts> chartList = new List<Highcharts> { };
             chartList.Add(chart);
             return PartialView(chartList);

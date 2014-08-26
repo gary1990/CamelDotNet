@@ -1,4 +1,15 @@
 ﻿@model List<DotNet.Highcharts.Highcharts>
+@if (ViewBag.ErrorMsg != null)
+{
+    <div>
+        @Html.Raw(ViewBag.ErrorMsg)
+    </div>
+}
+
+@{
+    decimal totalLength = Convert.ToDecimal(ViewBag.TotalLength);
+    decimal totalFailLength = Convert.ToDecimal(ViewBag.FailLength);
+}
 
 <div>
     @foreach (var chart in Model)
@@ -6,3 +17,92 @@
         @chart
     }
 </div>
+
+<div>
+    <span><b>总产量：</b>@string.Format("{0:0.#####}", totalLength)km</span>
+    <span><b>总不合格量：</b>@string.Format("{0:0.#####}", totalFailLength)km</span>
+    <span>
+        <b>合格率：</b>
+        @if (totalLength == 0)
+        {
+        <span>0%</span>
+        }
+        else
+        {
+        <span>
+            @string.Format("{0:0.#####}", (totalLength - totalFailLength) / totalLength * 100)%
+        </span>
+        }
+
+    </span>
+</div>
+
+@*<script>
+        Highcharts.setOptions({
+            chart: {
+                borderWidth: 5,
+                borderColor: '#e8eaeb',
+                borderRadius: 0,
+                backgroundColor: '#f7f7f7'
+            },
+            title: {
+                style: {
+                    'fontSize': '1em'
+                },
+                useHTML: true,
+                x: -27,
+                y: 8,
+                text: '<span class="chart-title"> Grouped categories <span class="chart-href"> <a href="http://www.blacklabel.pl/highcharts" target="_blank"> Black Label </a> </span> <span class="chart-subtitle">plugin by </span></span>'
+            }
+        });
+    </script>*@
+
+    @*<div class="chart-container" id="chart"></div>
+
+
+    <script>
+        window.chart = new Highcharts.Chart({
+            chart: {
+                renderTo: "chart",
+                type: "column"
+            },
+            series: [{
+                data: [1,2,3,5,4, 14, 18, 5, 6, 5, 14, 15, 18,19]
+            }],
+            xAxis: {
+                categories: [
+                    {
+                        name: "Fruit",
+                        categories: [
+                            {
+                                name: "Apple", categories: ["good appple", "bad apple"]
+                            },
+                            {
+                                name: "Banana", categories: ["good Banana", "bad nanana"]
+                            },
+                            {
+                                name: "Orange", categories: ["good orange", "bad orange"]
+                            },
+                            {
+                                name: "Pear", categories: [" "]
+                            }
+                        ]
+                    },
+                    {
+                        name: "Vegetable",
+                        categories: ["Carrot", "Potato", "Tomato"]
+                    },
+                    {
+                        name: "Fish",
+                        categories: ["Cod", "Salmon", "Tuna"]
+                    },
+                    {
+                        name: "Meat",
+                        categories:["good meat"]
+                    }
+                ]
+            }
+        });
+    </script>*@
+
+

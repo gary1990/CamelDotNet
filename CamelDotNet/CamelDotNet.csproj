@@ -316,6 +316,7 @@
     <Compile Include="Models\ViewModels\Msg.cs" />
     <Compile Include="Models\ViewModels\TestItemConfigEdit.cs" />
     <Compile Include="Models\ViewModels\VnaRecordQualityPassRecord.cs" />
+    <Compile Include="Models\ViewModels\VnaTotalResult.cs" />
     <Compile Include="Models\VnaRecord.cs" />
     <Compile Include="Models\VnaTestItemPerRecord.cs" />
     <Compile Include="Models\VnaTestItemRecord.cs" />
@@ -414,6 +415,7 @@
     <Content Include="Content\Highcharts-3.0.10\js\adapters\prototype-adapter.src.js" />
     <Content Include="Content\Highcharts-3.0.10\js\adapters\standalone-framework.js" />
     <Content Include="Content\Highcharts-3.0.10\js\adapters\standalone-framework.src.js" />
+    <Content Include="Content\Highcharts-3.0.10\js\grouped-categories.js" />
     <Content Include="Content\Highcharts-3.0.10\js\highcharts-all.js" />
     <Content Include="Content\Highcharts-3.0.10\js\highcharts-more.js" />
     <Content Include="Content\Highcharts-3.0.10\js\highcharts-more.src.js" />
@@ -867,6 +869,7 @@
     <Content Include="Scripts\superTables\superTables_Default.css" />
     <Content Include="Scripts\superTables\superTables_Orange.css" />
     <Content Include="Scripts\superTables\superTables_Sky.css" />
+    <Content Include="SQLProcedure\p_coaxialqualitystatTab_Rp.sql" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

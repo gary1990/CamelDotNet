@@ -74,3 +74,75 @@ notice:
 		join TestItem c
 		on b.TestItemId = c.Id
 		and c.Name in ('阻抗落差1','阻抗落差2'))
+
+=====
+2.2.5
+notice
+	1.update 阻抗落差2 wrong data
+		testitem result pass ,data result fail
+			update VnaTestItemRecord 
+			set TestItemResult = 1
+			where Id in
+			(
+				select c.VnaTestItemRecordId
+				from VnaTestItemPerRecord c
+				where c.TestitemPerResult = 1
+				and c.VnaTestItemRecordId in
+				(
+					select a.Id from VnaTestItemRecord a
+					where a.TestItemId = 75 --阻抗落差2
+					and a.TestItemResult = 0
+				)
+			)
+		testitem result fail, data result pass
+			update VnaTestItemRecord 
+			set 
+			TestItemResult = 0
+			where
+			Id in
+			(
+			select 
+				aaaaa.Id as VnaTestItemRecordId
+				from
+				(
+					select * from VnaTestItemRecord a
+					where 
+					a.TestItemId = 75
+					and a.Id in
+					(
+						select 
+							aaaa.VnaTestItemRecordId
+						from
+						(
+							select 
+								aa.*
+							from 
+							(
+								select distinct a.VnaTestItemRecordId,a.TestitemPerResult
+								from VnaTestItemPerRecord a
+							) aa
+							where
+							aa.VnaTestItemRecordId in
+							(
+								select 
+								aaa.VnaTestItemRecordId
+								from
+								(
+									select count(aa.VnaTestItemRecordId) as num, aa.VnaTestItemRecordId from
+									(
+										select distinct a.VnaTestItemRecordId,a.TestitemPerResult
+										from VnaTestItemPerRecord a
+									) aa
+									group by aa.VnaTestItemRecordId
+								) aaa
+								where aaa.num = 1
+							)
+						) aaaa
+						where aaaa.TestitemPerResult = 0
+					)
+				) aaaaa
+				where aaaaa.TestItemResult = 1
+			)
+	2.procedure
+		1.p_coaxialqualitystatTab_Rp.sql
+		2.
