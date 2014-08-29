@@ -5,7 +5,8 @@
 	@workgroup nvarchar(50) --班组
 as
 begin
-		--满足条件的所有记录（合格与不合格）
+	SET NOCOUNT ON;
+	--满足条件的所有记录（合格与不合格）
 	DECLARE @vantotal TABLE
 	(
 		RowNumber int,

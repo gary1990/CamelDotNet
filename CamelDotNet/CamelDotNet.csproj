@@ -60,6 +60,9 @@
     <Reference Include="Microsoft.CSharp">
       <Private>True</Private>
     </Reference>
+    <Reference Include="NPOI">
+      <HintPath>C:\Users\GARY\Desktop\NPOI.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Private>True</Private>
     </Reference>
@@ -315,8 +318,10 @@
     <Compile Include="Models\ViewModels\TestConfigEdit.cs" />
     <Compile Include="Models\ViewModels\Msg.cs" />
     <Compile Include="Models\ViewModels\TestItemConfigEdit.cs" />
+    <Compile Include="Models\ViewModels\QualityLossGroup.cs" />
     <Compile Include="Models\ViewModels\VnaRecordQualityPassRecord.cs" />
     <Compile Include="Models\ViewModels\VnaTotalResult.cs" />
+    <Compile Include="Models\ViewModels\VnaTotalResultExcel.cs" />
     <Compile Include="Models\VnaRecord.cs" />
     <Compile Include="Models\VnaTestItemPerRecord.cs" />
     <Compile Include="Models\VnaTestItemRecord.cs" />
@@ -870,6 +875,7 @@
     <Content Include="Scripts\superTables\superTables_Orange.css" />
     <Content Include="Scripts\superTables\superTables_Sky.css" />
     <Content Include="SQLProcedure\p_coaxialqualitystatTab_Rp.sql" />
+    <Content Include="SQLProcedure\p_coaxialqulitystatexcelTab_Rp.sql" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
