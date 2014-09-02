@@ -146,3 +146,16 @@ notice
 	2.procedure
 		1.p_coaxialqualitystatTab_Rp.sql
 		2.p_coaxialqualitystatexcelTab_Rp.sql
+		3.p_coaxialqualitydamageTab_Rp.sql
+		4.p_coaxialqualitydamagexcelTab_Rp.sql
+	3.Permission Add
+		Controller:TestConfig Action:CopyBat 
+			insert into Permission
+			([ControllerName],[ActionName],[Name],[IsDeleted])
+			values
+			('CoaxialQualityDamage','StatByFailItem','同轴质量损失-不合格项',0)
+		Admin Role add permission:
+			Insert into CamelRolePermission
+			([CamelDotNetRoleId],[PermissionId])
+			values
+			(1,149)

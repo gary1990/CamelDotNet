@@ -1,4 +1,4 @@
-﻿create procedure [dbo].[p_coaxialqualitystatTab_Rp]
+﻿create procedure [dbo].[p_coaxialqualitydamageTab_Rp]
 	@testtimestart datetime2,
 	@testtimestop datetime2,
 	@drillingcrew nvarchar(50),--机台
@@ -6,7 +6,6 @@
 as
 begin
 	SET NOCOUNT ON;
-	--满足条件的所有记录（合格与不合格）
 	DECLARE @vantotal TABLE
 	(
 		RowNumber int,
@@ -26,7 +25,8 @@ begin
 		ProductTypeId int,
 		Price decimal(8,2),
 		ProductFullName nvarchar(100), 
-		SerialNum nvarchar(100)
+		SerialNum nvarchar(100),
+		IsGreenLight int
 	)
 	--质量损失比定义
 	declare @qulityloss Table
@@ -64,7 +64,8 @@ begin
 		c.Id as ProductTypeId,
 		c.Price as Price,
 		c.Name+'#'+c.ModelName as ProductFullName, 
-		b.Number as SerialNum
+		b.Number as SerialNum,
+		a.isGreenLight
 		from VnaRecord a
 		join SerialNumber b
 		on a.SerialNumberId = b.Id
@@ -126,7 +127,7 @@ begin
 			join QualityLossPercent b
 			on b.QualityLossId = a.Id
 		) aa
---	select * from @qulityloss
+--select * from @qulityloss
 
 	declare @per_van_fail_details_formular_table table
 	(
@@ -260,7 +261,7 @@ begin
 		set @rowNo=@rowNo+1
 	end
 
-	--select * from @per_van_fail_details_formular_table
+--select * from @per_van_fail_details_formular_table
 
 	declare @van_fail_detail_result table
 	(
@@ -468,7 +469,7 @@ begin
 		(coalesce(aa.LossPercent,0.1) = coalesce(b.LossPercent,0.1))
 		and (coalesce(aa.VnaRecordId,'') = coalesce(b.VnaRecordId,''))
 		and (aa.VnaProcessId = b.VnaProcessId)
-
+--select * from @van_fail_detail_result_loss
 	insert into @vnatotal_result
 		select
 			a.VnaRecordId,
@@ -482,18 +483,32 @@ begin
 			a.FreqFormularR,
 			a.ValueFormularR
 		from @van_fail_detail_result_loss a
-
-	select aa.* from
+--select * from @vnatotal_result
+	select 
+	aaa.*,
+	bbb.Id as DepartmentId,
+	bbb.Name as DepartmentName,
+	CAST((aaa.Lengths/1000)*aaa.Price*aaa.LossPercent_Result as decimal(8,2)) as LossMoney
+	from
 	(
-		select 
-			a.*,b.*
-		from @vantotal a
-		left join @vnatotal_result b
-		on a.VnaRecordId = b.VnaRecordId_Result
-	) aa
-	where
-	(aa.ProcessName_Fail is null and aa.TestResult = 0)
-	or
-	(aa.ProcessName_Fail is not null)
-
+		select aa.* from
+		(
+			select 
+				a.*,b.*
+			from @vantotal a
+			left join @vnatotal_result b
+			on a.VnaRecordId = b.VnaRecordId_Result
+		) aa
+		where
+		(aa.ProcessName_Fail is null and aa.TestResult = 0)--get pass record
+		or
+		(aa.ProcessName_Fail is not null)--get fail record
+		or
+		(aa.ProcessName_Fail is not null and aa.IsGreenLight = 1)--get greenlight record
+	) aaa
+	left join
+	QualityPassRecord bb
+	on aaa.VnaRecordId = bb.VnaRecordId
+	left join Department bbb
+	on bb.DepartmentId = bbb.Id
 end

@@ -1,5 +1,5 @@
 ﻿<h2>@ViewBag.Name</h2>
-@using (Ajax.BeginForm(null, null, new AjaxOptions { Url = "/CoaxialQualityDamage/StatByProductType", UpdateTargetId = "AjaxBody" }, new { id = "searchForm" }))
+@using (Ajax.BeginForm(null, null, new AjaxOptions { Url = "/CoaxialQualityDamage/StatByFailItem", UpdateTargetId = "AjaxBody" }, new { id = "searchForm" }))
 {
     <table>
         <tr>
@@ -43,10 +43,11 @@
                 <button id="btExport" type="submit">导出</button>
             </td>
         </tr>
+        @Html.Hidden("export", false)
     </table>
 }
 <div>
-    <div id="/CoaxialQualityDamage/Index" class="float-left select-kind">不合格项</div>
+    <div id="/CoaxialQualityDamage/StatByFailItem" class="float-left select-kind selected-kind">不合格项</div>
     <div id="/CoaxialQualityDamage/StatByDepartment" class="float-left select-kind">部门</div>
     <div id="/CoaxialQualityDamage/StatByDrillingCrew" class="float-left select-kind">机台</div>
     <div id="/CoaxialQualityDamage/StatByWorkGroup" class="select-kind">班组</div>
@@ -63,15 +64,34 @@
 
     <script>
         $(document).ready(function () {
+            //when select different stat kind, change the form url to target Controller Action
             $(".select-kind").click(function () {
+                //normal search, set export to
+                $("#export").val("False");
+                $("#searchForm").attr("data-ajax", "true");
                 $(".select-kind").removeClass("selected-kind");
                 $(this).addClass("selected-kind");
                 var kindUrl = $(this).attr("Id");
-                $("#searchForm").attr("action", kindUrl);
                 $("#searchForm").attr("data-ajax-url", kindUrl);
                 $("#searchForm").submit();
             });
-
+            //the export url
+            var exportUrl = "/CoaxialQualityDamage/StatByFailItem";
+            $("#btExport").click(function () {
+                $("#export").val("True");
+                //remove ajax form submit, because download file cannot use this way
+                $("#searchForm").attr("data-ajax", "false");
+                $("#searchForm").attr("action", exportUrl);
+            });
+            $("#btSearch").click(function () {
+                //normal search, set export to
+                $("#export").val("False");
+                //use ajax from submit, because this is a normal search
+                $("#searchForm").attr("data-ajax", "true");
+                //get current selected kind id attr, and replace form's data-ajax-url with it
+                var currentSelectedKind = $(".selected-kind").attr("Id");
+                $("#searchForm").attr("data-ajax-url", currentSelectedKind);
+            });
         });
     </script>
 }

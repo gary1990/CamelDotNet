@@ -1,4 +1,10 @@
 ﻿@model List<DotNet.Highcharts.Highcharts>
+@if (ViewBag.ErrorMsg != null)
+{
+    <div>
+        @Html.Raw(ViewBag.ErrorMsg)
+    </div>
+}
 
 @{
     decimal totalDamage = Convert.ToDecimal(ViewBag.TotalDamage);
@@ -12,5 +18,5 @@
 </div>
 
 <div>
-    <span><b>损失合计：</b>@string.Format("{0:0.#####}", totalDamage)</span>
+    <span><b>损失合计：</b>@string.Format("{0:0.#####}", totalDamage)元</span>
 </div>

@@ -64,7 +64,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.ToList())
             {
                 var zb1 = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "驻波1").Select(a => a.VnaTestItemPerRecords).ToList();
                 var zb2 = item.VnaRecord.VnaTestItemRecords.Where(a => a.TestItem.Name == "驻波2").Select(a => a.VnaTestItemPerRecords).ToList();

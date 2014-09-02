@@ -312,6 +312,7 @@
     <Compile Include="Models\TestStation.cs" />
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Models\ViewModels\CopyBat.cs" />
+    <Compile Include="Models\ViewModels\DepartmentGroup.cs" />
     <Compile Include="Models\ViewModels\PerConfigEdit.cs" />
     <Compile Include="Models\ViewModels\QualityLossEdit.cs" />
     <Compile Include="Models\ViewModels\QualityLossPercentEdit.cs" />
@@ -321,6 +322,8 @@
     <Compile Include="Models\ViewModels\QualityLossGroup.cs" />
     <Compile Include="Models\ViewModels\VnaRecordQualityPassRecord.cs" />
     <Compile Include="Models\ViewModels\VnaTotalResult.cs" />
+    <Compile Include="Models\ViewModels\VnaTotalResultDamage.cs" />
+    <Compile Include="Models\ViewModels\VnaTotalResultDamageExcel.cs" />
     <Compile Include="Models\ViewModels\VnaTotalResultExcel.cs" />
     <Compile Include="Models\VnaRecord.cs" />
     <Compile Include="Models\VnaTestItemPerRecord.cs" />
@@ -874,6 +877,8 @@
     <Content Include="Scripts\superTables\superTables_Default.css" />
     <Content Include="Scripts\superTables\superTables_Orange.css" />
     <Content Include="Scripts\superTables\superTables_Sky.css" />
+    <Content Include="SQLProcedure\p_coaxialqualitydamageTab_Rp.sql" />
+    <Content Include="SQLProcedure\p_coaxialqualitydamagexcelTab_Rp.sql" />
     <Content Include="SQLProcedure\p_coaxialqualitystatTab_Rp.sql" />
     <Content Include="SQLProcedure\p_coaxialqulitystatexcelTab_Rp.sql" />
     <Content Include="Web.config">
@@ -1042,6 +1047,7 @@
     <Content Include="Views\TestConfig\CopyBat.cshtml" />
     <Content Include="Views\VnaRecord\Edit.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\EditVnaRecord.cshtml" />
+    <Content Include="Views\CoaxialQualityDamage\StatByFailItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

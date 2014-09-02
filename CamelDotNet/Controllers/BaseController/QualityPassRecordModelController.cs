@@ -75,8 +75,6 @@ namespace CamelDotNet.Controllers.BaseController
             var curUserRole = UW.context.UserManager.FindById(curUserId).CamelDotNetRole.Name;
             ViewBag.CurUserRole = curUserRole;
 
-            var s = vnaResults.ToList();
-
             var results = from a in vnaResults
                           from b in UW.context.QualityPassRecord
                           .Where(o => a.Id == o.VnaRecordId)

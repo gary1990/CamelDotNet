@@ -62,17 +62,17 @@ begin
 			aa.Price
 		from
 		(
-		--TotalFail group length
-		select 
-			a.TestDate,
-			a.DrillingCrew,
-			a.WorkGroup,
-			a.ProductFullName,
-			a.Price,
-			SUM(a.Lengths)/1000 as TotalFailLength --unit to km
-		from @vantotal_result a
-		where a.TestResult = 1
-		group by a.TestDate,a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.Price
+			--TotalFail group length
+			select 
+				a.TestDate,
+				a.DrillingCrew,
+				a.WorkGroup,
+				a.ProductFullName,
+				a.Price,
+				SUM(a.Lengths)/1000 as TotalFailLength --unit to km
+			from @vantotal_result a
+			where a.TestResult = 1
+			group by a.TestDate,a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.Price
 		) aa
 		--Total group length
 		join
