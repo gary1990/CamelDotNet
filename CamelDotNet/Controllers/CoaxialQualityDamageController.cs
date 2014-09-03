@@ -194,7 +194,22 @@ namespace CamelDotNet.Controllers
                         .SetTooltip(new Tooltip
                         {
                             Formatter = @"function(){return '<b>损失金额</b>:' + this.y + '元<br/>' + '<b>损失比例</b>: ' + Highcharts.numberFormat((this.y/" + totalDamage + ")*100) + '%'}"
-                        });
+                        })
+                        .SetPlotOptions(new PlotOptions
+                        {
+                            Column = new PlotOptionsColumn
+                            {
+                                Cursor = Cursors.Pointer,
+                                DataLabels = new PlotOptionsColumnDataLabels
+                                {
+                                    Enabled = true,
+                                    Color = Color.FromName("colors[0]"),
+                                    Formatter = "function() { return this.y + ' (' + Highcharts.numberFormat((this.y/" + totalDamage + ")*100) + '%)'; }",
+                                    Style = "fontWeight: 'bold'"
+                                }
+                            }
+                        })
+                        .AddJavascripVariable("colors", "Highcharts.getOptions().colors");
                     }
                 }
             }
@@ -562,88 +577,164 @@ namespace CamelDotNet.Controllers
                 }
             }
             
-            var totalRecord = db.VnaRecord.Where(a => a.NoStatistics == false).Where(a => a.TestTime <= testTimeStop && a.TestTime >= testTimeStart);
-            if (DrillingCrew != "")
-            {
-                totalRecord = totalRecord.Where(a => a.DrillingCrew.Contains(DrillingCrew));
-            }
-            if (WorkGroup != "")
-            {
-                totalRecord = totalRecord.Where(a => a.WorkGroup.Contains(WorkGroup));
-            }
-            if (ProductTypeId != 0)
-            {
-                totalRecord = totalRecord.Where(a => a.ProductTypeId == ProductTypeId);
-            }
-            //fail record, damage/1000 because InnerLength/OuterLength unit in database are m
-            var failRecordList = totalRecord.Where(a => a.TestResult == true).GroupBy(a => a.DrillingCrew).Select(b => new
-            {
-                id = b.Key,
-                length = b.Sum(c => Math.Abs(c.InnerLength - c.OuterLength)),
-                damage = b.Sum(c => Math.Abs(c.InnerLength - c.OuterLength) * c.ProductType.Price / 1000)
-            }).OrderByDescending(d => d.damage).ToList();
-            decimal totalDamage = 0;
-            //get total damage
-            foreach (var item in failRecordList)
-            {
-                totalDamage += item.damage;
-            }
-            //totalDrillingCrewObj for X(product list), totalFailDamageObj for Y(fail damage list)
-            var totalDrillingCrewObj = new string[failRecordList.Count()];
-            var totalFailDamageObj = new object[failRecordList.Count()];
-            for (int i = 0; i < totalDrillingCrewObj.Count(); i++)
-            {
-                totalDrillingCrewObj[i] = failRecordList[i].id;
-                var currentFail = failRecordList.Where(a => a.id == failRecordList[i].id).SingleOrDefault();
-                if (currentFail == null)
-                {
-                    totalFailDamageObj[i] = 0;
-                }
-                else
-                {
-                    totalFailDamageObj[i] = Convert.ToDecimal(currentFail.damage);
-                }
-            }
-
-            DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart")
-            .SetTitle(new Title { Text = "各机台同轴质量损失表（元）" })
-            .SetXAxis(new XAxis
-            {
-                Categories = totalDrillingCrewObj
-            })
-            .SetYAxis(new YAxis
-            {
-                Title = new YAxisTitle { Text = "损失金额" }
-            })
-            .SetSeries(new Series
-            {
-                Name = "机台",
-                Type = ChartTypes.Column,
-                Data = new Data(totalFailDamageObj)
-            })
-            .SetTooltip(new Tooltip
-            {
-                Formatter = @"function(){return '<b>损失金额</b>:' + this.y + '<br/>' + '<b>所占比例</b>: ' + Highcharts.numberFormat((this.y/" + totalDamage + ")*100) + '%'}"
-            })
-            .SetPlotOptions(new PlotOptions()
-            {
-                Pie = new PlotOptionsPie
-                {
-                    AllowPointSelect = true,
-                    Cursor = Cursors.Pointer,
-                    DataLabels = new PlotOptionsPieDataLabels
-                    {
-                        Color = ColorTranslator.FromHtml("#000000"),
-                        ConnectorColor = ColorTranslator.FromHtml("#000000"),
-                        Formatter = @"function(){return '<b>损失金额</b>:' + this.y + '<br/>' + '<b>所占比例</b>: ' + Highcharts.numberFormat((this.y/" + totalDamage + ")*100) + '%'}"
-                    }
-                }
-            });
-
-            ViewBag.TotalFailDamage = totalDamage;
-
+            //initial chart
+            //DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart");
             List<Highcharts> chartList = new List<Highcharts> { };
-            chartList.Add(chart);
+
+            //call procedure
+            string sql = "exec p_coaxialqualitydamage_departmentTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup";
+            SqlParameter[] param = new SqlParameter[4];
+            param[0] = new SqlParameter("@testtimestart", SqlDbType.DateTime2);
+            param[0].Value = testTimeStart;
+            param[1] = new SqlParameter("@testtimestop", SqlDbType.DateTime2);
+            param[1].Value = testTimeStop;
+            param[2] = new SqlParameter("@drillingcrew", SqlDbType.NVarChar);
+            param[2].Value = DrillingCrew;
+            param[3] = new SqlParameter("@workgroup", SqlDbType.NVarChar);
+            param[3].Value = WorkGroup;
+            //get procedure result
+            DataTable dt = CommonController.GetDateTable(sql, param);
+            //init vna total result damage department list, use VnaTotalResultDamageDepartment ViewModel
+            List<VnaTotalResultDamageDepartment> vnaTotalResultDamageDptList = new List<VnaTotalResultDamageDepartment>();
+            //departments total damage
+            decimal? totalDamage = 0;
+            if (dt.Rows.Count > 0)
+            {
+                //auto map dt to VnaTotalResultDamageDepartment
+                DataTableReader dr = dt.CreateDataReader();
+                vnaTotalResultDamageDptList = AutoMapper.Mapper.DynamicMap<IDataReader, List<VnaTotalResultDamageDepartment>>(dr);
+                //get total departments
+                var departmentsList = vnaTotalResultDamageDptList
+                    .Select(p => new
+                    {
+                        p.DepartmentId,
+                        p.DepartmentName,
+                        p.DepartmentLossMoney
+                    }).Distinct().ToList();
+                //department count
+                int dptCount = departmentsList.Count();
+                //depatment categories,stroed department name
+                string[] dptCategories = new string[dptCount];
+                //Point array, stored per departemnt category
+                DotNet.Highcharts.Options.Point[] dptPoints = new DotNet.Highcharts.Options.Point[dptCount];
+                //dptData,stored departemnt data, include per producttype data of each department
+                Data dptData = new Data(dptPoints);
+                //foreach departmentsList, get department loss money, and get per producttype loss money in this.department
+                int i = 0;
+                foreach (var department in departmentsList)
+                {
+                    //totalDamage add
+                    totalDamage = totalDamage + department.DepartmentLossMoney;
+                    //assign department name to dptCategories
+                    dptCategories[i] = department.DepartmentName;
+                    //current department Point
+                    DotNet.Highcharts.Options.Point currentDptPoint = new DotNet.Highcharts.Options.Point 
+                                                                      {
+                                                                          Y = (double)department.DepartmentLossMoney,
+                                                                          Color = Color.FromName("colors[" + i + "]"),
+                                                                      };
+                    //get current department's producttype category
+                    var productTypeList = vnaTotalResultDamageDptList
+                        .Where(a => a.DepartmentId == department.DepartmentId && a.DepartmentName == department.DepartmentName)
+                        .ToList();
+                    //number of peoducttype in current department
+                    int currentProductTypeCount = productTypeList.Count();
+                    //current productTypes Drilldown
+                    Drilldown currentProductTypesDrillDown = new Drilldown();
+                    //currentProductTypeCategories, stored current producttyes name
+                    string[] currentProductTypeCategories = new string[currentProductTypeCount];
+                    //currentProductTypeData, stored percent of current producttypes loss money in current department loss money
+                    object[] currentProductTypeData = new object[currentProductTypeCount];
+                    int j = 0;
+                    foreach (var productType in productTypeList)
+                    {
+                        currentProductTypeCategories[j] = productType.ProductFullName;
+                        currentProductTypeData[j] = Math.Round((productType.ProductLossMoney / department.DepartmentLossMoney)*100,2,MidpointRounding.ToEven);
+                        j = j + 1;//j is for loop productTypeList
+                    }
+                    //assign value to currentProductTypesDrillDown
+                    currentProductTypesDrillDown.Name = "各型号产品";
+                    currentProductTypesDrillDown.Categories = currentProductTypeCategories;
+                    currentProductTypesDrillDown.Data = new Data(currentProductTypeData);
+                    currentProductTypesDrillDown.Color = Color.FromName("colors[" + i + "]");
+                    //assign currentProductTypesDrillDown to currentDptPoint
+                    currentDptPoint.Drilldown = currentProductTypesDrillDown;
+                    //assign currentDptPoint to dptPoints
+                    dptPoints[i] = currentDptPoint;
+
+                    i = i + 1;//i is for loop departmentList
+                }
+
+                const string NAME = "部门不合格统计";
+
+                Highcharts chart = new Highcharts("chart")
+                .InitChart(new Chart { DefaultSeriesType = ChartTypes.Column })
+                .SetTitle(new Title { Text = "各部门同轴质量损失表（元）" })
+                .SetSubtitle(new Subtitle { Text = "点击柱子查看详情或返回." })
+                .SetXAxis(new XAxis { Categories = dptCategories })
+                .SetYAxis(new YAxis { Title = new YAxisTitle { Text = "损失" } })
+                .SetLegend(new Legend { Enabled = false })
+                .SetTooltip(new Tooltip { Formatter = "TooltipFormatter" })
+                .SetPlotOptions(new PlotOptions
+                {
+                    Column = new PlotOptionsColumn
+                    {
+                        Cursor = Cursors.Pointer,
+                        Point = new PlotOptionsColumnPoint { Events = new PlotOptionsColumnPointEvents { Click = "ColumnPointClick" } }
+                        //DataLabels = new PlotOptionsColumnDataLabels
+                        //{
+                        //    Enabled = true,
+                        //    Color = Color.FromName("colors[0]"),
+                        //    Formatter = "function() { return this.y +' ('+ Highcharts.numberFormat((this.y/" + totalDamage + ")*100) +'%)'; }",
+                        //    Style = "fontWeight: 'bold'"
+                        //}
+                    }
+                })
+                .SetSeries(new Series
+                {
+                    Name = "Browser brands",
+                    Data = dptData,
+                    Color = Color.White
+                })
+                .SetExporting(new Exporting { Enabled = false })
+                .AddJavascripFunction(
+                    "TooltipFormatter",
+                    @"var point = this.point, s = '';
+                      if (point.drilldown) {
+                        s += '损失量:<b>' + this.y +'</b><br/>点击查看'+ point.category +'详情';
+                      } else {
+                        s += '占比<b>' + this.y +'%</b><br/>点击返回';
+                      }
+                      return s;"
+                )
+                .AddJavascripFunction(
+                    "ColumnPointClick",
+                    @"var drilldown = this.drilldown;
+                      if (drilldown) { // drill down
+                        setChart(drilldown.name, drilldown.categories, drilldown.data.data, drilldown.color);
+                      } else { // restore
+                        setChart(name, categories, data.data);
+                      }"
+                )
+                .AddJavascripFunction(
+                    "setChart",
+                    @"chart.xAxis[0].setCategories(categories);
+                      chart.series[0].remove();
+                      chart.addSeries({
+                         name: name,
+                         data: data,
+                         color: color || 'white'
+                      });",
+                    "name", "categories", "data", "color"
+                )
+                .AddJavascripVariable("colors", "Highcharts.getOptions().colors")
+                .AddJavascripVariable("name", "'{0}'".FormatWith(NAME))
+                .AddJavascripVariable("categories", JsonSerializer.Serialize(dptCategories))
+                .AddJavascripVariable("data", JsonSerializer.Serialize(dptData));
+                chartList.Add(chart);
+            }
+
+            ViewBag.TotalDamage = totalDamage;
             return PartialView(chartList);
         }
 
@@ -766,7 +857,22 @@ namespace CamelDotNet.Controllers
                     .SetTooltip(new Tooltip
                     {
                         Formatter = @"function(){return '<b>损失金额</b>:' + this.y + '元<br/>' + '<b>损失比例</b>: ' + Highcharts.numberFormat((this.y/" + totalDamage + ")*100) + '%'}"
-                    });
+                    })
+                    .SetPlotOptions(new PlotOptions
+                    {
+                        Column = new PlotOptionsColumn
+                        {
+                            Cursor = Cursors.Pointer,
+                            DataLabels = new PlotOptionsColumnDataLabels
+                            {
+                                Enabled = true,
+                                Color = Color.FromName("colors[0]"),
+                                Formatter = "function() { return this.y + ' (' + Highcharts.numberFormat((this.y/" + totalDamage + ")*100) + '%)'; }",
+                                Style = "fontWeight: 'bold'"
+                            }
+                        }
+                    })
+                    .AddJavascripVariable("colors", "Highcharts.getOptions().colors");
                 }
             }
 
