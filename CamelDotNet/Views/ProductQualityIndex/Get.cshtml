@@ -1,0 +1,220 @@
+﻿@model List<ProductQualityIndex>
+
+@if (ViewBag.ErrorMsg != null)
+{
+    <div>
+        @Html.Raw(ViewBag.ErrorMsg)
+    </div>
+}
+@if(@Model.Count() != 0)
+{
+    <div class="fakeContainer">
+        <table id="freezonTable">
+            <thead>
+                <tr>
+                    <th>缆号</th>
+                    <th>盘号</th>
+                    <th colspan="4">驻波1</th>
+                    <th colspan="4">驻波2</th>
+                    <th colspan="4">回波损耗1</th>
+                    <th colspan="4">回波损耗2</th>
+                    <th>衰减100M</th>
+                    <th>衰减150M</th>
+                    <th>衰减200M</th>
+                    <th>衰减280M</th>
+                    <th>衰减450M</th>
+                    <th>衰减800M</th>
+                    <th>衰减900M</th>
+                    <th>衰减1000M</th>
+                    <th>衰减1500M</th>
+                    <th>衰减1800M</th>
+                    <th>衰减2000M</th>
+                    <th>衰减2200M</th>
+                    <th>衰减2400M</th>
+                    <th>衰减2500M</th>
+                    <th>衰减3000M</th>
+                    <th>衰减3400M</th>
+                    <th>衰减4000M</th>
+                    <th>时域阻抗</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.SerialNumber</td>
+                        <td>@item.ReelNumber</td>
+                        <td>@item.SWOneCone</td>
+                        <td>@item.SWOneCtwo</td>
+                        <td>@item.SWOneCthree</td>
+                        <td>@item.SWOneCfour</td>
+                        <td>@item.SWTwoCone</td>
+                        <td>@item.SWTwoCtwo</td>
+                        <td>@item.SWTwoCthree</td>
+                        <td>@item.SWTwoCfour</td>
+                        <td>@item.RLOneCone</td>
+                        <td>@item.RLOneCtwo</td>
+                        <td>@item.RLOneCthree</td>
+                        <td>@item.RLOneCfour</td>
+                        <td>@item.RLTwoCone</td>
+                        <td>@item.RLTwoCtwo</td>
+                        <td>@item.RLTwoCthree</td>
+                        <td>@item.RLTwoCfour</td>
+                        <td>@item.Attenuation100</td>
+                        <td>@item.Attenuation150</td>
+                        <td>@item.Attenuation200</td>
+                        <td>@item.Attenuation280</td>
+                        <td>@item.Attenuation450</td>
+                        <td>@item.Attenuation800</td>
+                        <td>@item.Attenuation900</td>
+                        <td>@item.Attenuation1000</td>
+                        <td>@item.Attenuation1500</td>
+                        <td>@item.Attenuation1800</td>
+                        <td>@item.Attenuation2000</td>
+                        <td>@item.Attenuation2200</td>
+                        <td>@item.Attenuation2400</td>
+                        <td>@item.Attenuation2500</td>
+                        <td>@item.Attenuation3000</td>
+                        <td>@item.Attenuation3400</td>
+                        <td>@item.Attenuation4000</td>
+                        <td>@item.TDI</td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="2">最大值</td>
+                    <td>@Model.Max(a => a.SWOneCone)</td>
+                    <td>@Model.Max(a => a.SWOneCtwo)</td>
+                    <td>@Model.Max(a => a.SWOneCthree)</td>
+                    <td>@Model.Max(a => a.SWOneCfour)</td>
+                    <td>@Model.Max(a => a.SWTwoCone)</td>
+                    <td>@Model.Max(a => a.SWTwoCtwo)</td>
+                    <td>@Model.Max(a => a.SWTwoCthree)</td>
+                    <td>@Model.Max(a => a.SWTwoCfour)</td>
+                    <td>@Model.Max(a => a.RLOneCone)</td>
+                    <td>@Model.Max(a => a.RLOneCtwo)</td>
+                    <td>@Model.Max(a => a.RLOneCthree)</td>
+                    <td>@Model.Max(a => a.RLOneCfour)</td>
+                    <td>@Model.Max(a => a.RLTwoCone)</td>
+                    <td>@Model.Max(a => a.RLTwoCtwo)</td>
+                    <td>@Model.Max(a => a.RLTwoCthree)</td>
+                    <td>@Model.Max(a => a.RLTwoCfour)</td>
+                    <td>@Model.Max(a => a.Attenuation100)</td>
+                    <td>@Model.Max(a => a.Attenuation150)</td>
+                    <td>@Model.Max(a => a.Attenuation200)</td>
+                    <td>@Model.Max(a => a.Attenuation280)</td>
+                    <td>@Model.Max(a => a.Attenuation450)</td>
+                    <td>@Model.Max(a => a.Attenuation800)</td>
+                    <td>@Model.Max(a => a.Attenuation900)</td>
+                    <td>@Model.Max(a => a.Attenuation1000)</td>
+                    <td>@Model.Max(a => a.Attenuation1500)</td>
+                    <td>@Model.Max(a => a.Attenuation1800)</td>
+                    <td>@Model.Max(a => a.Attenuation2000)</td>
+                    <td>@Model.Max(a => a.Attenuation2200)</td>
+                    <td>@Model.Max(a => a.Attenuation2400)</td>
+                    <td>@Model.Max(a => a.Attenuation2500)</td>
+                    <td>@Model.Max(a => a.Attenuation3000)</td>
+                    <td>@Model.Max(a => a.Attenuation3400)</td>
+                    <td>@Model.Max(a => a.Attenuation4000)</td>
+                    <td>@Model.Max(a => a.TDI)</td>
+                </tr>
+                <tr>
+                    <td colspan="2">最小值</td>
+                    <td>@Model.Min(a => a.SWOneCone)</td>
+                    <td>@Model.Min(a => a.SWOneCtwo)</td>
+                    <td>@Model.Min(a => a.SWOneCthree)</td>
+                    <td>@Model.Min(a => a.SWOneCfour)</td>
+                    <td>@Model.Min(a => a.SWTwoCone)</td>
+                    <td>@Model.Min(a => a.SWTwoCtwo)</td>
+                    <td>@Model.Min(a => a.SWTwoCthree)</td>
+                    <td>@Model.Min(a => a.SWTwoCfour)</td>
+                    <td>@Model.Min(a => a.RLOneCone)</td>
+                    <td>@Model.Min(a => a.RLOneCtwo)</td>
+                    <td>@Model.Min(a => a.RLOneCthree)</td>
+                    <td>@Model.Min(a => a.RLOneCfour)</td>
+                    <td>@Model.Min(a => a.RLTwoCone)</td>
+                    <td>@Model.Min(a => a.RLTwoCtwo)</td>
+                    <td>@Model.Min(a => a.RLTwoCthree)</td>
+                    <td>@Model.Min(a => a.RLTwoCfour)</td>
+                    <td>@Model.Min(a => a.Attenuation100)</td>
+                    <td>@Model.Min(a => a.Attenuation150)</td>
+                    <td>@Model.Min(a => a.Attenuation200)</td>
+                    <td>@Model.Min(a => a.Attenuation280)</td>
+                    <td>@Model.Min(a => a.Attenuation450)</td>
+                    <td>@Model.Min(a => a.Attenuation800)</td>
+                    <td>@Model.Min(a => a.Attenuation900)</td>
+                    <td>@Model.Min(a => a.Attenuation1000)</td>
+                    <td>@Model.Min(a => a.Attenuation1500)</td>
+                    <td>@Model.Min(a => a.Attenuation1800)</td>
+                    <td>@Model.Min(a => a.Attenuation2000)</td>
+                    <td>@Model.Min(a => a.Attenuation2200)</td>
+                    <td>@Model.Min(a => a.Attenuation2400)</td>
+                    <td>@Model.Min(a => a.Attenuation2500)</td>
+                    <td>@Model.Min(a => a.Attenuation3000)</td>
+                    <td>@Model.Min(a => a.Attenuation3400)</td>
+                    <td>@Model.Min(a => a.Attenuation4000)</td>
+                    <td>@Model.Min(a => a.TDI)</td>
+                </tr>
+                <tr>
+                    <td colspan="2">平均值</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.SWOneCone))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.SWOneCtwo))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.SWOneCthree))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.SWOneCfour))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.SWTwoCone))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.SWTwoCtwo))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.SWTwoCthree))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.SWTwoCfour))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.RLOneCone))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.RLOneCtwo))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.RLOneCthree))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.RLOneCfour))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.RLTwoCone))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.RLTwoCtwo))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.RLTwoCthree))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.RLTwoCfour))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation100))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation150))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation200))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation280))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation450))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation800))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation900))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation1000))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation1500))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation1800))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation2000))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation2200))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation2400))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation2500))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation3000))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation3400))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation4000))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.TDI))</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+<link href="@Url.Content("~/Scripts/superTables/superTables.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/superTables/superTables.js")"></script>
+<style>
+    .fakeContainer {
+        padding: 0px;
+        border: none;
+        width: 100%;
+        height: 300px;
+        overflow: hidden;
+    }
+
+    th {
+        border: 1px solid #c3c3c3;
+    }
+</style>
+<script type="text/javascript">
+    (function () {
+        new superTable("freezonTable", {
+            cssSkin: "sDefault", //颜色方案
+            fixedCols: 2 //固定几列
+        });
+    })();
+</script>

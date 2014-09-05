@@ -88,7 +88,7 @@
                         @Math.Abs((item.VnaRecord.InnerLength - item.VnaRecord.OuterLength) / 1000)
                     </td>
                     <td rowspan="2">
-                        @Html.DisplayFor(modelItem => item.VnaRecord.SerialNumber.Number)
+                        @Html.ActionLink(item.VnaRecord.SerialNumber.Number, "Show", "VnaTestRecord",new { id = item.VnaRecord.Id, returnUrl = returnUrl }, new { target = "_blank", style = "color:blue" })
                     </td>
                     <td>
                         内端

@@ -2,10 +2,17 @@
 	@testtimestart datetime2,
 	@testtimestop datetime2,
 	@drillingcrew nvarchar(50),--机台
-	@workgroup nvarchar(50) --班组
+	@workgroup nvarchar(50), --班组
+	@producttypeId int
 as
 begin
 	SET NOCOUNT ON;
+	--判断@producttypeId，如果为0，置为null
+	IF @producttypeId = 0
+	BEGIN
+		SET @producttypeId = NULL
+	END
+
 	DECLARE @vantotal TABLE
 	(
 		RowNumber int,
@@ -83,6 +90,7 @@ begin
 		and a.TestTime <= @testtimestop
 		and a.DrillingCrew like '%' + IsNull(@drillingcrew,a.DrillingCrew) +'%'
 		and a.WorkGroup like '%' + IsNull(@workgroup,a.workgroup) + '%'
+		and a.ProductTypeId = ISNULL(@producttypeId,a.ProductTypeId)
 		order by a.TestTime desc
 
 	insert into @qulityloss

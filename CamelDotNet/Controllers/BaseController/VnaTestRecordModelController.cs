@@ -175,6 +175,27 @@ namespace CamelDotNet.Controllers
             return View(ViewPath1 + ViewPath + ViewPath2 + "Details.cshtml", result);
         }
 
+        public ActionResult Show(int? id, string returnUrl = "Index") 
+        {
+            var result = VnaRecordCommon<Model>.GetQuery(UW)
+                .Include(a => a.SerialNumber)
+                .Include(a => a.TestEquipment).Include(a => a.TestStation).Include(a => a.CamelDotNetUser)
+                .Include(a => a.ProductType)
+                .Include(a => a.VnaTestItemRecords)
+                .Include(a => a.VnaTestItemRecords.Select(b => b.TestItem))
+                .Include(a => a.VnaTestItemRecords.Select(b => b.VnaTestItemPerRecords))
+                .Where(a => a.Id == id).SingleOrDefault();
+            if (result == null)
+            {
+                Common.RMError(this);
+                return Redirect(Url.Content(returnUrl));
+            }
+
+            ViewBag.ReturnUrl = returnUrl;
+
+            return View(ViewPath1 + ViewPath + ViewPath2 + "Details.cshtml", result);
+        }
+
         public ActionResult ExportToExcel()
         {
             StringBuilder str = new StringBuilder();

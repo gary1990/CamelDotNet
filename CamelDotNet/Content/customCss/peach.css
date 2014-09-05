@@ -253,7 +253,7 @@ header {
             position: relative;
             margin: 0;
             padding: 0;
-            float: right;
+            float: left;
         }
 
             header nav ul#menu > li {
@@ -306,10 +306,10 @@ header {
 
             header nav ul#menu li ul {
                 display: none;
-                left: 0;
+                /*left: 0;*/
                 line-height: 28px;
                 position: absolute;
-                width: 100%;
+                width: 150%;
             }
 
             header nav ul#menu li.current ul {

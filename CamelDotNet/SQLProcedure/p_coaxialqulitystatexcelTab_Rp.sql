@@ -2,7 +2,8 @@
 	@testtimestart datetime2,
 	@testtimestop datetime2,
 	@drillingcrew nvarchar(50),--机台
-	@workgroup nvarchar(50) --班组
+	@workgroup nvarchar(50), --班组
+	@producttypeId int
 as
 begin
 	SET NOCOUNT ON;
@@ -38,7 +39,7 @@ begin
 		ValueFormularR nvarchar(50)
 	)
 	insert into @vantotal_result
-		exec p_coaxialqualitystatTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup
+		exec p_coaxialqualitystatTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup, @producttypeId
 	declare @vantotal_result_failgroup table
 	(
 		TestDate date,

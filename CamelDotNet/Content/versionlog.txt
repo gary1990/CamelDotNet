@@ -149,16 +149,23 @@ notice
 		3.p_coaxialqualitydamageTab_Rp.sql
 		4.p_coaxialqualitydamagexcelTab_Rp.sql
 		5.p_coaxialqualitydamage_departmentTab_Rp.sql
+		6.p_productqualityindexTab_Rp.sql
 	3.Permission Add
 		Controller:TestConfig Action:CopyBat 
 			insert into Permission
 			([ControllerName],[ActionName],[Name],[IsDeleted])
 			values
 			('CoaxialQualityDamage','StatByFailItem','同轴质量损失-不合格项',0),
-			('CoaxialQualityDamage','StatByDepartment','同轴质量损失-部门',0)
+			('CoaxialQualityDamage','StatByDepartment','同轴质量损失-部门',0),
+			('ProductQualityIndex','Index','产品指标统计',0),
+			('ProductQualityIndex','Get','产品指标统计-查询',0),
+			('VnaTestRecord','Show','Vna测试-点击序列号',0),
 		Admin Role add permission:
 			Insert into CamelRolePermission
 			([CamelDotNetRoleId],[PermissionId])
 			values
 			(1,149),
-			(1,150)
+			(1,150),
+			(1,151),
+			(1,152),
+			(1,153)

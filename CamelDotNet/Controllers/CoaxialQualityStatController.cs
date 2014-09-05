@@ -95,8 +95,8 @@ namespace CamelDotNet.Controllers
             if (!export)//do not export, normal search
             {
                 //call procedure
-                string sql = "exec p_coaxialqualitystatTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup";
-                SqlParameter[] param = new SqlParameter[4];
+                string sql = "exec p_coaxialqualitystatTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup, @producttypeId";
+                SqlParameter[] param = new SqlParameter[5];
                 param[0] = new SqlParameter("@testtimestart", SqlDbType.DateTime2);
                 param[0].Value = testTimeStart;
                 param[1] = new SqlParameter("@testtimestop", SqlDbType.DateTime2);
@@ -105,6 +105,8 @@ namespace CamelDotNet.Controllers
                 param[2].Value = DrillingCrew;
                 param[3] = new SqlParameter("@workgroup", SqlDbType.NVarChar);
                 param[3].Value = WorkGroup;
+                param[4] = new SqlParameter("@producttypeId", SqlDbType.Int);
+                param[4].Value = ProductTypeId;
                 //get procedure result
                 DataTable dt = CommonController.GetDateTable(sql, param);
                 //init vna total result list, use VnaTotalResult ViewModel
@@ -206,8 +208,8 @@ namespace CamelDotNet.Controllers
             }
             else //export
             {
-                string sql = "exec p_coaxialqualitystatexcelTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup";
-                SqlParameter[] param = new SqlParameter[4];
+                string sql = "exec p_coaxialqualitystatexcelTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup, @producttypeId";
+                SqlParameter[] param = new SqlParameter[5];
                 param[0] = new SqlParameter("@testtimestart", SqlDbType.DateTime2);
                 param[0].Value = testTimeStart;
                 param[1] = new SqlParameter("@testtimestop", SqlDbType.DateTime2);
@@ -216,6 +218,8 @@ namespace CamelDotNet.Controllers
                 param[2].Value = DrillingCrew;
                 param[3] = new SqlParameter("@workgroup", SqlDbType.NVarChar);
                 param[3].Value = WorkGroup;
+                param[4] = new SqlParameter("@producttypeId", SqlDbType.Int);
+                param[4].Value = ProductTypeId;
 
                 DataTable dt = CommonController.GetDateTable(sql, param);
                 //init vna total result list, use VnaTotalResult ViewModel

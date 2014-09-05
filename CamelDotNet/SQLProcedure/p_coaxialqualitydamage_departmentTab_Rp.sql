@@ -2,7 +2,8 @@
 @testtimestart datetime2,
 	@testtimestop datetime2,
 	@drillingcrew nvarchar(50),--机台
-	@workgroup nvarchar(50) --班组
+	@workgroup nvarchar(50), --班组
+	@producttypeId int
 as
 begin
 	SET NOCOUNT ON;
@@ -43,7 +44,7 @@ begin
 	)
 
 	insert into @vantotal_demage_result
-		exec p_coaxialqualitydamageTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup
+		exec p_coaxialqualitydamageTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup, @producttypeId
 
 	select 
 		aaa.ProductTypeId,

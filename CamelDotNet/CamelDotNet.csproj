@@ -239,6 +239,7 @@
     <Compile Include="Controllers\Lib\PdfResult.cs" />
     <Compile Include="Controllers\Lib\ZipResult.cs" />
     <Compile Include="Controllers\PermissionController.cs" />
+    <Compile Include="Controllers\ProductQualityIndexController.cs" />
     <Compile Include="Controllers\ProductTypeController.cs" />
     <Compile Include="Controllers\QualityLossController.cs" />
     <Compile Include="Controllers\QualityPassRecordController.cs" />
@@ -314,6 +315,7 @@
     <Compile Include="Models\ViewModels\CopyBat.cs" />
     <Compile Include="Models\ViewModels\DepartmentGroup.cs" />
     <Compile Include="Models\ViewModels\PerConfigEdit.cs" />
+    <Compile Include="Models\ViewModels\ProductQualityIndex.cs" />
     <Compile Include="Models\ViewModels\QualityLossEdit.cs" />
     <Compile Include="Models\ViewModels\QualityLossPercentEdit.cs" />
     <Compile Include="Models\ViewModels\TestConfigEdit.cs" />
@@ -883,6 +885,7 @@
     <Content Include="SQLProcedure\p_coaxialqualitydamage_departmentTab_Rp.sql" />
     <Content Include="SQLProcedure\p_coaxialqualitystatTab_Rp.sql" />
     <Content Include="SQLProcedure\p_coaxialqulitystatexcelTab_Rp.sql" />
+    <Content Include="SQLProcedure\p_productqualityindexTab_Rp.sql" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1051,6 +1054,8 @@
     <Content Include="Views\Shared\EditorTemplates\EditVnaRecord.cshtml" />
     <Content Include="Views\CoaxialQualityDamage\StatByFailItem.cshtml" />
     <Content Include="Views\CoaxialQualityDamage\StatByDepartment.cshtml" />
+    <Content Include="Views\ProductQualityIndex\Index.cshtml" />
+    <Content Include="Views\ProductQualityIndex\Get.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

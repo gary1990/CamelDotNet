@@ -1,0 +1,90 @@
+﻿<h2>@ViewBag.Name</h2>
+@using (Ajax.BeginForm(null, null, new AjaxOptions { Url = "/ProductQualityIndex/Get", UpdateTargetId = "AjaxBody" }, new { id = "searchForm" }))
+{
+    <table>
+        <tr>
+            <td>
+                <span class="searchLabel">起始时间</span>
+            </td>
+            <td>
+                <span class="searchLabel">截止时间</span>
+            </td>
+            <td>
+                <span class="searchLabel">机台</span>
+            </td>
+            <td>
+                <span class="searchLabel">班组</span>
+            </td>
+            <td>
+                <span class="searchLabel">产品型号</span>
+            </td>
+            <td>
+                <span class="searchLabel">客户</span>
+            </td>
+            <td>
+                <span class="searchLabel">订单号</span>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                @Html.TextBox("TestTimeStartDay", null, new { @class = "Wdate", style = "width: 100px;", onclick = "WdatePicker({lang:'zh-cn'})" })
+                @Html.DropDownList("TestTimeStartHour", new SelectList(ViewBag.Hours, "Value", "Text"), String.Empty, new { style = "width: 50px;" })
+            </td>
+            <td>
+                @Html.TextBox("TestTimeStopDay", null, new { @class = "Wdate", style = "width: 100px;", onclick = "WdatePicker({lang:'zh-cn'})" })
+                @Html.DropDownList("TestTimeStopHour", new SelectList(ViewBag.Hours, "Value", "Text"), String.Empty, new { style = "width: 50px;" })
+            </td>
+            <td>
+                @Html.TextBox("DrillingCrew", null, new { style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.TextBox("WorkGroup", null, new { style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.DropDownList("ProductTypeId", new SelectList(Common.GetProductTypeInTestConfigList(), "Id", "FullName"), String.Empty, new { style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.DropDownList("ClientId", new SelectList(Common.GetClientList(), "Id", "Name"), String.Empty, new { style = "width: 100px;" })
+            </td>
+            <td>
+                @Html.TextBox("OrderNo", null, new { style = "width: 100px;" })
+            </td>
+            <td>
+                <button id="btSearch" type="submit">查询</button>
+                <button id="btExport" type="submit">导出</button>
+            </td>
+        </tr>
+        @Html.Hidden("export", false)
+    </table>
+}
+<div id="AjaxBody">
+
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/cw")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")"></script>
+
+    <script>
+        $(document).ready(function () {
+            //the export url
+            var exportUrl = "/ProductQualityIndex/Get";
+            $("#btExport").click(function () {
+                $("#export").val("True");
+                //remove ajax form submit, because download file cannot use this way
+                $("#searchForm").attr("data-ajax", "false");
+                $("#searchForm").attr("action", exportUrl);
+            });
+            $("#btSearch").click(function () {
+                //normal search, set export to
+                $("#export").val("False");
+                //use ajax from submit, because this is a normal search
+                $("#searchForm").attr("data-ajax", "true");
+                //get current selected kind id attr, and replace form's data-ajax-url with it
+                var currentSelectedKind = $(".selected-kind").attr("Id");
+                $("#searchForm").attr("data-ajax-url", currentSelectedKind);
+            });
+        });
+    </script>
+}
