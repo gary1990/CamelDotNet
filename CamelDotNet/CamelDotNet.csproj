@@ -61,7 +61,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NPOI">
-      <HintPath>C:\Users\GARY\Desktop\NPOI.dll</HintPath>
+      <HintPath>..\..\..\..\learning\NPOI.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>True</Private>
