@@ -470,95 +470,84 @@ namespace CamelDotNet.Controllers
                 }
             }
 
-            var totalRecord = db.VnaRecord.Where(a => a.NoStatistics == false).Where(a => a.TestTime <= testTimeStop && a.TestTime >= testTimeStart);
-            if(DrillingCrew != "")
-            {
-                totalRecord = totalRecord.Where(a => a.DrillingCrew.Contains(DrillingCrew));
-            }
-            if(WorkGroup != "")
-            {
-                totalRecord = totalRecord.Where(a => a.WorkGroup.Contains(WorkGroup));
-            }
-            if(ProductTypeId != 0)
-            {
-                totalRecord = totalRecord.Where(a => a.ProductTypeId == ProductTypeId);
-            }
-            //total record, length/1000 because InnerLength/OuterLength unit in database is m
-            var totalRecordList = totalRecord.GroupBy(a => a.ProductTypeId).Select(b => new { 
-                id = b.Key,
-                name = b.Select(c => c.ProductType.Name +"#"+ c.ProductType.ModelName).Distinct().FirstOrDefault(), 
-                count = b.Count(), 
-                length = b.Sum(c => Math.Abs(c.InnerLength-c.OuterLength)/1000)}).OrderByDescending(d => d.length).ToList();
-            //fail record, length/1000 because InnerLength/OuterLength unit in database is m
-            var failRecordList = totalRecord.Where(a => a.TestResult == true).GroupBy(a => a.ProductTypeId).Select(b => new {
-                                    id = b.Key,
-                                    name = b.Select(c => c.ProductType.Name + "#" + c.ProductType.ModelName).Distinct().FirstOrDefault(),
-                                    count = b.Count(),
-                                    length = b.Sum(c => Math.Abs(c.InnerLength - c.OuterLength)/1000)
-                                }).ToList();
+            //call procedure
+            string sql = "exec p_coaxialqualitystatTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup, @producttypeId";
+            SqlParameter[] param = new SqlParameter[5];
+            param[0] = new SqlParameter("@testtimestart", SqlDbType.DateTime2);
+            param[0].Value = testTimeStart;
+            param[1] = new SqlParameter("@testtimestop", SqlDbType.DateTime2);
+            param[1].Value = testTimeStop;
+            param[2] = new SqlParameter("@drillingcrew", SqlDbType.NVarChar);
+            param[2].Value = DrillingCrew;
+            param[3] = new SqlParameter("@workgroup", SqlDbType.NVarChar);
+            param[3].Value = WorkGroup;
+            param[4] = new SqlParameter("@producttypeId", SqlDbType.Int);
+            param[4].Value = ProductTypeId;
+            //get procedure result
+            DataTable dt = CommonController.GetDateTable(sql, param);
+            //init vna total result list, use VnaTotalResult ViewModel
+            List<VnaTotalResult> vnaTotalResultList = new List<VnaTotalResult>();
+            //vna total result length
             decimal totalLength = 0;
+            //vna fail result length
             decimal totalFailLength = 0;
-            //get total length
-            foreach (var item in totalRecordList)
+            //initialize chart
+            DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart");
+            if (dt.Rows.Count > 0)
             {
-                totalLength += item.length;
-            }
-            //get total fail length
-            foreach (var item in failRecordList)
-            {
-                totalFailLength += item.length;
-            }
-
-            //totalProductObj for X(product list), totalFailObj for Y(fail lenght list)
-            var totalProductObj = new string[totalRecordList.Count()];
-            var totalFailObj = new object[totalRecordList.Count()];
-            for (int i = 0; i < totalProductObj.Count(); i++)
-            {
-                totalProductObj[i] = totalRecordList[i].name;
-                var currentFail = failRecordList.Where(a => a.name == totalRecordList[i].name).SingleOrDefault();
-                if (currentFail == null)
+                //auto map dt to VnaTotalResult
+                DataTableReader dr = dt.CreateDataReader();
+                vnaTotalResultList = AutoMapper.Mapper.DynamicMap<IDataReader, List<VnaTotalResult>>(dr);
+                var totalResultList = vnaTotalResultList.Select(a => new
                 {
-                    totalFailObj[i] = 0;
-                }
-                else 
+                    TestTime = a.TestTime,
+                    ProductFullName = a.ProductFullName,
+                    DrillingCrew = a.DrillingCrew,
+                    WorkGroup = a.WorkGroup,
+                    Lengths = a.Lengths,
+                    TestResult = a.TestResult
+                }).Distinct().ToList();
+                //fail list
+                var failResultList = totalResultList.Where(a => a.TestResult == 1).ToList();
+                //get total length, unit m to km
+                totalLength = totalResultList.Sum(a => a.Lengths) / 1000;
+                //get total length, unit m to km
+                totalFailLength = failResultList.Sum(a => a.Lengths) / 1000;
+                var vnaFailGroupList = failResultList.GroupBy(a => a.ProductFullName).Select(b => new
                 {
-                    totalFailObj[i] = Convert.ToDecimal(currentFail.length);
+                    id = b.Key,
+                    length = b.Sum(c => Math.Abs(c.Lengths) / 1000)
+                }).OrderByDescending(d => d.length).ToList();
+                //totalXObj for X(X list), totalYObj for Y(Y is fail lenght list)
+                var totalXObj = new string[vnaFailGroupList.Count()];
+                var totalYObj = new object[vnaFailGroupList.Count()];
+                for (int i = 0; i < vnaFailGroupList.Count(); i++)
+                {
+                    totalXObj[i] = vnaFailGroupList[i].id;
+                    //vnaFailGroup length, unit m to km
+                    totalYObj[i] = Convert.ToDecimal(vnaFailGroupList[i].length);
                 }
+                chart
+                .SetTitle(new Title { Text = "物料名称不合格量统计" })
+                .SetXAxis(new XAxis
+                {
+                    Categories = totalXObj
+                })
+                .SetYAxis(new YAxis
+                {
+                    Title = new YAxisTitle { Text = "不合格量(km)" }
+                })
+                .SetSeries(new Series
+                {
+                    Name = "产品型号",
+                    Type = ChartTypes.Column,
+                    Data = new Data(totalYObj)
+                })
+                .SetTooltip(new Tooltip
+                {
+                    Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
+                });
             }
-
-            DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart")
-            .SetTitle(new Title { Text = "物料名称不合格量统计" })
-            .SetXAxis(new XAxis
-            {
-                Categories = totalProductObj
-            })
-            .SetYAxis(new YAxis
-            {
-                Title = new YAxisTitle { Text = "不合格量(km)" }
-            })
-            .SetSeries(new Series
-            {
-                Name = "产品型号",
-                Type = ChartTypes.Column,
-                Data = new Data(totalFailObj)
-            })
-            .SetTooltip(new Tooltip
-            {
-                Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
-            })
-            .SetPlotOptions(new PlotOptions() {
-                Pie = new PlotOptionsPie
-                {
-                    AllowPointSelect = true,
-                    Cursor = Cursors.Pointer,
-                    DataLabels = new PlotOptionsPieDataLabels
-                    {
-                        Color = ColorTranslator.FromHtml("#000000"),
-                        ConnectorColor = ColorTranslator.FromHtml("#000000"),
-                        Formatter = @"function(){return '<b>不合格量</b>:' + this.y + '<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
-                    }
-                }
-            });
             
             ViewBag.TotalLength = totalLength;
             ViewBag.TotalFailLength = totalFailLength;
@@ -597,95 +586,84 @@ namespace CamelDotNet.Controllers
                 }
             }
 
-            var totalRecord = db.VnaRecord.Where(a => a.NoStatistics == false).Where(a => a.TestTime <= testTimeStop && a.TestTime >= testTimeStart);
-            if (DrillingCrew != "")
-            {
-                totalRecord = totalRecord.Where(a => a.DrillingCrew.Contains(DrillingCrew));
-            }
-            if (WorkGroup != "")
-            {
-                totalRecord = totalRecord.Where(a => a.WorkGroup.Contains(WorkGroup));
-            }
-            if (ProductTypeId != 0)
-            {
-                totalRecord = totalRecord.Where(a => a.ProductTypeId == ProductTypeId);
-            }
-            //total record, length/1000 because InnerLength/OuterLength unit in database is m
-            var totalRecordList = totalRecord.GroupBy(a => a.DrillingCrew).Select(b => new
-            {
-                id = b.Key,
-                length = b.Sum(c => Math.Abs(c.InnerLength - c.OuterLength)/1000)
-            }).OrderByDescending(d => d.length).ToList();
-            //fail record, length/1000 because InnerLength/OuterLength unit in database is m
-            var failRecordList = totalRecord.Where(a => a.TestResult == true).GroupBy(a => a.DrillingCrew).Select(b => new
-            {
-                id = b.Key,
-                length = b.Sum(c => Math.Abs(c.InnerLength - c.OuterLength)/1000)
-            }).ToList();
+            //call procedure
+            string sql = "exec p_coaxialqualitystatTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup, @producttypeId";
+            SqlParameter[] param = new SqlParameter[5];
+            param[0] = new SqlParameter("@testtimestart", SqlDbType.DateTime2);
+            param[0].Value = testTimeStart;
+            param[1] = new SqlParameter("@testtimestop", SqlDbType.DateTime2);
+            param[1].Value = testTimeStop;
+            param[2] = new SqlParameter("@drillingcrew", SqlDbType.NVarChar);
+            param[2].Value = DrillingCrew;
+            param[3] = new SqlParameter("@workgroup", SqlDbType.NVarChar);
+            param[3].Value = WorkGroup;
+            param[4] = new SqlParameter("@producttypeId", SqlDbType.Int);
+            param[4].Value = ProductTypeId;
+            //get procedure result
+            DataTable dt = CommonController.GetDateTable(sql, param);
+            //init vna total result list, use VnaTotalResult ViewModel
+            List<VnaTotalResult> vnaTotalResultList = new List<VnaTotalResult>();
+            //vna total result length
             decimal totalLength = 0;
+            //vna fail result length
             decimal totalFailLength = 0;
-            //get total length
-            foreach (var item in totalRecordList)
+            //initialize chart
+            DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart");
+            if (dt.Rows.Count > 0)
             {
-                totalLength += item.length;
-            }
-            //get total fail length
-            foreach (var item in failRecordList)
-            {
-                totalFailLength += item.length;
-            }
-
-            //totalDrillingCrewObj for X(product list), totalFailObj for Y(fail lenght list)
-            var totalDrillingCrewObj = new string[totalRecordList.Count()];
-            var totalFailObj = new object[totalRecordList.Count()];
-            for (int i = 0; i < totalDrillingCrewObj.Count(); i++)
-            {
-                totalDrillingCrewObj[i] = totalRecordList[i].id;
-                var currentFail = failRecordList.Where(a => a.id == totalRecordList[i].id).SingleOrDefault();
-                if (currentFail == null)
+                //auto map dt to VnaTotalResult
+                DataTableReader dr = dt.CreateDataReader();
+                vnaTotalResultList = AutoMapper.Mapper.DynamicMap<IDataReader, List<VnaTotalResult>>(dr);
+                var totalResultList = vnaTotalResultList.Select(a => new
                 {
-                    totalFailObj[i] = 0;
-                }
-                else
+                    TestTime = a.TestTime,
+                    ProductFullName = a.ProductFullName,
+                    DrillingCrew = a.DrillingCrew,
+                    WorkGroup = a.WorkGroup,
+                    Lengths = a.Lengths,
+                    TestResult = a.TestResult
+                }).Distinct().ToList();
+                //fail list
+                var failResultList = totalResultList.Where(a => a.TestResult == 1).ToList();
+                //get total length, unit m to km
+                totalLength = totalResultList.Sum(a => a.Lengths) / 1000;
+                //get total length, unit m to km
+                totalFailLength = failResultList.Sum(a => a.Lengths) / 1000;
+                var vnaFailGroupList = failResultList.GroupBy(a => a.DrillingCrew).Select(b => new
                 {
-                    totalFailObj[i] = Convert.ToDecimal(currentFail.length);
+                    id = b.Key,
+                    length = b.Sum(c => Math.Abs(c.Lengths) / 1000)
+                }).OrderByDescending(d => d.length).ToList();
+                //totalXObj for X(X list), totalYObj for Y(Y is fail lenght list)
+                var totalXObj = new string[vnaFailGroupList.Count()];
+                var totalYObj = new object[vnaFailGroupList.Count()];
+                for (int i = 0; i < vnaFailGroupList.Count(); i++)
+                {
+                    totalXObj[i] = vnaFailGroupList[i].id;
+                    //vnaFailGroup length, unit m to km
+                    totalYObj[i] = Convert.ToDecimal(vnaFailGroupList[i].length);
                 }
+                chart
+                .SetTitle(new Title { Text = "机台不合格量统计" })
+                .SetXAxis(new XAxis
+                {
+                    Categories = totalXObj
+                })
+                .SetYAxis(new YAxis
+                {
+                    Title = new YAxisTitle { Text = "不合格量(km)" }
+                })
+                .SetSeries(new Series
+                {
+                    Name = "机台",
+                    Type = ChartTypes.Column,
+                    Data = new Data(totalYObj)
+                })
+                .SetTooltip(new Tooltip
+                {
+                    Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
+                });
             }
-
-            DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart")
-            .SetTitle(new Title { Text = "机台不合格量统计" })
-            .SetXAxis(new XAxis
-            {
-                Categories = totalDrillingCrewObj
-            })
-            .SetYAxis(new YAxis
-            {
-                Title = new YAxisTitle { Text = "不合格量(km)" }
-            })
-            .SetSeries(new Series
-            {
-                Name = "机台",
-                Type = ChartTypes.Column,
-                Data = new Data(totalFailObj)
-            })
-            .SetTooltip(new Tooltip
-            {
-                Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
-            })
-            .SetPlotOptions(new PlotOptions()
-            {
-                Pie = new PlotOptionsPie
-                {
-                    AllowPointSelect = true,
-                    Cursor = Cursors.Pointer,
-                    DataLabels = new PlotOptionsPieDataLabels
-                    {
-                        Color = ColorTranslator.FromHtml("#000000"),
-                        ConnectorColor = ColorTranslator.FromHtml("#000000"),
-                        Formatter = @"function(){return '<b>不合格量</b>:' + this.y + '<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
-                    }
-                }
-            });
 
             ViewBag.TotalLength = totalLength;
             ViewBag.TotalFailLength = totalFailLength;
@@ -724,98 +702,88 @@ namespace CamelDotNet.Controllers
                 }
             }
 
-            var totalRecord = db.VnaRecord.Where(a => a.NoStatistics == false).Where(a => a.TestTime <= testTimeStop && a.TestTime >= testTimeStart);
-            if (DrillingCrew != "")
-            {
-                totalRecord = totalRecord.Where(a => a.DrillingCrew.Contains(DrillingCrew));
-            }
-            if (WorkGroup != "")
-            {
-                totalRecord = totalRecord.Where(a => a.WorkGroup.Contains(WorkGroup));
-            }
-            if (ProductTypeId != 0)
-            {
-                totalRecord = totalRecord.Where(a => a.ProductTypeId == ProductTypeId);
-            }
-            //total record, length/1000 because InnerLength/OuterLength unit in database is m
-            var totalRecordList = totalRecord.GroupBy(a => a.WorkGroup).Select(b => new
-            {
-                id = b.Key,
-                length = b.Sum(c => Math.Abs(c.InnerLength - c.OuterLength)/1000)
-            }).OrderByDescending(d => d.length).ToList();
-            //fail record, length/1000 because InnerLength/OuterLength unit in database is m
-            var failRecordList = totalRecord.Where(a => a.TestResult == true).GroupBy(a => a.WorkGroup).Select(b => new
-            {
-                id = b.Key,
-                length = b.Sum(c => Math.Abs(c.InnerLength - c.OuterLength)/1000)
-            }).ToList();
+            //call procedure
+            string sql = "exec p_coaxialqualitystatTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup, @producttypeId";
+            SqlParameter[] param = new SqlParameter[5];
+            param[0] = new SqlParameter("@testtimestart", SqlDbType.DateTime2);
+            param[0].Value = testTimeStart;
+            param[1] = new SqlParameter("@testtimestop", SqlDbType.DateTime2);
+            param[1].Value = testTimeStop;
+            param[2] = new SqlParameter("@drillingcrew", SqlDbType.NVarChar);
+            param[2].Value = DrillingCrew;
+            param[3] = new SqlParameter("@workgroup", SqlDbType.NVarChar);
+            param[3].Value = WorkGroup;
+            param[4] = new SqlParameter("@producttypeId", SqlDbType.Int);
+            param[4].Value = ProductTypeId;
+            //get procedure result
+            DataTable dt = CommonController.GetDateTable(sql, param);
+            //init vna total result list, use VnaTotalResult ViewModel
+            List<VnaTotalResult> vnaTotalResultList = new List<VnaTotalResult>();
+            //vna total result length
             decimal totalLength = 0;
+            //vna fail result length
             decimal totalFailLength = 0;
-            //get total length
-            foreach (var item in totalRecordList)
+            //initialize chart
+            DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart");
+            if (dt.Rows.Count > 0)
             {
-                totalLength += item.length;
-            }
-            //get total fail length
-            foreach (var item in failRecordList)
-            {
-                totalFailLength += item.length;
-            }
-
-            //totalWorkGroupObj for X(product list), totalFailObj for Y(fail lenght list)
-            var totalWorkGroupObj = new string[totalRecordList.Count()];
-            var totalFailObj = new object[totalRecordList.Count()];
-            for (int i = 0; i < totalWorkGroupObj.Count(); i++)
-            {
-                totalWorkGroupObj[i] = totalRecordList[i].id;
-                var currentFail = failRecordList.Where(a => a.id == totalRecordList[i].id).SingleOrDefault();
-                if (currentFail == null)
+                //auto map dt to VnaTotalResult
+                DataTableReader dr = dt.CreateDataReader();
+                vnaTotalResultList = AutoMapper.Mapper.DynamicMap<IDataReader, List<VnaTotalResult>>(dr);
+                var totalResultList = vnaTotalResultList.Select(a => new
                 {
-                    totalFailObj[i] = 0;
-                }
-                else
+                    TestTime = a.TestTime,
+                    ProductFullName = a.ProductFullName,
+                    DrillingCrew = a.DrillingCrew,
+                    WorkGroup = a.WorkGroup,
+                    Lengths = a.Lengths,
+                    TestResult = a.TestResult
+                }).Distinct().ToList();
+                //fail list
+                var failResultList = totalResultList.Where(a => a.TestResult == 1).ToList();
+                //get total length, unit m to km
+                totalLength = totalResultList.Sum(a => a.Lengths) / 1000;
+                //get total length, unit m to km
+                totalFailLength = failResultList.Sum(a => a.Lengths) / 1000;
+                var vnaFailGroupList = failResultList.GroupBy(a => a.WorkGroup).Select(b => new
                 {
-                    totalFailObj[i] = Convert.ToDecimal(currentFail.length);
+                    id = b.Key,
+                    length = b.Sum(c => Math.Abs(c.Lengths) / 1000)
+                }).OrderByDescending(d => d.length).ToList();
+                //totalXObj for X(X list), totalYObj for Y(Y is fail lenght list)
+                var totalXObj = new string[vnaFailGroupList.Count()];
+                var totalYObj = new object[vnaFailGroupList.Count()];
+                for (int i = 0; i < vnaFailGroupList.Count(); i++)
+                {
+                    totalXObj[i] = vnaFailGroupList[i].id;
+                    //vnaFailGroup length, unit m to km
+                    totalYObj[i] = Convert.ToDecimal(vnaFailGroupList[i].length);
                 }
+                chart
+                .SetTitle(new Title { Text = "班组不合格量统计" })
+                .SetXAxis(new XAxis
+                {
+                    Categories = totalXObj
+                })
+                .SetYAxis(new YAxis
+                {
+                    Title = new YAxisTitle { Text = "不合格量(km)" }
+                })
+                .SetSeries(new Series
+                {
+                    Name = "班组",
+                    Type = ChartTypes.Column,
+                    Data = new Data(totalYObj)
+                })
+                .SetTooltip(new Tooltip
+                {
+                    Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
+                });
             }
-
-            DotNet.Highcharts.Highcharts chart = new DotNet.Highcharts.Highcharts("chart")
-            .SetTitle(new Title { Text = "班组不合格量统计" })
-            .SetXAxis(new XAxis
-            {
-                Categories = totalWorkGroupObj
-            })
-            .SetYAxis(new YAxis
-            {
-                Title = new YAxisTitle { Text = "不合格量(km)" }
-            })
-            .SetSeries(new Series
-            {
-                Name = "班组",
-                Type = ChartTypes.Column,
-                Data = new Data(totalFailObj)
-            })
-            .SetTooltip(new Tooltip
-            {
-                Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
-            })
-            .SetPlotOptions(new PlotOptions()
-            {
-                Pie = new PlotOptionsPie
-                {
-                    AllowPointSelect = true,
-                    Cursor = Cursors.Pointer,
-                    DataLabels = new PlotOptionsPieDataLabels
-                    {
-                        Color = ColorTranslator.FromHtml("#000000"),
-                        ConnectorColor = ColorTranslator.FromHtml("#000000"),
-                        Formatter = @"function(){return '<b>不合格量</b>:' + this.y + '<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
-                    }
-                }
-            });
 
             ViewBag.TotalLength = totalLength;
             ViewBag.TotalFailLength = totalFailLength;
+
 
             List<Highcharts> chartList = new List<Highcharts> { };
             chartList.Add(chart);

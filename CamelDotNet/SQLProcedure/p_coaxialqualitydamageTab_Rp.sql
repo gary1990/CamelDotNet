@@ -54,44 +54,62 @@ begin
 
 	insert into @vantotal
 		select 
-		ROW_NUMBER() OVER(ORDER BY a.Id) AS RowNumber,--为每条记录生成RowNumber，供循环使用
-		a.Id as VnaRecordId,
-		a.TestTime,
-		a.TestTime as TestDate,
-		a.DrillingCrew,
-		a.WorkGroup,
-		a.TestResult,
-		a.InnerLength,
-		ABS(a.OuterLength-a.InnerLength) as Lengths,
-		a.OuterLength,
-		a.TestStationId,
-		d.Name as TestStaion,
-		d.ProcessId as TestStationProcessId,
-		e.Name as TestStationProcess,
-		c.Id as ProductTypeId,
-		c.Price as Price,
-		c.Name+'#'+c.ModelName as ProductFullName, 
-		b.Number as SerialNum,
-		a.isGreenLight
-		from VnaRecord a
-		join SerialNumber b
-		on a.SerialNumberId = b.Id
-		join ProductType c
-		on a.ProductTypeId = c.Id
-		join TestStation d
-		on a.TestStationId = d.Id
-		join Process e
-		on d.ProcessId = e.Id
+			ROW_NUMBER() OVER(ORDER BY aa.VnaRecordId) AS RowNumber,--为每条记录生成RowNumber，供循环使用
+			aa.*
+		from
+		(
+			select 
+			a.Id as VnaRecordId,
+			a.TestTime,
+			a.TestTime as TestDate,
+			a.DrillingCrew,
+			a.WorkGroup,
+			a.TestResult,
+			a.InnerLength,
+			ABS(a.OuterLength-a.InnerLength) as Lengths,
+			a.OuterLength,
+			a.TestStationId,
+			d.Name as TestStaion,
+			d.ProcessId as TestStationProcessId,
+			e.Name as TestStationProcess,
+			c.Id as ProductTypeId,
+			c.Price as Price,
+			c.Name+'#'+c.ModelName as ProductFullName, 
+			b.Number as SerialNum,
+			a.isGreenLight as IsGreenLight
+			from VnaRecord a
+			join SerialNumber b
+			on a.SerialNumberId = b.Id
+			join ProductType c
+			on a.ProductTypeId = c.Id
+			join TestStation d
+			on a.TestStationId = d.Id
+			join Process e
+			on d.ProcessId = e.Id
 
-		where 
-		a.NoStatistics = 0 --wipe out NoStatistics
-		and a.reTest = 0 --wipe out Tested
-		and a.TestTime >= @testtimestart
-		and a.TestTime <= @testtimestop
-		and a.DrillingCrew like '%' + IsNull(@drillingcrew,a.DrillingCrew) +'%'
-		and a.WorkGroup like '%' + IsNull(@workgroup,a.workgroup) + '%'
-		and a.ProductTypeId = ISNULL(@producttypeId,a.ProductTypeId)
-		order by a.TestTime desc
+			where 
+			a.NoStatistics = 0 --wipe out NoStatistics
+			and a.TestTime >= @testtimestart
+			and a.TestTime <= @testtimestop
+			and a.DrillingCrew like '%' + IsNull(@drillingcrew,a.DrillingCrew) +'%'
+			and a.WorkGroup like '%' + IsNull(@workgroup,a.workgroup) + '%'
+			and a.ProductTypeId = ISNULL(@producttypeId,a.ProductTypeId)
+		) aa
+		where aa.TestTime in
+		(
+			select 
+			MAX(a.TestTime) as TestTime
+			from 
+			VnaRecord a
+			where 
+			a.NoStatistics = 0 --wipe out NoStatistics
+			and a.TestTime >= @testtimestart
+			and a.TestTime <= @testtimestop
+			and a.DrillingCrew like '%' + IsNull(@drillingcrew,a.DrillingCrew) +'%'
+			and a.WorkGroup like '%' + IsNull(@workgroup,a.workgroup) + '%'
+			and a.ProductTypeId = ISNULL(@producttypeId,a.ProductTypeId)
+			group by a.SerialNumberId
+		)
 
 	insert into @qulityloss
 		select 
@@ -427,7 +445,7 @@ begin
 	insert into @van_fail_detail_result_group
 		select count(*) as MatchedNum,a.VnaRecordId, a.LossPercent,a.FormularLevel,a.TestItemId,a.TestItemName,a.VnaProcessId,a.VnaProcessName,a.QualityLossId,a.QualityLossPercntId,a.FreqFormularR,a.ValueFormularR
 		from @van_fail_detail_result a 
-		where a.PerResult = 0 
+		where (a.PerResult = 0 or a.PerResult is null)
 		group by a.VnaRecordId, a.LossPercent,a.FormularLevel,a.TestItemId,a.TestItemName,a.VnaProcessId,a.VnaProcessName,a.QualityLossId,a.QualityLossPercntId,a.FreqFormularR,a.ValueFormularR
 
 	insert into @van_fail_detail_result_per_group

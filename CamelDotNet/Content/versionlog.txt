@@ -168,4 +168,29 @@ notice
 			(1,150),
 			(1,151),
 			(1,152),
-			(1,153)
+			(1,153),
+			(3,153),
+			(4,153),
+			(5,153),
+			(6,153)
+	4.update 阻抗落差1，阻抗落差2 wrong data
+		select a.XValue 
+		from VnaTestItemPerRecord a
+		join VnaTestItemRecord b
+		on a.VnaTestItemRecordId = b.Id
+		join TestItem c
+		on b.TestItemId = c.Id
+		and c.Name in ('阻抗落差1','阻抗落差2')
+
+		update VnaTestItemPerRecord
+		set XValue = XValue/1000000000
+		where
+		Id in
+		(select a.Id 
+		from VnaTestItemPerRecord a
+		join VnaTestItemRecord b
+		on a.VnaTestItemRecordId = b.Id
+		join TestItem c
+		on b.TestItemId = c.Id
+		and c.Name in ('阻抗落差1','阻抗落差2')
+		and a.XValue > 0.001)

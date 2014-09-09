@@ -1,5 +1,12 @@
 ﻿@model List<DotNet.Highcharts.Highcharts>
 
+@if (ViewBag.ErrorMsg != null)
+{
+    <div>
+        @Html.Raw(ViewBag.ErrorMsg)
+    </div>
+}
+
 @{
     decimal totalDamage = Convert.ToDecimal(ViewBag.TotalDamage);
 }
