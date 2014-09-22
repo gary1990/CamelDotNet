@@ -28,7 +28,7 @@ begin
 		ProductFullName nvarchar(100), 
 		SerialNum nvarchar(100),
 		VnaRecordId_Result int,
-		LossPercent_Result decimal(8,2),
+		LossPercent_Result decimal(11,5),
 		TestItemId_Fail int,
 		TestItemName_Fail nvarchar(50),
 		ProcessId_Fail int,

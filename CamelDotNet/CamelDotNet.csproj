@@ -281,6 +281,10 @@
     <Compile Include="Migrations\201406300853117_201406301652_add_ProductType_Price.Designer.cs">
       <DependentUpon>201406300853117_201406301652_add_ProductType_Price.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409220258529_update_QualitylossPercent_precision.cs" />
+    <Compile Include="Migrations\201409220258529_update_QualitylossPercent_precision.Designer.cs">
+      <DependentUpon>201409220258529_update_QualitylossPercent_precision.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Base\BaseModel.cs" />
@@ -1087,6 +1091,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406300853117_201406301652_add_ProductType_Price.resx">
       <DependentUpon>201406300853117_201406301652_add_ProductType_Price.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409220258529_update_QualitylossPercent_precision.resx">
+      <DependentUpon>201409220258529_update_QualitylossPercent_precision.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

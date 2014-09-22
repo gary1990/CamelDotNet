@@ -62,7 +62,7 @@ namespace CamelDotNet.Models.DAL
             modelBuilder.Entity<VnaTestItemPerRecord>().Property(a => a.YValue).HasPrecision(30, 15);
             modelBuilder.Entity<VnaTestItemPerRecord>().Property(a => a.RValue).HasPrecision(30, 15);
 
-            modelBuilder.Entity<QualityLossPercent>().Property(a => a.LossValue).HasPrecision(6,2);
+            modelBuilder.Entity<QualityLossPercent>().Property(a => a.LossValue).HasPrecision(11,5);
             modelBuilder.Entity<ProductType>().Property(a => a.Price).HasPrecision(8,2);
         }
     }

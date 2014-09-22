@@ -370,7 +370,7 @@ namespace CamelDotNet.Controllers
                         //write totalFailLength
                         totalRow.CreateCell(5).SetCellValue(failTotalLength.ToString());
                         //write totalPercent
-                        totalRow.CreateCell(6).SetCellValue(Math.Round((failTotalLength / totalLength)*100, 2, MidpointRounding.ToEven).ToString() + "%");
+                        totalRow.CreateCell(6).SetCellValue(Math.Round(((totalLength - failTotalLength) / totalLength) * 100, 2, MidpointRounding.ToEven).ToString() + "%");
                         //write totalPerFailLength
                         foreach (var qualityLossGroup in qualityLossGroupList)
                         {

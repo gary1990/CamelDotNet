@@ -45,7 +45,7 @@ begin
 		QualityLossRef nvarchar(50),
 		ValueFormularR nvarchar(50),
 		ValueFormular nvarchar(50),
-		LossPercent decimal(8,2),
+		LossPercent decimal(11,5),
 		QualityLossId int,
 		QualityLossPercntId int,
 		FormularLevel int
@@ -295,7 +295,7 @@ begin
 		YValue decimal(18,2),
 		FreqFormular nvarchar(255),
 		ValueFormular nvarchar(255),
-		LossPercent decimal(18,2),
+		LossPercent decimal(18,5),
 		FormularLevel int,
 		VnaRecordId int,
 		TestItemId int,
@@ -321,7 +321,7 @@ begin
 		declare @yvalue_result decimal(18,2)
 		declare @fformular_result nvarchar(255)
 		declare @vformular_result nvarchar(255)
-		declare @losspercent_result decimal(18,2)
+		declare @losspercent_result decimal(18,5)
 		declare @formularlevel_result int
 		declare @vnarecordid_result int
 		declare @testitemid_result int
@@ -381,7 +381,7 @@ begin
 	declare @vnatotal_result table
 	(
 		VnaRecordId_Result int,
-		LossPercent_Result decimal(8,2),
+		LossPercent_Result decimal(11,5),
 		TestItemId_Fail int,
 		TestItemName_Fail nvarchar(50),
 		ProcessId_Fail int,
@@ -396,7 +396,7 @@ begin
 	(
 		MatchedNum int,
 		VnaRecordId int, 
-		LossPercent decimal(8,2),
+		LossPercent decimal(11,5),
 		FormularLevel int,
 		TestItemId int,
 		TestItemName nvarchar(50),
@@ -412,7 +412,7 @@ begin
 	(
 		MatchedNum int,
 		VnaRecordId int, 
-		LossPercent decimal(8,2),
+		LossPercent decimal(11,5),
 		FormularLevel int,
 		TestItemId int,
 		TestItemName nvarchar(50),
@@ -428,7 +428,7 @@ begin
 	(
 		MatchedNum int,
 		VnaRecordId int, 
-		LossPercent decimal(8,2),
+		LossPercent decimal(11,5),
 		FormularLevel int,
 		TestItemId int,
 		TestItemName nvarchar(50),

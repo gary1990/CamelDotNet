@@ -182,55 +182,55 @@ begin
 					when aaa.TestitemName = '回波损耗2' and aaa.RowNumber = 4 then ABS(aaa.YValue) else null
 				end RLTwoCfour,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 100000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 100000000 then ABS(aaa.RValue) else null
 				end Attenuation100,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 150000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 150000000 then ABS(aaa.RValue) else null
 				end Attenuation150,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 200000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 200000000 then ABS(aaa.RValue) else null
 				end Attenuation200,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 280000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 280000000 then ABS(aaa.RValue) else null
 				end Attenuation280,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 450000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 450000000 then ABS(aaa.RValue) else null
 				end Attenuation450,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 800000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 800000000 then ABS(aaa.RValue) else null
 				end Attenuation800,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 900000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 900000000 then ABS(aaa.RValue) else null
 				end Attenuation900,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 1000000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 1000000000 then ABS(aaa.RValue) else null
 				end Attenuation1000,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 1500000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 1500000000 then ABS(aaa.RValue) else null
 				end Attenuation1500,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 1800000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 1800000000 then ABS(aaa.RValue) else null
 				end Attenuation1800,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 2000000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 2000000000 then ABS(aaa.RValue) else null
 				end Attenuation2000,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 2200000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 2200000000 then ABS(aaa.RValue) else null
 				end Attenuation2200,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 2400000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 2400000000 then ABS(aaa.RValue) else null
 				end Attenuation2400,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 2500000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 2500000000 then ABS(aaa.RValue) else null
 				end Attenuation2500,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 3000000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 3000000000 then ABS(aaa.RValue) else null
 				end Attenuation3000,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 3400000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 3400000000 then ABS(aaa.RValue) else null
 				end Attenuation3400,
 				case 
-					when aaa.TestitemName = '衰减' and aaa.XValue = 4000000000 then ABS(aaa.YValue) else null
+					when aaa.TestitemName = '衰减' and aaa.XValue = 4000000000 then ABS(aaa.RValue) else null
 				end Attenuation4000,
 				case
 					when aaa.TestitemName = '时域阻抗' and aaa.RowNumber = 1 then ABS(aaa.RValue) else null

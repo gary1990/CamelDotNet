@@ -476,7 +476,14 @@ namespace CamelDotNet.Controllers
                             int cellNum = qualityLossGroup.CellNum;
                             totalRow.CreateCell(cellNum).SetCellValue(qualityLossGroup.PerFailLengthTotal.ToString());
                             //write per qualityLoss group total loss money's percent in  totalLossMoney
-                            totalRowPercent.CreateCell(cellNum).SetCellValue(Math.Round(qualityLossGroup.PerFailLengthTotal / totalLossMoney, 2, MidpointRounding.ToEven).ToString());
+                            if (totalLossMoney != 0)
+                            {
+                                totalRowPercent.CreateCell(cellNum).SetCellValue(Math.Round(qualityLossGroup.PerFailLengthTotal / totalLossMoney, 2, MidpointRounding.ToEven).ToString());
+                            }
+                            else 
+                            {
+                                totalRowPercent.CreateCell(cellNum).SetCellValue("0");
+                            }
                         }
                         //add title to per qualityLoss group total loss money's percent in  totalLossMoney
                         totalRowPercent.CreateCell(7 + departmentGroupListCount).SetCellValue("损失占比");

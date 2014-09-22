@@ -2,10 +2,12 @@
 @{
     string returnUrl = Url.Action((((RouteValueDictionary)(ViewBag.RV))["returnRoot"]).ToString(), (RouteValueDictionary)(ViewBag.RV));
     var curUserRole = ViewBag.CurUserRole;
+    //generate fakeContainer's height, not fixed, because a small number of record may cause several column can not display
+    var fakeContainerHeight = Model.Count() * 65 + "px";
 }
 
 @Html.Partial("PageLink")
-<div class="fakeContainer">
+<div class="fakeContainer" style="height:@fakeContainerHeight;">
     <table id="freezonTable">
         <thead>
             <tr>
@@ -200,7 +202,6 @@
         padding: 0px;
         border: none;
         width: 100%;
-        height: 300px;
         overflow: hidden;
     }
 </style>

@@ -1,5 +1,9 @@
 ﻿@model List<ProductQualityIndex>
 
+@{
+    //generate fakeContainer's height, not fixed, because a small number of record may cause several column can not display
+    var fakeContainerHeight = (Model.Count() > 25 ? 650 : Model.Count() * 25) + "px";
+}
 @if (ViewBag.ErrorMsg != null)
 {
     <div>
@@ -8,7 +12,7 @@
 }
 @if(@Model.Count() != 0)
 {
-    <div class="fakeContainer">
+    <div class="fakeContainer" style="height:@fakeContainerHeight;">
         <table id="freezonTable">
             <thead>
                 <tr>
@@ -202,7 +206,6 @@
         padding: 0px;
         border: none;
         width: 100%;
-        height: 300px;
         overflow: hidden;
     }
 

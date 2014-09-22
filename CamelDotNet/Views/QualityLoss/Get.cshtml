@@ -46,7 +46,7 @@
                         string qualityLossStr = "";
                         foreach (var qualityLossPercent in qualityLossPercents)
                         {
-                            qualityLossStr += "[频点:" + qualityLossPercent.QualityLossFreq + ",值:" + qualityLossPercent.QualityLossRef + ", 质量损失比:" + qualityLossPercent.LossValue + "]<br/>";
+                            qualityLossStr += "[频点:" + qualityLossPercent.QualityLossFreq + ",值:" + qualityLossPercent.QualityLossRef + ", 质量损失比:" + string.Format("{0:0.#####}", qualityLossPercent.LossValue) + "]<br/>";
                         }
                     }
                     @Html.Raw(qualityLossStr)

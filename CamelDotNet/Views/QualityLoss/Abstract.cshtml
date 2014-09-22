@@ -22,7 +22,7 @@
         <tr>
             <td>@Html.DisplayFor(model => qualityLossPercent.QualityLossFreq)</td>
             <td>@Html.DisplayFor(model => qualityLossPercent.QualityLossRef)</td>
-            <td>@Html.DisplayFor(model => qualityLossPercent.LossValue)</td>
+            <td>@string.Format("{0:0.#####}", qualityLossPercent.LossValue)</td>
         </tr>
     }
 </table>
