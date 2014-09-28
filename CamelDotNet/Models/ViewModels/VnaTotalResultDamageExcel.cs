@@ -7,7 +7,6 @@ namespace CamelDotNet.Models.ViewModels
 {
     public class VnaTotalResultDamageExcel
     {
-        public DateTime TestDate { get; set; }
         public string DrillingCrew { get; set; }
         public string WorkGroup { get; set; }
         public string ProductFullName { get; set; }

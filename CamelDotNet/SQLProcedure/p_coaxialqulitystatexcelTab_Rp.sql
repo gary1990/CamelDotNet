@@ -42,18 +42,16 @@ begin
 		exec p_coaxialqualitystatTab_Rp @testtimestart, @testtimestop, @drillingcrew, @workgroup, @producttypeId
 	declare @vantotal_result_failgroup table
 	(
-		TestDate date,
 		DrillingCrew nvarchar(50),
 		WorkGroup nvarchar(50),
 		ProductFullName nvarchar(100),
-		TotalLength decimal(8,2),
-		TotalFailLength decimal(8,2),
+		TotalLength decimal(18,5),
+		TotalFailLength decimal(18,5),
 		PassPercent decimal(5,2),
 		Price decimal(8,2)
 	)
 	insert into @vantotal_result_failgroup
 		select
-			aa.TestDate,
 			aa.DrillingCrew,
 			aa.WorkGroup,
 			aa.ProductFullName,
@@ -65,7 +63,6 @@ begin
 		(
 			--TotalFail group length
 			select 
-				a.TestDate,
 				a.DrillingCrew,
 				a.WorkGroup,
 				a.ProductFullName,
@@ -73,30 +70,27 @@ begin
 				SUM(a.Lengths)/1000 as TotalFailLength --unit to km
 			from @vantotal_result a
 			where a.TestResult = 1
-			group by a.TestDate,a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.Price
+			group by a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.Price
 		) aa
 		--Total group length
 		join
 		(
 			select 
-				a.TestDate,
 				a.DrillingCrew,
 				a.WorkGroup,
 				a.ProductFullName,
 				a.Price,
 				SUM(a.Lengths)/1000 as TotalLength -- unit to km
 			from @vantotal_result a
-			group by a.TestDate,a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.Price
+			group by a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.Price
 		) aaa
-		on aa.TestDate = aaa.TestDate
-		and	aa.DrillingCrew = aaa.DrillingCrew
+		on aa.DrillingCrew = aaa.DrillingCrew
 		and aa.WorkGroup = aaa.WorkGroup
 		and aa.ProductFullName = aaa.ProductFullName
 		and aa.Price = aaa.Price
 
 	--vantotal_result_failgroup_formular
 	select 
-		a.TestDate,
 		a.DrillingCrew,
 		a.WorkGroup,
 		a.ProductFullName,
@@ -114,7 +108,6 @@ begin
 	from
 	(
 		select 
-			a.TestDate,
 			a.DrillingCrew,
 			a.WorkGroup,
 			a.ProductFullName,
@@ -125,14 +118,13 @@ begin
 			a.QualityLossPercentId_Result,
 			a.FreqFormularR,
 			a.ValueFormularR,
-			CAST(SUM(a.Lengths)/1000 as decimal(8,2)) as PerFailLength -- unit to km
+			CAST(SUM(a.Lengths)/1000 as decimal(18,5)) as PerFailLength -- unit to km
 		from @vantotal_result a where a.TestResult = 1
-		group by a.TestDate,a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.TestItemName_Fail,a.ProcessName_Fail,a.QualityLossId_Result,a.QualityLossPercentId_Result,a.FreqFormularR,a.ValueFormularR
+		group by a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.TestItemName_Fail,a.ProcessName_Fail,a.QualityLossId_Result,a.QualityLossPercentId_Result,a.FreqFormularR,a.ValueFormularR
 	) a
 	join
 	@vantotal_result_failgroup b
-	on a.TestDate = b.TestDate
-	and a.DrillingCrew = b.DrillingCrew
+	on a.DrillingCrew = b.DrillingCrew
 	and a.WorkGroup = b.WorkGroup
 	and a.ProductFullName = b.ProductFullName
 end

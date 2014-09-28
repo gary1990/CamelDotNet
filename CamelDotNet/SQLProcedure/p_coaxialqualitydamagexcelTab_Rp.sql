@@ -48,12 +48,11 @@ begin
 	
 	declare @vantotal_result_failgroup table
 	(
-		TestDate date,
 		DrillingCrew nvarchar(50),
 		WorkGroup nvarchar(50),
 		ProductFullName nvarchar(100),
-		TotalLength decimal(8,2),
-		TotalFailLength decimal(8,2),
+		TotalLength decimal(18,5),
+		TotalFailLength decimal(18,5),
 		PassPercent decimal(5,2),
 		Price decimal(8,2)
 	)
@@ -61,7 +60,6 @@ begin
 	insert into @vantotal_result_failgroup
 		--取得两个分组的分组各项及两个分组的长度合计，并计算出合格率
 		select
-			aa.TestDate,
 			aa.DrillingCrew,
 			aa.WorkGroup,
 			aa.ProductFullName,
@@ -73,36 +71,32 @@ begin
 		(
 			--根据日期、机台、班组、物料名称分组，并取得（结果中不合格或放行为合格）分组各项及分组的长度合计（换算为km）
 			select 
-				a.TestDate,
 				a.DrillingCrew,
 				a.WorkGroup,
 				a.ProductFullName,
 				a.Price,
 				SUM(a.Lengths)/1000 as TotalFailLength --unit to km
 			from @vantotal_demage_result a where a.TestResult = 1 or (a.TestResult = 0 and a.IsGreenLight = 1)--pass result,but is green light
-			group by a.TestDate,a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.Price
+			group by a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.Price
 		) aa
 		join
 		(
 			--根据日期、机台、班组、物料名称分组，并取得分组各项及分组的长度合计（换算为km）
 			select 
-				a.TestDate,
 				a.DrillingCrew,
 				a.WorkGroup,
 				a.ProductFullName,
 				a.Price,
 				SUM(a.Lengths)/1000 as TotalLength -- unit to km
 			from @vantotal_demage_result a
-			group by a.TestDate,a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.Price
+			group by a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.Price
 		) aaa
-		on aa.TestDate = aaa.TestDate
-		and	aa.DrillingCrew = aaa.DrillingCrew
+		on aa.DrillingCrew = aaa.DrillingCrew
 		and aa.WorkGroup = aaa.WorkGroup
 		and aa.ProductFullName = aaa.ProductFullName
 		and aa.Price = aaa.Price
 
 	select 
-		aa.TestDate,
 		aa.DrillingCrew,
 		aa.WorkGroup,
 		aa.ProductFullName,
@@ -126,7 +120,6 @@ begin
 	from
 	(
 		select 
-			a.TestDate,
 			a.DrillingCrew,
 			a.WorkGroup,
 			a.ProductFullName,
@@ -137,18 +130,17 @@ begin
 			a.QualityLossPercentId_Result,
 			a.FreqFormularR,
 			a.ValueFormularR,
-			CAST(SUM(a.Lengths)/100 as decimal(8,2)) as PerLossLength,
+			CAST(SUM(a.Lengths)/1000 as decimal(18,5)) as PerLossLength,
 
 			a.DepartmentId,
 			a.DepartmentName,
 			CAST(SUM(a.LossMoney) as decimal(18,2)) as PerLossMoney
 		from @vantotal_demage_result a where a.TestResult = 1 or (a.TestResult = 0 and a.IsGreenLight = 1)--pass result,but is green light
-		group by a.TestDate,a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.TestItemName_Fail,a.ProcessName_Fail,a.QualityLossId_Result,a.QualityLossPercentId_Result,a.FreqFormularR,a.ValueFormularR,a.DepartmentId,a.DepartmentName,a.LossMoney
+		group by a.DrillingCrew,a.WorkGroup,a.ProductFullName,a.TestItemName_Fail,a.ProcessName_Fail,a.QualityLossId_Result,a.QualityLossPercentId_Result,a.FreqFormularR,a.ValueFormularR,a.DepartmentId,a.DepartmentName,a.LossMoney
 	) aa
 	join
 	@vantotal_result_failgroup bb
-	on aa.TestDate = bb.TestDate
-	and aa.DrillingCrew = bb.DrillingCrew
+	on aa.DrillingCrew = bb.DrillingCrew
 	and aa.WorkGroup = bb.WorkGroup
 	and aa.ProductFullName = bb.ProductFullName
 end

@@ -156,7 +156,8 @@ namespace CamelDotNet.Controllers
                                 ValueFormularR = ac.Key.ValueFormularR,
                                 Demage = ac.Sum(acs => acs.LossMoney)
                             }).ToList();
-                        vnaFailGroupList = vnaFailGroupList.OrderBy(a => a.ProcessName).ThenBy(a => a.TestItemName).ThenBy(a => a.FreqFormularR).ThenBy(a => a.ValueFormularR).ToList();
+                        //vnaFailGroupList = vnaFailGroupList.OrderBy(a => a.ProcessName).ThenBy(a => a.TestItemName).ThenBy(a => a.FreqFormularR).ThenBy(a => a.ValueFormularR).ToList();
+                        vnaFailGroupList = vnaFailGroupList.OrderByDescending(a => a.Demage).ToList();
                         //totalXObj for X(X list), totalYObj for Y(Y is fail lenght list)
                         var totalXObj = new string[vnaFailGroupList.Count()];
                         var totalYObj = new object[vnaFailGroupList.Count()];
@@ -260,10 +261,9 @@ namespace CamelDotNet.Controllers
                         IRow freqFormularRow = worksheet.CreateRow(2);
                         //title Row start from 4, also used for valueFormular
                         IRow titleRow = worksheet.CreateRow(3);
-                        titleRow.CreateCell(0).SetCellValue("日期");
-                        titleRow.CreateCell(1).SetCellValue("机台");
-                        titleRow.CreateCell(2).SetCellValue("班组");
-                        titleRow.CreateCell(3).SetCellValue("物料名称");
+                        titleRow.CreateCell(0).SetCellValue("机台");
+                        titleRow.CreateCell(1).SetCellValue("班组");
+                        titleRow.CreateCell(2).SetCellValue("物料名称");
                         //get Department List
                         var departmentList = vnaTotalResultDamageExcelList.Where(a => a.DepartmentName != null)
                             .GroupBy(a => new
@@ -277,8 +277,8 @@ namespace CamelDotNet.Controllers
                             }).OrderBy(p => p.DepartmentId).ToList();
                         //initialize departmentGroupList, use DepartmentGroup ViewModel to add row and cell for each department
                         List<DepartmentGroup> departmentGroupList = new List<DepartmentGroup>() { };
-                        //cell start from 5
-                        int departmentGroupCellStart = 4;
+                        //cell start from 4
+                        int departmentGroupCellStart = 3;
                         foreach (var department in departmentList)
                         {
                             DepartmentGroup departmentGroup = new DepartmentGroup()
@@ -299,10 +299,10 @@ namespace CamelDotNet.Controllers
                         //get departmentGroupList count, used to add this count while write other titles after departmentGroup
                         int departmentGroupListCount = departmentGroupList.Count();
                         //write 总产量（KM）,总不合格量（KM）,合格率,单价 title, after depaetmentGroupList
-                        titleRow.CreateCell(4 + departmentGroupListCount).SetCellValue("总产量（KM）");
-                        titleRow.CreateCell(5 + departmentGroupListCount).SetCellValue("总不合格量（KM）");
-                        titleRow.CreateCell(6 + departmentGroupListCount).SetCellValue("合格率");
-                        titleRow.CreateCell(7 + departmentGroupListCount).SetCellValue("单价");
+                        titleRow.CreateCell(3 + departmentGroupListCount).SetCellValue("总产量（KM）");
+                        titleRow.CreateCell(4 + departmentGroupListCount).SetCellValue("总不合格量（KM）");
+                        titleRow.CreateCell(5 + departmentGroupListCount).SetCellValue("合格率");
+                        titleRow.CreateCell(6 + departmentGroupListCount).SetCellValue("单价");
                         //get QualityLoss List
                         var qualityLossList = vnaTotalResultDamageExcelList
                             .GroupBy(a => new
@@ -325,8 +325,8 @@ namespace CamelDotNet.Controllers
                             }).OrderBy(p => p.ProcessName).ThenBy(p => p.TestItemName).ThenBy(p => p.QualityLossId).ThenBy(p => p.QualityLossPercentId).ToList();
                         //initialize qualityLossGroupList, use QualityLossGroup ViewModel to add row and cell for each qualityLoss
                         List<QualityLossGroup> qualityLossGroupList = new List<QualityLossGroup>() { };
-                        //cell start from cell 9 + departmentGroup.Count()
-                        int qualityLossGroupStart = 8 + departmentGroupList.Count();
+                        //cell start from cell 8 + departmentGroup.Count()
+                        int qualityLossGroupStart = 7 + departmentGroupList.Count();
                         foreach (var qualityLoss in qualityLossList)
                         {
                             QualityLossGroup qualityLossGroup = new QualityLossGroup
@@ -384,14 +384,13 @@ namespace CamelDotNet.Controllers
                                 departmentGroup.TotalLossMoney = departmentGroup.TotalLossMoney + vnaTotalResultDamageExcel.PerLossMoney;
                             }
 
-                            string testDate = vnaTotalResultDamageExcel.TestDate.ToString();
                             string drillingCrew = vnaTotalResultDamageExcel.DrillingCrew;
                             string workGroup = vnaTotalResultDamageExcel.WorkGroup;
                             string productFullName = vnaTotalResultDamageExcel.ProductFullName;
                             int qualityLossId = vnaTotalResultDamageExcel.QualityLossId_Result;
                             int qualityLossPecentId = vnaTotalResultDamageExcel.QualityLossPercentId_Result;
                             //new tempGroup, stored distinct(testDate + drillingCrew + workGroup + productFullName)
-                            string tempGroup = testDate + drillingCrew + workGroup + productFullName;
+                            string tempGroup =  drillingCrew + workGroup + productFullName;
                             //if not contains in tempGroupList
                             if (!tempGroupList.Contains(tempGroup))
                             {
@@ -400,21 +399,20 @@ namespace CamelDotNet.Controllers
                                 failTotalLength = failTotalLength + vnaTotalResultDamageExcel.TotalFailLength;
                                 //create new Row
                                 IRow newRow = worksheet.CreateRow(startRow);
-                                //write general info, from cell 1-3 is 日期、机台、班组、物料名称
-                                newRow.CreateCell(0).SetCellValue(testDate);
-                                newRow.CreateCell(1).SetCellValue(drillingCrew);
-                                newRow.CreateCell(2).SetCellValue(workGroup);
-                                newRow.CreateCell(3).SetCellValue(productFullName);
+                                //write general info, from cell 1-3 is 机台、班组、物料名称
+                                newRow.CreateCell(0).SetCellValue(drillingCrew);
+                                newRow.CreateCell(1).SetCellValue(workGroup);
+                                newRow.CreateCell(2).SetCellValue(productFullName);
                                 //write PerLossMoney to cunrrent DepartmentGroup
                                 if (departmentGroup != null)
                                 {
                                     newRow.CreateCell(departmentGroup.CellNum).SetCellValue(vnaTotalResultDamageExcel.PerLossMoney.ToString());
                                 }
                                 //write general info, from cell （4-7）+ departmentGroupListCount is 总产量、总不合格量、合格率、单价
-                                newRow.CreateCell(4 + departmentGroupListCount).SetCellValue(vnaTotalResultDamageExcel.TotalLength.ToString());
-                                newRow.CreateCell(5 + departmentGroupListCount).SetCellValue(vnaTotalResultDamageExcel.TotalFailLength.ToString());
-                                newRow.CreateCell(6 + departmentGroupListCount).SetCellValue(vnaTotalResultDamageExcel.PassPercent.ToString() + "%");
-                                newRow.CreateCell(7 + departmentGroupListCount).SetCellValue(vnaTotalResultDamageExcel.Price.ToString());
+                                newRow.CreateCell(3 + departmentGroupListCount).SetCellValue(vnaTotalResultDamageExcel.TotalLength.ToString());
+                                newRow.CreateCell(4 + departmentGroupListCount).SetCellValue(vnaTotalResultDamageExcel.TotalFailLength.ToString());
+                                newRow.CreateCell(5 + departmentGroupListCount).SetCellValue(vnaTotalResultDamageExcel.PassPercent.ToString() + "%");
+                                newRow.CreateCell(6 + departmentGroupListCount).SetCellValue(vnaTotalResultDamageExcel.Price.ToString());
                                 //write PerLossMoney to cunrrent QualityLossGroup
                                 newRow.CreateCell(qualityLossGroup.CellNum).SetCellValue(vnaTotalResultDamageExcel.PerLossMoney.ToString());
                                 //add current group to tempGroupList
@@ -465,11 +463,11 @@ namespace CamelDotNet.Controllers
                             totalRow.CreateCell(cellNum).SetCellValue(departmentGroup.TotalLossMoney.ToString());
                         }
                         //write totalLength（总产量）
-                        totalRow.CreateCell(4 + departmentGroupListCount).SetCellValue(totalLength.ToString());
+                        totalRow.CreateCell(3 + departmentGroupListCount).SetCellValue(totalLength.ToString());
                         //write totalFailLength（总不合格量）
-                        totalRow.CreateCell(5 + departmentGroupListCount).SetCellValue(failTotalLength.ToString());
+                        totalRow.CreateCell(4 + departmentGroupListCount).SetCellValue(failTotalLength.ToString());
                         //write totalPercent（合格率）
-                        totalRow.CreateCell(6 + departmentGroupListCount).SetCellValue(Math.Round(((totalLength-failTotalLength) / totalLength) * 100, 2, MidpointRounding.ToEven).ToString() + "%");
+                        totalRow.CreateCell(5 + departmentGroupListCount).SetCellValue(Math.Round(((totalLength-failTotalLength) / totalLength) * 100, 2, MidpointRounding.ToEven).ToString() + "%");
                         //write totalPerFailLength(in fact it is total loss money)
                         foreach (var qualityLossGroup in qualityLossGroupList)
                         {
@@ -486,10 +484,10 @@ namespace CamelDotNet.Controllers
                             }
                         }
                         //add title to per qualityLoss group total loss money's percent in  totalLossMoney
-                        totalRowPercent.CreateCell(7 + departmentGroupListCount).SetCellValue("损失占比");
+                        totalRowPercent.CreateCell(6 + departmentGroupListCount).SetCellValue("损失占比");
                         //add department group list total loss money
-                        totalRowPercent.CreateCell(4).SetCellValue("各部门损失合计");
-                        totalRowPercent.CreateCell(5).SetCellValue(departmentGrouplistTotalLossMoney.ToString());
+                        totalRowPercent.CreateCell(3).SetCellValue("各部门损失合计");
+                        totalRowPercent.CreateCell(4).SetCellValue(departmentGrouplistTotalLossMoney.ToString());
                         //add total Loss Money
                         totalRowPercent.CreateCell(0).SetCellValue("总损失");
                         totalRowPercent.CreateCell(1).SetCellValue(totalLossMoney.ToString());
@@ -625,6 +623,7 @@ namespace CamelDotNet.Controllers
                         p.DepartmentName,
                         p.DepartmentLossMoney
                     }).Distinct().ToList();
+                departmentsList = departmentsList.OrderByDescending(a => a.DepartmentLossMoney).ToList();
                 //department count
                 int dptCount = departmentsList.Count();
                 //depatment categories,stroed department name
@@ -842,7 +841,8 @@ namespace CamelDotNet.Controllers
                             DrillingCrew = ac.Key.DrillingCrew,
                             Demage = ac.Sum(acs => acs.LossMoney)
                         }).ToList();
-                    vnaFailGroupList = vnaFailGroupList.OrderBy(a => a.DrillingCrew).ToList();
+                    //vnaFailGroupList = vnaFailGroupList.OrderBy(a => a.DrillingCrew).ToList();
+                    vnaFailGroupList = vnaFailGroupList.OrderByDescending(a => a.Demage).ToList();
                     //totalXObj for X(X list), totalYObj for Y(Y is fail lenght list)
                     var totalXObj = new string[vnaFailGroupList.Count()];
                     var totalYObj = new object[vnaFailGroupList.Count()];
@@ -986,7 +986,8 @@ namespace CamelDotNet.Controllers
                             WorkGroup = ac.Key.WorkGroup,
                             Demage = ac.Sum(acs => acs.LossMoney)
                         }).ToList();
-                    vnaFailGroupList = vnaFailGroupList.OrderBy(a => a.WorkGroup).ToList();
+                    //vnaFailGroupList = vnaFailGroupList.OrderBy(a => a.WorkGroup).ToList();
+                    vnaFailGroupList = vnaFailGroupList.OrderByDescending(a => a.Demage).ToList();
                     //totalXObj for X(X list), totalYObj for Y(Y is fail lenght list)
                     var totalXObj = new string[vnaFailGroupList.Count()];
                     var totalYObj = new object[vnaFailGroupList.Count()];
@@ -1017,7 +1018,22 @@ namespace CamelDotNet.Controllers
                     .SetTooltip(new Tooltip
                     {
                         Formatter = @"function(){return '<b>损失金额</b>:' + this.y + '元<br/>' + '<b>损失比例</b>: ' + Highcharts.numberFormat((this.y/" + totalDamage + ")*100) + '%'}"
-                    });
+                    })
+                    .SetPlotOptions(new PlotOptions
+                    {
+                        Column = new PlotOptionsColumn
+                        {
+                            Cursor = Cursors.Pointer,
+                            DataLabels = new PlotOptionsColumnDataLabels
+                            {
+                                Enabled = true,
+                                Color = Color.FromName("colors[0]"),
+                                Formatter = "function() { return this.y + ' (' + Highcharts.numberFormat((this.y/" + totalDamage + ")*100) + '%)'; }",
+                                Style = "fontWeight: 'bold'"
+                            }
+                        }
+                    })
+                    .AddJavascripVariable("colors", "Highcharts.getOptions().colors");
                 }
             }
 

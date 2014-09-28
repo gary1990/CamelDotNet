@@ -161,7 +161,8 @@ namespace CamelDotNet.Controllers
                                 ValueFormularR = ac.Key.ValueFormularR,
                                 Length = ac.Sum(acs => acs.Lengths)
                             }).ToList();
-                        vnaFailGroupList = vnaFailGroupList.OrderBy(a => a.ProcessName).ThenBy(a => a.TestItemName).ThenBy(a => a.FreqFormularR).ThenBy(a => a.ValueFormularR).ToList();
+                        //vnaFailGroupList = vnaFailGroupList.OrderBy(a => a.ProcessName).ThenBy(a => a.TestItemName).ThenBy(a => a.FreqFormularR).ThenBy(a => a.ValueFormularR).ToList();
+                        vnaFailGroupList = vnaFailGroupList.OrderByDescending(a => a.Length).ToList();
                         //totalXObj for X(X list), totalYObj for Y(Y is fail lenght list)
                         var totalXObj = new string[vnaFailGroupList.Count()];
                         var totalYObj = new object[vnaFailGroupList.Count()];
@@ -202,7 +203,22 @@ namespace CamelDotNet.Controllers
                         .SetTooltip(new Tooltip
                         {
                             Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + failLength + ")*100) + '%'}"
-                        });
+                        })
+                        .SetPlotOptions(new PlotOptions
+                        {
+                            Column = new PlotOptionsColumn
+                            {
+                                Cursor = Cursors.Pointer,
+                                DataLabels = new PlotOptionsColumnDataLabels
+                                {
+                                    Enabled = true,
+                                    Color = Color.FromName("colors[0]"),
+                                    Formatter = "function() { return this.y + ' (' + Highcharts.numberFormat((this.y/" + failLength + ")*100) + '%)'; }",
+                                    Style = "fontWeight: 'bold'"
+                                }
+                            }
+                        })
+                        .AddJavascripVariable("colors", "Highcharts.getOptions().colors");
                     }
                 }
             }
@@ -250,14 +266,13 @@ namespace CamelDotNet.Controllers
                         IRow freqFormularRow = worksheet.CreateRow(2);
                         //title Row start from 4, also used for valueFormular
                         IRow titleRow = worksheet.CreateRow(3);
-                        titleRow.CreateCell(0).SetCellValue("日期");
-                        titleRow.CreateCell(1).SetCellValue("机台");
-                        titleRow.CreateCell(2).SetCellValue("班组");
-                        titleRow.CreateCell(3).SetCellValue("物料名称");
-                        titleRow.CreateCell(4).SetCellValue("总产量（KM）");
-                        titleRow.CreateCell(5).SetCellValue("总不合格量（KM）");
-                        titleRow.CreateCell(6).SetCellValue("合格率");
-                        titleRow.CreateCell(7).SetCellValue("单价");
+                        titleRow.CreateCell(0).SetCellValue("机台");
+                        titleRow.CreateCell(1).SetCellValue("班组");
+                        titleRow.CreateCell(2).SetCellValue("物料名称");
+                        titleRow.CreateCell(3).SetCellValue("总产量（KM）");
+                        titleRow.CreateCell(4).SetCellValue("总不合格量（KM）");
+                        titleRow.CreateCell(5).SetCellValue("合格率");
+                        titleRow.CreateCell(6).SetCellValue("单价");
                         //get QualityLoss List
                         var qualityLossList = vnaTotalResultExcelList
                             .GroupBy(a => new
@@ -280,8 +295,8 @@ namespace CamelDotNet.Controllers
                             }).OrderBy(p => p.ProcessName).ThenBy(p => p.TestItemName).ThenBy(p => p.QualityLossId).ThenBy(p => p.QualityLossPercentId).ToList();
                         //initialize qualityLossGroupList, use QualityLossGroup ViewModel to add row and cell for each qualityLoss
                         List<QualityLossGroup> qualityLossGroupList = new List<QualityLossGroup> { };
-                        //cell start from cell 9
-                        int cellPostionStart = 8;
+                        //cell start from cell 8
+                        int cellPostionStart = 7;
                         foreach(var qualityLoss in qualityLossList)
                         {
                             QualityLossGroup qualityLossGroup = new QualityLossGroup
@@ -323,14 +338,13 @@ namespace CamelDotNet.Controllers
                             //add PerFailLength to current qualityLossGroup
                             qualityLossGroup.PerFailLengthTotal = qualityLossGroup.PerFailLengthTotal + vnaTotalResultExcel.PerFailLength;
 
-                            string testDate = vnaTotalResultExcel.TestDate.ToString();
                             string drillingCrew = vnaTotalResultExcel.DrillingCrew;
                             string workGroup = vnaTotalResultExcel.WorkGroup;
                             string productFullName = vnaTotalResultExcel.ProductFullName;
                             int qualityLossId = vnaTotalResultExcel.QualityLossId_Result;
                             int qualityLossPecentId = vnaTotalResultExcel.QualityLossPercentId_Result;
-                            //new tempGroup, stored distinct(testDate + drillingCrew + workGroup + productFullName)
-                            string tempGroup = testDate + drillingCrew + workGroup + productFullName;
+                            //new tempGroup, stored distinct(drillingCrew + workGroup + productFullName)
+                            string tempGroup =  drillingCrew + workGroup + productFullName;
                             //if not contains in tempGroupList
                             if (!tempGroupList.Contains(tempGroup))
                             {
@@ -339,15 +353,14 @@ namespace CamelDotNet.Controllers
                                 failTotalLength = failTotalLength + vnaTotalResultExcel.TotalFailLength;
                                 //create new Row
                                 IRow newRow = worksheet.CreateRow(startRow);
-                                //write general info, from cell 1 to cell 8
-                                newRow.CreateCell(0).SetCellValue(testDate);
-                                newRow.CreateCell(1).SetCellValue(drillingCrew);
-                                newRow.CreateCell(2).SetCellValue(workGroup);
-                                newRow.CreateCell(3).SetCellValue(productFullName);
-                                newRow.CreateCell(4).SetCellValue(vnaTotalResultExcel.TotalLength.ToString());
-                                newRow.CreateCell(5).SetCellValue(vnaTotalResultExcel.TotalFailLength.ToString());
-                                newRow.CreateCell(6).SetCellValue(vnaTotalResultExcel.PassPercent.ToString() + "%");
-                                newRow.CreateCell(7).SetCellValue(vnaTotalResultExcel.Price.ToString());
+                                //write general info, from cell 1 to cell 7
+                                newRow.CreateCell(0).SetCellValue(drillingCrew);
+                                newRow.CreateCell(1).SetCellValue(workGroup);
+                                newRow.CreateCell(2).SetCellValue(productFullName);
+                                newRow.CreateCell(3).SetCellValue(vnaTotalResultExcel.TotalLength.ToString());
+                                newRow.CreateCell(4).SetCellValue(vnaTotalResultExcel.TotalFailLength.ToString());
+                                newRow.CreateCell(5).SetCellValue(vnaTotalResultExcel.PassPercent.ToString() + "%");
+                                newRow.CreateCell(6).SetCellValue(vnaTotalResultExcel.Price.ToString());
                                 //write Length to selected cell
                                 newRow.CreateCell(qualityLossGroup.CellNum).SetCellValue(vnaTotalResultExcel.PerFailLength.ToString());
                                 //add current group to tempGroupList
@@ -366,11 +379,11 @@ namespace CamelDotNet.Controllers
                         IRow totalRow = worksheet.CreateRow(startRow + 1);
                         totalRow.CreateCell(0).SetCellValue("汇总");
                         //write totalLength
-                        totalRow.CreateCell(4).SetCellValue(totalLength.ToString());
+                        totalRow.CreateCell(3).SetCellValue(totalLength.ToString());
                         //write totalFailLength
-                        totalRow.CreateCell(5).SetCellValue(failTotalLength.ToString());
+                        totalRow.CreateCell(4).SetCellValue(failTotalLength.ToString());
                         //write totalPercent
-                        totalRow.CreateCell(6).SetCellValue(Math.Round(((totalLength - failTotalLength) / totalLength) * 100, 2, MidpointRounding.ToEven).ToString() + "%");
+                        totalRow.CreateCell(5).SetCellValue(Math.Round(((totalLength - failTotalLength) / totalLength) * 100, 2, MidpointRounding.ToEven).ToString() + "%");
                         //write totalPerFailLength
                         foreach (var qualityLossGroup in qualityLossGroupList)
                         {
@@ -546,7 +559,22 @@ namespace CamelDotNet.Controllers
                 .SetTooltip(new Tooltip
                 {
                     Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
-                });
+                })
+                .SetPlotOptions(new PlotOptions
+                {
+                    Column = new PlotOptionsColumn
+                    {
+                        Cursor = Cursors.Pointer,
+                        DataLabels = new PlotOptionsColumnDataLabels
+                        {
+                            Enabled = true,
+                            Color = Color.FromName("colors[0]"),
+                            Formatter = "function() { return this.y + ' (' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%)'; }",
+                            Style = "fontWeight: 'bold'"
+                        }
+                    }
+                })
+                .AddJavascripVariable("colors", "Highcharts.getOptions().colors");
             }
             
             ViewBag.TotalLength = totalLength;
@@ -639,9 +667,11 @@ namespace CamelDotNet.Controllers
                 var totalYObj = new object[vnaFailGroupList.Count()];
                 for (int i = 0; i < vnaFailGroupList.Count(); i++)
                 {
-                    totalXObj[i] = vnaFailGroupList[i].id;
                     //vnaFailGroup length, unit m to km
                     totalYObj[i] = Convert.ToDecimal(vnaFailGroupList[i].length);
+                    //get current DrillingCrew's total length
+                    var currGroupTotalLength = totalResultList.Where(a => a.DrillingCrew == vnaFailGroupList[i].id).Sum(b => Math.Abs(b.Lengths) / 1000);
+                    totalXObj[i] = vnaFailGroupList[i].id + "<br/>机台不合格率：" + (Convert.ToDecimal(vnaFailGroupList[i].length) / currGroupTotalLength * 100).ToString("#.##") + "%";
                 }
                 chart
                 .SetTitle(new Title { Text = "机台不合格量统计" })
@@ -661,8 +691,23 @@ namespace CamelDotNet.Controllers
                 })
                 .SetTooltip(new Tooltip
                 {
-                    Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
-                });
+                    Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>总不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
+                })
+                .SetPlotOptions(new PlotOptions
+                {
+                    Column = new PlotOptionsColumn
+                    {
+                        Cursor = Cursors.Pointer,
+                        DataLabels = new PlotOptionsColumnDataLabels
+                        {
+                            Enabled = true,
+                            Color = Color.FromName("colors[0]"),
+                            Formatter = "function() { return this.y + ' (' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%)'; }",
+                            Style = "fontWeight: 'bold'"
+                        }
+                    }
+                })
+                .AddJavascripVariable("colors", "Highcharts.getOptions().colors");
             }
 
             ViewBag.TotalLength = totalLength;
@@ -755,9 +800,11 @@ namespace CamelDotNet.Controllers
                 var totalYObj = new object[vnaFailGroupList.Count()];
                 for (int i = 0; i < vnaFailGroupList.Count(); i++)
                 {
-                    totalXObj[i] = vnaFailGroupList[i].id;
                     //vnaFailGroup length, unit m to km
                     totalYObj[i] = Convert.ToDecimal(vnaFailGroupList[i].length);
+                    //get current WorkGroup's total length
+                    var currGroupTotalLength = totalResultList.Where(a => a.WorkGroup == vnaFailGroupList[i].id).Sum(b => Math.Abs(b.Lengths) / 1000);
+                    totalXObj[i] = vnaFailGroupList[i].id + "<br/>班组不合格率：" + (Convert.ToDecimal(vnaFailGroupList[i].length) / currGroupTotalLength * 100).ToString("#.##") + "%";
                 }
                 chart
                 .SetTitle(new Title { Text = "班组不合格量统计" })
@@ -777,8 +824,23 @@ namespace CamelDotNet.Controllers
                 })
                 .SetTooltip(new Tooltip
                 {
-                    Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
-                });
+                    Formatter = @"function(){return '<b>不合格量</b>:' + this.y + 'km<br/>' + '<b>总不合格比</b>: ' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%'}"
+                })
+                .SetPlotOptions(new PlotOptions
+                {
+                    Column = new PlotOptionsColumn
+                    {
+                        Cursor = Cursors.Pointer,
+                        DataLabels = new PlotOptionsColumnDataLabels
+                        {
+                            Enabled = true,
+                            Color = Color.FromName("colors[0]"),
+                            Formatter = "function() { return this.y + ' (' + Highcharts.numberFormat((this.y/" + totalFailLength + ")*100) + '%)'; }",
+                            Style = "fontWeight: 'bold'"
+                        }
+                    }
+                })
+                .AddJavascripVariable("colors", "Highcharts.getOptions().colors");
             }
 
             ViewBag.TotalLength = totalLength;

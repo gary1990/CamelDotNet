@@ -16,6 +16,9 @@
                 @Html.DisplayNameFor(model => model.VnaRecord.ReelNumber)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.VnaRecord.WorkGroup)
+            </th>
+            <th>
                 长度（Km）
             </th>
             <th>
@@ -79,6 +82,9 @@
                 </td>
                 <td rowspan="2">
                     @Html.DisplayFor(modelItem => item.VnaRecord.ReelNumber)
+                </td>
+                <td rowspan="2">
+                    @Html.DisplayFor(modelItem => item.VnaRecord.WorkGroup)
                 </td>
                 <td rowspan="2">
                     @Math.Abs((item.VnaRecord.InnerLength - item.VnaRecord.OuterLength) / 1000)
