@@ -1065,6 +1065,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Content\ImportTemplate\" />
     <Folder Include="Content\UploadedFolder\Template\" />
+    <Folder Include="UploadFile\" />
     <Folder Include="Views\Api\" />
     <Folder Include="Views\Client\" />
     <Folder Include="Views\Department\" />
