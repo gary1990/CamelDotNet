@@ -18,10 +18,12 @@
                 <tr>
                     <th>缆号</th>
                     <th>盘号</th>
+                    <th>长度</th>
                     <th colspan="4">驻波1</th>
                     <th colspan="4">驻波2</th>
                     <th colspan="4">回波损耗1</th>
                     <th colspan="4">回波损耗2</th>
+                    <th>时域阻抗</th>
                     <th>衰减100M</th>
                     <th>衰减150M</th>
                     <th>衰减200M</th>
@@ -39,7 +41,6 @@
                     <th>衰减3000M</th>
                     <th>衰减3400M</th>
                     <th>衰减4000M</th>
-                    <th>时域阻抗</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,14 +49,15 @@
                     <tr>
                         <td>@item.SerialNumber</td>
                         <td>@item.ReelNumber</td>
-                        <td>@item.SWOneCone</td>
-                        <td>@item.SWOneCtwo</td>
-                        <td>@item.SWOneCthree</td>
-                        <td>@item.SWOneCfour</td>
-                        <td>@item.SWTwoCone</td>
-                        <td>@item.SWTwoCtwo</td>
-                        <td>@item.SWTwoCthree</td>
-                        <td>@item.SWTwoCfour</td>
+                        <td>@item.TotalLength</td>
+                        <td>@string.Format("{0:0.##}", item.SWOneConeX / 1000000) /@item.SWOneCone </td>
+                        <td>@string.Format("{0:0.##}", item.SWOneCtwoX / 1000000) /@item.SWOneCtwo </td>
+                        <td>@string.Format("{0:0.##}", item.SWOneCthreeX / 1000000) /@item.SWOneCthree </td>
+                        <td>@string.Format("{0:0.##}", item.SWOneCfourX / 1000000) /@item.SWOneCfour </td>
+                        <td>@string.Format("{0:0.##}", item.SWTwoConeX / 1000000) /@item.SWTwoCone </td>
+                        <td>@string.Format("{0:0.##}", item.SWTwoCtwoX / 1000000) /@item.SWTwoCtwo </td>
+                        <td>@string.Format("{0:0.##}", item.SWTwoCthreeX / 1000000) /@item.SWTwoCthree </td>
+                        <td>@string.Format("{0:0.##}", item.SWTwoCfourX / 1000000) /@item.SWTwoCfour </td>
                         <td>@item.RLOneCone</td>
                         <td>@item.RLOneCtwo</td>
                         <td>@item.RLOneCthree</td>
@@ -64,6 +66,7 @@
                         <td>@item.RLTwoCtwo</td>
                         <td>@item.RLTwoCthree</td>
                         <td>@item.RLTwoCfour</td>
+                        <td>@item.TDI</td>
                         <td>@item.Attenuation100</td>
                         <td>@item.Attenuation150</td>
                         <td>@item.Attenuation200</td>
@@ -81,11 +84,10 @@
                         <td>@item.Attenuation3000</td>
                         <td>@item.Attenuation3400</td>
                         <td>@item.Attenuation4000</td>
-                        <td>@item.TDI</td>
                     </tr>
                 }
                 <tr>
-                    <td colspan="2">最大值</td>
+                    <td colspan="3">最大值</td>
                     <td>@Model.Max(a => a.SWOneCone)</td>
                     <td>@Model.Max(a => a.SWOneCtwo)</td>
                     <td>@Model.Max(a => a.SWOneCthree)</td>
@@ -102,6 +104,7 @@
                     <td>@Model.Max(a => a.RLTwoCtwo)</td>
                     <td>@Model.Max(a => a.RLTwoCthree)</td>
                     <td>@Model.Max(a => a.RLTwoCfour)</td>
+                    <td>@Model.Max(a => a.TDI)</td>
                     <td>@Model.Max(a => a.Attenuation100)</td>
                     <td>@Model.Max(a => a.Attenuation150)</td>
                     <td>@Model.Max(a => a.Attenuation200)</td>
@@ -119,10 +122,9 @@
                     <td>@Model.Max(a => a.Attenuation3000)</td>
                     <td>@Model.Max(a => a.Attenuation3400)</td>
                     <td>@Model.Max(a => a.Attenuation4000)</td>
-                    <td>@Model.Max(a => a.TDI)</td>
                 </tr>
                 <tr>
-                    <td colspan="2">最小值</td>
+                    <td colspan="3">最小值</td>
                     <td>@Model.Min(a => a.SWOneCone)</td>
                     <td>@Model.Min(a => a.SWOneCtwo)</td>
                     <td>@Model.Min(a => a.SWOneCthree)</td>
@@ -139,6 +141,7 @@
                     <td>@Model.Min(a => a.RLTwoCtwo)</td>
                     <td>@Model.Min(a => a.RLTwoCthree)</td>
                     <td>@Model.Min(a => a.RLTwoCfour)</td>
+                    <td>@Model.Min(a => a.TDI)</td>
                     <td>@Model.Min(a => a.Attenuation100)</td>
                     <td>@Model.Min(a => a.Attenuation150)</td>
                     <td>@Model.Min(a => a.Attenuation200)</td>
@@ -156,10 +159,9 @@
                     <td>@Model.Min(a => a.Attenuation3000)</td>
                     <td>@Model.Min(a => a.Attenuation3400)</td>
                     <td>@Model.Min(a => a.Attenuation4000)</td>
-                    <td>@Model.Min(a => a.TDI)</td>
                 </tr>
                 <tr>
-                    <td colspan="2">平均值</td>
+                    <td colspan="3">平均值</td>
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.SWOneCone))</td>
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.SWOneCtwo))</td>
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.SWOneCthree))</td>
@@ -176,6 +178,7 @@
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.RLTwoCtwo))</td>
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.RLTwoCthree))</td>
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.RLTwoCfour))</td>
+                    <td>@string.Format("{0:0.##}", Model.Average(a => a.TDI))</td>
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation100))</td>
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation150))</td>
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation200))</td>
@@ -193,7 +196,6 @@
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation3000))</td>
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation3400))</td>
                     <td>@string.Format("{0:0.##}", Model.Average(a => a.Attenuation4000))</td>
-                    <td>@string.Format("{0:0.##}", Model.Average(a => a.TDI))</td>
                 </tr>
             </tbody>
         </table>

@@ -10,13 +10,22 @@ namespace CamelDotNet.Models.ViewModels
         public int VnaRecordId { get; set; }
         public string SerialNumber { get; set; }
         public string ReelNumber { get; set; }
+        public decimal? TotalLength  { get; set; }
+        public decimal? SWOneConeX { get; set; }
         public decimal? SWOneCone { get; set; }
+        public decimal? SWOneCtwoX { get; set; }
         public decimal? SWOneCtwo { get; set; }
+        public decimal? SWOneCthreeX { get; set; }
         public decimal? SWOneCthree { get; set; }
+        public decimal? SWOneCfourX { get; set; }
         public decimal? SWOneCfour { get; set; }
+        public decimal? SWTwoConeX { get; set; }
         public decimal? SWTwoCone { get; set; }
+        public decimal? SWTwoCtwoX { get; set; }
         public decimal? SWTwoCtwo { get; set; }
+        public decimal? SWTwoCthreeX { get; set; }
         public decimal? SWTwoCthree { get; set; }
+        public decimal? SWTwoCfourX { get; set; }
         public decimal? SWTwoCfour { get; set; }
         public decimal? RLOneCone { get; set; }
         public decimal? RLOneCtwo { get; set; }

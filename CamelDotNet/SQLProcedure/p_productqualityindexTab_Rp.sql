@@ -24,13 +24,16 @@ begin
 	(
 		VnaRecordId int,
 		SerialNumber nvarchar(100),
-		ReelNumber nvarchar(50)
+		ReelNumber nvarchar(50),
+		TotalLength decimal(18,2)
 	)
+
 	insert into @VnaInfo
 		select 
 		a.Id as VnaRecordId,
 		b.Number as SerialNumber,
-		a.ReelNumber
+		a.ReelNumber as ReelNumber,
+		ABS(a.InnerLength-a.OuterLength) as TotalLength
 		from VnaRecord a
 		join SerialNumber b
 		on
@@ -54,13 +57,22 @@ begin
 		VnaRecordId int,
 		SerialNumber nvarchar(100),
 		ReelNumber nvarchar(50),
+		TotalLength decimal(18,2),
+		SWOneConeX decimal(18,2),
 		SWOneCone decimal(18,2),
+		SWOneCtwoX decimal(18,2),
 		SWOneCtwo decimal(18,2),
+		SWOneCthreeX decimal(18,2),
 		SWOneCthree decimal(18,2),
+		SWOneCfourX decimal(18,2),
 		SWOneCfour decimal(18,2),
+		SWTwoConeX decimal(18,2),
 		SWTwoCone decimal(18,2),
+		SWTwoCtwoX decimal(18,2),
 		SWTwoCtwo decimal(18,2),
+		SWTwoCthreeX decimal(18,2),
 		SWTwoCthree decimal(18,2),
+		SWTwoCfourX decimal(18,2),
 		SWTwoCfour decimal(18,2),
 		RLOneCone decimal(18,2),
 		RLOneCtwo decimal(18,2),
@@ -95,13 +107,22 @@ begin
 			aaaa.VnaRecordId, 
 			aaaa.SerialNumber,
 			aaaa.ReelNumber,
+			aaaa.TotalLength,
+			MAX(aaaa.SWOneConeX) AS SWOneConeX,
 			MAX(aaaa.SWOneCone) AS SWOneCone,
+			MAX(aaaa.SWOneCtwoX) AS SWOneCtwoX,
 			MAX(aaaa.SWOneCtwo) AS SWOneCtwo,
+			MAX(aaaa.SWOneCthreeX) AS SWOneCthreeX,
 			MAX(aaaa.SWOneCthree) AS SWOneCthree,
+			MAX(aaaa.SWOneCfourX) AS SWOneCfourX,
 			MAX(aaaa.SWOneCfour) AS SWOneCfour,
+			MAX(aaaa.SWTwoConeX) AS SWTwoConeX,
 			MAX(aaaa.SWTwoCone) AS SWTwoCone,
+			MAX(aaaa.SWTwoCtwoX) AS SWTwoCtwoX,
 			MAX(aaaa.SWTwoCtwo) AS SWTwoCtwo,
+			MAX(aaaa.SWTwoCthreeX) AS SWTwoCthreeX,
 			MAX(aaaa.SWTwoCthree) AS SWTwoCthree,
+			MAX(aaaa.SWTwoCfourX) AS SWTwoCfourX,
 			MAX(aaaa.SWTwoCfour) AS SWTwoCfour,
 			MAX(aaaa.RLOneCone) AS RLOneCone,
 			MAX(aaaa.RLOneCtwo) AS RLOneCtwo,
@@ -132,28 +153,52 @@ begin
 		from
 		(
 			select 
-				aaa.VnaRecordId,aaa.SerialNumber,aaa.ReelNumber,
+				aaa.VnaRecordId,aaa.SerialNumber,aaa.ReelNumber,aaa.TotalLength,
+				case
+					when aaa.TestitemName = '驻波1' and aaa.RowNumber = 1 then ABS(aaa.XValue) else null
+				end SWOneConeX,
 				case
 					when aaa.TestitemName = '驻波1' and aaa.RowNumber = 1 then ABS(aaa.YValue) else null
 				end SWOneCone,
 				case
+					when aaa.TestitemName = '驻波1' and aaa.RowNumber = 2 then ABS(aaa.XValue) else null
+				end SWOneCtwoX,
+				case
 					when aaa.TestitemName = '驻波1' and aaa.RowNumber = 2 then ABS(aaa.YValue) else null
 				end SWOneCtwo,
+				case
+					when aaa.TestitemName = '驻波1' and aaa.RowNumber = 3 then ABS(aaa.XValue) else null
+				end SWOneCthreeX,
 				case
 					when aaa.TestitemName = '驻波1' and aaa.RowNumber = 3 then ABS(aaa.YValue) else null
 				end SWOneCthree,
 				case
+					when aaa.TestitemName = '驻波1' and aaa.RowNumber = 4 then ABS(aaa.XValue) else null
+				end SWOneCfourX,
+				case
 					when aaa.TestitemName = '驻波1' and aaa.RowNumber = 4 then ABS(aaa.YValue) else null
 				end SWOneCfour,
+				case
+					when aaa.TestitemName = '驻波2' and aaa.RowNumber = 1 then ABS(aaa.XValue) else null
+				end SWTwoConeX,
 				case
 					when aaa.TestitemName = '驻波2' and aaa.RowNumber = 1 then ABS(aaa.YValue) else null
 				end SWTwoCone,
 				case
+					when aaa.TestitemName = '驻波2' and aaa.RowNumber = 2 then ABS(aaa.XValue) else null
+				end SWTwoCtwoX,
+				case
 					when aaa.TestitemName = '驻波2' and aaa.RowNumber = 2 then ABS(aaa.YValue) else null
 				end SWTwoCtwo,
 				case
+					when aaa.TestitemName = '驻波2' and aaa.RowNumber = 3 then ABS(aaa.XValue) else null
+				end SWTwoCthreeX,
+				case
 					when aaa.TestitemName = '驻波2' and aaa.RowNumber = 3 then ABS(aaa.YValue) else null
 				end SWTwoCthree,
+				case
+					when aaa.TestitemName = '驻波2' and aaa.RowNumber = 4 then ABS(aaa.XValue) else null
+				end SWTwoCfourX,
 				case
 					when aaa.TestitemName = '驻波2' and aaa.RowNumber = 4 then ABS(aaa.YValue) else null
 				end SWTwoCfour,
@@ -247,6 +292,7 @@ begin
 						a.VnaRecordId,
 						a.SerialNumber,
 						a.ReelNumber,
+						a.TotalLength,
 						b.Id as VnaTestItemRecordId,
 						b.TestItemId,
 						c.Name as TestitemName
@@ -261,9 +307,9 @@ begin
 				join VnaTestItemPerRecord bb
 				on aa.VnaTestItemRecordId = bb.VnaTestItemRecordId
 			)aaa
-			group by aaa.VnaRecordId,aaa.SerialNumber,aaa.ReelNumber,aaa.TestitemName,aaa.XValue,aaa.RowNumber,aaa.YValue,aaa.RValue
+			group by aaa.VnaRecordId,aaa.SerialNumber,aaa.ReelNumber,aaa.TotalLength,aaa.TestitemName,aaa.XValue,aaa.RowNumber,aaa.YValue,aaa.RValue
 		) aaaa
-		group by aaaa.VnaRecordId, aaaa.SerialNumber,aaaa.ReelNumber
+		group by aaaa.VnaRecordId, aaaa.SerialNumber,aaaa.ReelNumber, aaaa.TotalLength
 
 	select * from @VnaResult
 
