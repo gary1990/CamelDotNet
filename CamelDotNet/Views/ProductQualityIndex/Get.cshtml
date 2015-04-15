@@ -50,14 +50,14 @@
                         <td>@item.SerialNumber</td>
                         <td>@item.ReelNumber</td>
                         <td>@item.TotalLength</td>
-                        <td>@string.Format("{0:0.##}", item.SWOneConeX / 1000000) /@item.SWOneCone </td>
-                        <td>@string.Format("{0:0.##}", item.SWOneCtwoX / 1000000) /@item.SWOneCtwo </td>
-                        <td>@string.Format("{0:0.##}", item.SWOneCthreeX / 1000000) /@item.SWOneCthree </td>
-                        <td>@string.Format("{0:0.##}", item.SWOneCfourX / 1000000) /@item.SWOneCfour </td>
-                        <td>@string.Format("{0:0.##}", item.SWTwoConeX / 1000000) /@item.SWTwoCone </td>
-                        <td>@string.Format("{0:0.##}", item.SWTwoCtwoX / 1000000) /@item.SWTwoCtwo </td>
-                        <td>@string.Format("{0:0.##}", item.SWTwoCthreeX / 1000000) /@item.SWTwoCthree </td>
-                        <td>@string.Format("{0:0.##}", item.SWTwoCfourX / 1000000) /@item.SWTwoCfour </td>
+                        <td align="right">@string.Format("{0:0.##}", item.SWOneConeX / 1000000) /@item.SWOneCone </td>
+                        <td align="right">@string.Format("{0:0.##}", item.SWOneCtwoX / 1000000) /@item.SWOneCtwo </td>
+                        <td align="right">@string.Format("{0:0.##}", item.SWOneCthreeX / 1000000) /@item.SWOneCthree </td>
+                        <td align="right">@string.Format("{0:0.##}", item.SWOneCfourX / 1000000) /@item.SWOneCfour </td>
+                        <td align="right">@string.Format("{0:0.##}", item.SWTwoConeX / 1000000) /@item.SWTwoCone </td>
+                        <td align="right">@string.Format("{0:0.##}", item.SWTwoCtwoX / 1000000) /@item.SWTwoCtwo </td>
+                        <td align="right">@string.Format("{0:0.##}", item.SWTwoCthreeX / 1000000) /@item.SWTwoCthree </td>
+                        <td align="right">@string.Format("{0:0.##}", item.SWTwoCfourX / 1000000) /@item.SWTwoCfour </td>
                         <td>@item.RLOneCone</td>
                         <td>@item.RLOneCtwo</td>
                         <td>@item.RLOneCthree</td>
@@ -213,6 +213,9 @@
 
     th {
         border: 1px solid #c3c3c3;
+    }
+    td[align="right"] {
+        text-align: right;
     }
 </style>
 <script type="text/javascript">
