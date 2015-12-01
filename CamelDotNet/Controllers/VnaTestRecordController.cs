@@ -13,6 +13,7 @@ using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using System.Data.Entity.Validation;
 
 namespace CamelDotNet.Controllers
 {
@@ -383,8 +384,19 @@ namespace CamelDotNet.Controllers
                             db.SaveChanges();
                             vnaRecordId = vnaRecord.Id;
                         }
-                        catch(Exception e)
+                        catch (DbEntityValidationException e)
                         {
+                            var sb = new StringBuilder();
+
+                            foreach (var failure in e.EntityValidationErrors)
+                            {
+                                sb.AppendFormat("{0} failed validation\n", failure.Entry.Entity.GetType());
+                                foreach (var error in failure.ValidationErrors)
+                                {
+                                    sb.AppendFormat("- {0} : {1}", error.PropertyName, error.ErrorMessage);
+                                    sb.AppendLine();
+                                }
+                            }
                             sr.Close();
                             result.Message = "插入General.csv信息失败";
                             return new XmlResult<SingleResultXml>()
