@@ -34,7 +34,7 @@ namespace CamelDotNet.Controllers
         {
             try
             {
-                var connection = new SqlConnection("Data Source=10.10.2.150,1433;Network Library=DBMSSOCN;Initial Catalog=AIS20121207075920;User ID=sa;Password=you5678*;");
+                var connection = new SqlConnection("Data Source=10.10.2.150,1433;Network Library=DBMSSOCN;Initial Catalog=AIS20121207075920;User ID=sa;Password=Hengxin8454;");
                 connection.Open();
                 SqlCommand command = connection.CreateCommand();
                 command.CommandText = "SELECT FNumber AS KNumber,FName AS Name,FModel AS ModelName,FDeleted AS IsDeleted FROM vICItem WHERE FItemClassID = 4 AND FDetail = 1 AND FDeleted = 0 AND (FNumber LIKE '3%' OR FNumber LIKE '2%')";
@@ -54,7 +54,7 @@ namespace CamelDotNet.Controllers
                             var kNumber = Convert.ToString(reader["KNumber"]);
                             var name = Convert.ToString(reader["Name"]);
                             var modelName = Convert.ToString(reader["ModelName"]);
-                            var existProductType = db.ProductType.Where(a => a.Knumber == kNumber && a.Name == name && a.ModelName == modelName && a.isLocal == false && a.IsDeleted == isDeleted).SingleOrDefault();
+                            var existProductType = db.ProductType.Where(a => a.Knumber == kNumber).SingleOrDefault();
                             if (existProductType == null)
                             {
                                 ProductType pt = new ProductType
@@ -68,63 +68,22 @@ namespace CamelDotNet.Controllers
                                 };
                                 db.ProductType.Add(pt);
                             }
+                            else
+                            {
+                                //如果信息有变动，更新
+                                if (existProductType.Name != name || existProductType.ModelName != modelName || existProductType.isLocal != false || existProductType.IsDeleted != isDeleted)
+                                {
+                                    existProductType.Name = name;
+                                    existProductType.ModelName = modelName;
+                                    existProductType.isLocal = false;
+                                    existProductType.IsDeleted = isDeleted;
+                                }
+                            }
                         }
                         reader.Close();
-                        //var testConnect = db.ProductType.Where(a => a.Knumber == "xxxx" && a.Name == "212" && a.ModelName == "2121" && a.isLocal == false && a.IsDeleted == false).SingleOrDefault();
-
-                        ////var connection = new SqlConnection("Data Source=10.10.2.150,1433;Network Library=DBMSSOCN;Initial Catalog=AIS20121207075920;User ID=sa;Password=you5678*;")
-                        ////var connection = new SqlConnection("Data Source=192.168.0.100,1433;Network Library=DBMSSOCN;Initial Catalog=AIS20121207075920;User ID=sa;Password=Cc19900129;")
-                        ////var connection = new SqlConnection("Data Source=127.0.0.1,1433;Network Library=DBMSSOCN;Initial Catalog=AIS20121207075920;User ID=sa;Password=Clps2013;")
-                        //using (var connection = new SqlConnection("Data Source=10.10.2.150,1433;Network Library=DBMSSOCN;Initial Catalog=AIS20121207075920;User ID=sa;Password=you5678*;"))
-                        //{
-                        //    using (SqlCommand command = connection.CreateCommand())
-                        //    {
-                        //        command.CommandText = "SELECT FNumber AS KNumber,FName AS Name,FModel AS ModelName,FDeleted AS IsDeleted FROM vICItem WHERE FItemClassID = 4 AND FDetail = 1 AND FDeleted = 0 AND (FNumber LIKE '3%' OR FNumber LIKE '2%')";
-                        //        connection.Open();
-                        //        using (SqlDataReader reader = command.ExecuteReader())
-                        //        {
-                        //            while (reader.Read())
-                        //            {
-                        //                bool isDeleted = false;
-                        //                if (Convert.ToInt32(reader["IsDeleted"]) == 1)
-                        //                {
-                        //                    isDeleted = true;
-                        //                }
-                        //                var kNumber = Convert.ToString(reader["KNumber"]);
-                        //                var name = Convert.ToString(reader["Name"]);
-                        //                var modelName = Convert.ToString(reader["ModelName"]);
-                        //                var existProductType = db.ProductType.Where(a => a.Knumber == kNumber && a.Name == name && a.ModelName == modelName && a.isLocal == false && a.IsDeleted == isDeleted).SingleOrDefault();
-                        //                if (existProductType == null)
-                        //                {
-                        //                    ProductType pt = new ProductType
-                        //                    {
-                        //                        Knumber = kNumber,
-                        //                        Name = name,
-                        //                        ModelName = modelName,
-                        //                        isLocal = false,
-                        //                        IsDeleted = isDeleted
-                        //                    };
-                        //                    db.ProductType.Add(pt); 
-                        //                } 
-                        //            }
-                        //            reader.Close();
-                        //        }
-                        //        connection.Close();
-                        //    }
-                        //}
+                        
                         db.SaveChanges();
                     }
-                    //catch (System.Data.Entity.Validation.DbEntityValidationException ex)
-                    //{
-                    //    var sb = new System.Text.StringBuilder();
-                    //    foreach (var failture in ex.EntityValidationErrors)
-                    //    {
-                    //        //foreach()
-                    //        //{
-
-                    //        //}
-                    //    }
-                    //}
                     catch (Exception e)
                     {
                         throw e;

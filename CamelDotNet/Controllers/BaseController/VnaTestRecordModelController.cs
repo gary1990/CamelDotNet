@@ -296,6 +296,38 @@ namespace CamelDotNet.Controllers
                     if (isSelected)
                     {
                         perRecordTestItemTable.AddCell(new Phrase("测试项：" + testitem.TestItem.Name, font));
+                        //create perrecord table
+                        PdfPTable perRecordItemTable = new PdfPTable(4);
+                        perRecordItemTable.AddCell(new Phrase("频点", font));
+                        perRecordItemTable.AddCell(new Phrase("测试值", font));
+                        perRecordItemTable.AddCell(new Phrase("计算值", font));
+                        perRecordItemTable.AddCell(new Phrase("结果", font));
+                        foreach (var perTestItem in testitem.VnaTestItemPerRecords) {
+                            decimal xValueAbs = (decimal)perTestItem.XValue;
+                            //秒 转换成 纳秒
+                            if (Math.Abs(xValueAbs) < 0.001m)
+                            {
+                                xValueAbs = xValueAbs * 1000000000;
+                            }
+                            else//赫兹转换成兆赫兹
+                            {
+                                xValueAbs = xValueAbs/1000000;
+                            }
+                            decimal yValueAbs = (decimal)perTestItem.YValue;
+                            decimal rValueAbs = (decimal)perTestItem.RValue;
+                            var perTestItemResult = "合格";
+                            if (perTestItem.TestitemPerResult)
+                            {
+                                perTestItemResult = "不合格";
+                            }
+                            perRecordItemTable.AddCell(xValueAbs.ToString("0.##"));
+                            perRecordItemTable.AddCell(yValueAbs.ToString("0.##"));
+                            perRecordItemTable.AddCell(rValueAbs.ToString("0.##"));
+                            perRecordItemTable.AddCell(new Phrase(perTestItemResult, font));
+                        }
+                        perRecordTestItemTable.AddCell(perRecordItemTable);
+                        //doc.Add(perRecordItemTable);
+
                         doc.Add(newLinePhrase);
                         //uploadFolder image path
                         FileInfo itemTestImagePath = new FileInfo(uploadFolderPath + "/" + testitem.ImagePath);
