@@ -3,6 +3,7 @@ using CamelDotNet.Models;
 using CamelDotNet.Models.DAL;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
@@ -34,7 +35,11 @@ namespace CamelDotNet.Controllers
         {
             try
             {
-                var connection = new SqlConnection("Data Source=10.10.2.150,1433;Network Library=DBMSSOCN;Initial Catalog=AIS20121207075920;User ID=sa;Password=Hengxin8454;");
+                var barcodeDBIp = ConfigurationManager.AppSettings["BarcodeDbIp"];
+                var barcodeDBName = ConfigurationManager.AppSettings["BarcodeDbName"];
+                var barcodeDBUserName = ConfigurationManager.AppSettings["BarcodeDbUserName"];
+                var barcodeDBPsw = ConfigurationManager.AppSettings["BarcodeDbPassword"];
+                var connection = new SqlConnection("Data Source=" + barcodeDBIp + ",1433;Network Library=DBMSSOCN;Initial Catalog=" + barcodeDBName + ";User ID=" + barcodeDBUserName + ";Password=" + barcodeDBPsw + ";");
                 connection.Open();
                 SqlCommand command = connection.CreateCommand();
                 command.CommandText = "SELECT FNumber AS KNumber,FName AS Name,FModel AS ModelName,FDeleted AS IsDeleted FROM vICItem WHERE FItemClassID = 4 AND FDetail = 1 AND FDeleted = 0 AND (FNumber LIKE '3%' OR FNumber LIKE '2%')";
